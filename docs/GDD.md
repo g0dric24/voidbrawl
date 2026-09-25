@@ -63,8 +63,9 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 | Q / E | roll left / right |
 | W / S | thrust forward / reverse |
 | A / D | strafe left / right |
-| Space / Ctrl | strafe up / down (ship's own up) |
+| Space / C | strafe up / down (ship's own up). Not Ctrl: Ctrl+W closes the browser tab |
 | Shift | boost (drains a meter; the meter recharges) |
+| V | switch aim mode (direct / joystick) |
 | Left mouse | primary gun |
 | Right mouse or F | use the held pickup |
 | Tab | scoreboard |
@@ -73,9 +74,13 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 
 - **Pointer lock** captures the mouse during a match.
 - **Can stop and hover.** Thrust accelerates up to a max speed; with no input, linear drag bleeds speed to
-  zero *(tune)*. Rotation also damps to zero when the mouse stops, so the ship holds its heading.
-- **Rotation is rate-based:** mouse delta sets a turn rate, capped per class. No mouse smoothing that
-  delays aim.
+  zero *(tune)*. Rotation stops when the mouse stops, so the ship holds its heading.
+- **Two aim modes, picked at the S1 feel-gate** *(both built)*:
+  - **Direct** (default): mouse movement turns the nose by an angle, like an FPS. The class turn rate caps
+    each tick; a fast flick finishes over a few ticks (carry ≤ 0.15 rad), never drifts further.
+  - **Joystick**: the mouse moves a virtual stick; its offset from centre sets the turn rate. The stick
+    stays where you leave it.
+- No mouse smoothing that delays aim.
 - **Camera:** third-person, behind and slightly above the ship, **locked to the ship's roll** (the
   horizon turns with you). A small lag on position only, never on aim. Cockpit view is a later option.
 
