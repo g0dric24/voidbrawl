@@ -43,7 +43,7 @@ function targets( state: MatchState ): BoltTarget[] {
     const out: BoltTarget[] = [];
     state.players.forEach( ( p, id ) => {
         if ( p.dead ) return;
-        const radius = SHIP_CLASSES[ classOf( p ) ].tuning.hullRadius;
+        const radius = SHIP_CLASSES[ classOf( p ) ].hitRadius;
         out.push( { id, team: p.team as TeamId, x: p.x, y: p.y, z: p.z, radius } );
     } );
     return out;

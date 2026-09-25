@@ -3,6 +3,8 @@ import type { FlightTuning } from './flight-tuning.js';
 
 export type ShipClassId = 'fighter' | 'interceptor' | 'heavy';
 
+export const SHIP_SCALE = 3;
+
 export interface ShipClass {
     id: ShipClassId;
     name: string;
@@ -10,6 +12,7 @@ export interface ShipClass {
     gun: GunTuning;
     hull: number;
     shield: number;
+    hitRadius: number;
 }
 
 const STANDARD_GUN: GunTuning = {
@@ -27,7 +30,7 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
         id: 'fighter',
         name: 'Fighter',
         tuning: {
-            hullRadius: 1.4,
+            hullRadius: 4.2,
             thrustAccel: 66,
             reverseAccel: 36,
             strafeAccel: 44,
@@ -43,12 +46,13 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
         gun: STANDARD_GUN,
         hull: 100,
         shield: 50,
+        hitRadius: 6.1,
     },
     interceptor: {
         id: 'interceptor',
         name: 'Interceptor',
         tuning: {
-            hullRadius: 1.1,
+            hullRadius: 3.3,
             thrustAccel: 86,
             reverseAccel: 44,
             strafeAccel: 56,
@@ -64,12 +68,13 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
         gun: { ...STANDARD_GUN, damage: 7, fireInterval: 0.075 },
         hull: 75,
         shield: 40,
+        hitRadius: 4.5,
     },
     heavy: {
         id: 'heavy',
         name: 'Heavy',
         tuning: {
-            hullRadius: 2.2,
+            hullRadius: 6.6,
             thrustAccel: 48,
             reverseAccel: 28,
             strafeAccel: 30,
@@ -85,6 +90,7 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
         gun: { ...STANDARD_GUN, damage: 13, fireInterval: 0.12, heatPerShot: 0.08 },
         hull: 150,
         shield: 75,
+        hitRadius: 10.9,
     },
 };
 

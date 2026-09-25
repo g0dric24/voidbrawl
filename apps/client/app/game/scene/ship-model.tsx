@@ -27,6 +27,7 @@ export function ShipModel( { classId, glow }: { classId: ShipClassId; glow: stri
     useFrame( () => {
         uniforms.uRimPower.value = num( 'Ship.rimPower' );
         uniforms.uRimStrength.value = num( 'Ship.rimStrength' );
+        uniforms.uBodyGlow.value = num( 'Ship.bodyGlow' );
     } );
 
     return (

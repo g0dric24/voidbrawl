@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { num } from '../../dev/tuning';
+import { sceneCamera } from '../scene-camera';
 import { viewPose } from '../view-pose';
 
 const WALL_MARGIN = 2;
@@ -14,6 +15,7 @@ export function keepInside( position: THREE.Vector3, radius: number ): void {
 }
 
 export function updateFollowCamera( camera: THREE.PerspectiveCamera, delta: number, arenaRadius: number ): void {
+    sceneCamera.current = camera;
     const pose = viewPose;
     _offset.set( 0, num( 'Camera.height' ), -num( 'Camera.back' ) ).applyQuaternion( pose.quaternion );
     _desired.copy( pose.position ).add( _offset );

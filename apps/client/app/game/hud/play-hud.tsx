@@ -10,6 +10,7 @@ import { HitMarker } from './hit-marker';
 import { HudLayer } from './hud-layer';
 import { KillFeed } from './kill-feed';
 import { PilotsReadout } from './pilots-readout';
+import { ShipMarkers } from './ship-markers';
 import { StickCursor } from './stick-cursor';
 import { VitalsReadout } from './vitals-readout';
 
@@ -17,6 +18,7 @@ export function PlayHud() {
     return (
         <Fragment>
             <DamageFlash />
+            <ShipMarkers />
             <HudLayer>
                 <StickCursor />
                 <HitMarker />

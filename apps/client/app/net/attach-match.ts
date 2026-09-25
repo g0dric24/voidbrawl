@@ -55,7 +55,19 @@ function mirrorPilot( entity: Entity, p: PlayerState ): void {
 }
 
 function snapshotOf( p: PlayerState ) {
-    return { t: performance.now(), x: p.x, y: p.y, z: p.z, qx: p.qx, qy: p.qy, qz: p.qz, qw: p.qw };
+    return {
+        t: performance.now(),
+        x: p.x,
+        y: p.y,
+        z: p.z,
+        qx: p.qx,
+        qy: p.qy,
+        qz: p.qz,
+        qw: p.qw,
+        vx: p.vx,
+        vy: p.vy,
+        vz: p.vz,
+    };
 }
 
 function refreshRoster( room: Room< MatchState > ): void {

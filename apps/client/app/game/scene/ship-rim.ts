@@ -4,6 +4,7 @@ export interface RimUniforms {
     uRimColor: { value: THREE.Color };
     uRimPower: { value: number };
     uRimStrength: { value: number };
+    uBodyGlow: { value: number };
 }
 
 export function rimUniforms( color: string ): RimUniforms {
@@ -11,6 +12,7 @@ export function rimUniforms( color: string ): RimUniforms {
         uRimColor: { value: new THREE.Color( color ) },
         uRimPower: { value: 3 },
         uRimStrength: { value: 2 },
+        uBodyGlow: { value: 0 },
     };
 }
 
@@ -18,12 +20,13 @@ const RIM_HEAD = `
 uniform vec3 uRimColor;
 uniform float uRimPower;
 uniform float uRimStrength;
+uniform float uBodyGlow;
 `;
 
 const RIM_EMISSIVE = `
 #include <emissivemap_fragment>
 float rimK = pow( 1.0 - clamp( dot( normal, normalize( vViewPosition ) ), 0.0, 1.0 ), uRimPower );
-totalEmissiveRadiance += uRimColor * rimK * uRimStrength;
+totalEmissiveRadiance += uRimColor * rimK * uRimStrength + diffuseColor.rgb * uBodyGlow;
 `;
 
 function withRim( source: THREE.Material, uniforms: RimUniforms ): THREE.Material {

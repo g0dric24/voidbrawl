@@ -34,6 +34,9 @@ export interface Snapshot {
     qy: number;
     qz: number;
     qw: number;
+    vx: number;
+    vy: number;
+    vz: number;
 }
 
 export const Interp = trait( () => ( { buffer: [] as Snapshot[] } ) );
@@ -41,5 +44,6 @@ export const Interp = trait( () => ( { buffer: [] as Snapshot[] } ) );
 export const RemotePose = trait( () => ( {
     position: new THREE.Vector3(),
     quaternion: new THREE.Quaternion(),
+    velocity: new THREE.Vector3(),
     ready: false,
 } ) );

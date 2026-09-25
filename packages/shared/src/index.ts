@@ -1,6 +1,7 @@
 export * from './arena/arena.js';
 export * from './combat/bolt.js';
 export * from './combat/gun.js';
+export * from './combat/lead.js';
 export * from './combat/vitals.js';
 export * from './net/messages.js';
 export * from './net/schema.js';
