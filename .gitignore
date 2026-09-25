@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+test-dist/
+build/
+out/
+*.tsbuildinfo
+
+# Vite / caches
+.vite/
+.cache/
+.turbo/
+
+# React Router (framework mode) typegen output
+.react-router/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor / OS
+.DS_Store
+.idea/
+*.swp
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Test / coverage
+coverage/
+
+# Throwaway prototypes / inspectors (never committed; excluded from lint via biome useIgnoreFile)
+scratchpad/
+
+# Session handovers (yeet:pause) — local working notes, never committed.
+.tmp/
+
+# Per-machine Claude Code state — never shared.
+.claude/settings.local.json
+
+# Browser-automation scratch output.
+.playwright-mcp/

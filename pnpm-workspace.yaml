@@ -1,0 +1,34 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# Fail fast if a workspace dependency cycle is introduced (see monorepo.md, Gotchas §5).
+disallowWorkspaceCycles: true
+
+# Single source of version truth for third-party deps shared by more than one package.
+# Two copies of react / three / @colyseus/schema is a runtime failure, not a style nit.
+catalog:
+  '@colyseus/schema': ^4.0.30
+  '@colyseus/sdk': ^0.17.43 # 0.17 client SDK (NOT legacy colyseus.js, frozen at 0.16); exports getStateCallbacks
+  '@react-three/postprocessing': ^3.0.4 # R3F bloom wrapper; peer three >= 0.156, fiber ^9
+  '@tailwindcss/vite': ^4.3.3 # Tailwind v4 Vite plugin — styles the 2D DOM UI only (tailwind.md); pairs with tailwindcss
+  '@types/node': ^22 # node types — server runtime + the node:test suites; all three packages use it
+  leva: ^0.10.1 # dev-only tuning panel (r3f-community default); DOM-only, mounted outside <Canvas>
+  postprocessing: ^6.39.4 # bloom engine; peer three ">= 0.168 < 0.186" — pins the three ceiling with the catalog above
+  react: ^19.2.8
+  react-dom: ^19.2.8
+  tailwindcss: ^4.3.3 # v4 CSS-first (no config file); @import "tailwindcss" + @theme tokens in app.css
+  three: ^0.185.1 # caret on 0.x locks the minor → stays <0.186 (postprocessing peer)
+  typescript: ^7.0.2
+
+minimumReleaseAgeExclude:
+  - '@colyseus/core@0.17.47'
+  - tsx@4.23.9
+  - vite@8.2.1
+
+# Dependencies permitted to run install/build scripts (pnpm blocks the rest by default).
+# esbuild ships its binary via platform optional-deps; msgpackr-extract is an optional
+# native serialization accelerator used by Colyseus (JS fallback if it can't build).
+allowBuilds:
+  esbuild: true
+  msgpackr-extract: true
