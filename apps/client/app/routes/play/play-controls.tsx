@@ -1,5 +1,5 @@
 import type { Room } from '@colyseus/sdk';
-import { type MatchState, RESPAWN_MESSAGE, SET_CLASS_MESSAGE, SHIP_ORDER } from '@voidbrawl/shared';
+import { type MatchState, SELF_DESTRUCT_MESSAGE, SET_CLASS_MESSAGE, SHIP_ORDER } from '@voidbrawl/shared';
 import { useEffect } from 'react';
 import { attachKeyboard } from '../../game/input/keyboard';
 import { attachMouse } from '../../game/input/mouse';
@@ -11,12 +11,12 @@ export function PlayControls( { room }: { room: Room< MatchState > } ) {
     // JUSTIFIED EFFECT — syncs with an external system: the DOM mouse and the Pointer Lock API.
     useEffect( attachMouse, [] );
 
-    // JUSTIFIED EFFECT — syncs with an external system: DOM keyboard → respawn (R) and class switch (1–3) messages to the room.
+    // JUSTIFIED EFFECT — syncs with an external system: DOM keyboard → self-destruct (K) and next-class (1–3) messages to the room.
     useEffect( () => {
         const onKey = ( e: KeyboardEvent ) => {
             if ( e.repeat ) return;
-            if ( e.code === 'KeyR' ) {
-                room.send( RESPAWN_MESSAGE );
+            if ( e.code === 'KeyK' ) {
+                room.send( SELF_DESTRUCT_MESSAGE );
                 return;
             }
             const classId = e.code.startsWith( 'Digit' ) ? SHIP_ORDER[ Number( e.code.slice( 5 ) ) - 1 ] : undefined;

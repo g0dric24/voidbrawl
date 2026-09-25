@@ -10,6 +10,17 @@ export const Pilot = trait( { classId: DEFAULT_CLASS as ShipClassId, team: 0 as 
 
 export const NetId = trait( { sessionId: '' } );
 
+export const Vital = trait( {
+    hull: 0,
+    shield: 0,
+    dead: false,
+    protect: 0,
+    respawnTimer: 0,
+    nextClassId: '',
+    kills: 0,
+    deaths: 0,
+} );
+
 export const LocalPlayer = trait();
 
 export const Remote = trait();
@@ -23,6 +34,9 @@ export interface Snapshot {
     qy: number;
     qz: number;
     qw: number;
+    vx: number;
+    vy: number;
+    vz: number;
 }
 
 export const Interp = trait( () => ( { buffer: [] as Snapshot[] } ) );
@@ -30,5 +44,6 @@ export const Interp = trait( () => ( { buffer: [] as Snapshot[] } ) );
 export const RemotePose = trait( () => ( {
     position: new THREE.Vector3(),
     quaternion: new THREE.Quaternion(),
+    velocity: new THREE.Vector3(),
     ready: false,
 } ) );

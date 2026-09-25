@@ -6,7 +6,7 @@ import {
     type NetInput,
     SHIP_CLASSES,
     type ShipState,
-    stepShip,
+    stepPilot,
 } from '@voidbrawl/shared';
 
 export interface Authoritative extends ShipState {
@@ -50,8 +50,8 @@ export function createPredictor(): Predictor {
         reconcile( sim, auth, arena ) {
             copyShip( sim, auth );
             while ( pending.length > 0 && pending[ 0 ].input.seq <= auth.lastProcessedInput ) pending.shift();
-            const tuning = SHIP_CLASSES[ classOf( auth ) ].tuning;
-            for ( const p of pending ) stepShip( sim, p.input, tuning, arena, FIXED_DT );
+            const ship = SHIP_CLASSES[ classOf( auth ) ];
+            for ( const p of pending ) stepPilot( sim, p.input, ship, arena, FIXED_DT );
         },
         pendingCount() {
             return pending.length;

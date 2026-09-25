@@ -32,12 +32,13 @@ export interface Arena {
 export const ARENA_RADIUS = 600;
 export const BASE_INSET = 70;
 export const BASE_CLEARANCE = 140;
-export const ASTEROID_COUNT = 170;
+export const ASTEROID_COUNT = 130;
 export const ASTEROID_MIN_R = 5;
 export const ASTEROID_MAX_R = 45;
-export const ASTEROID_GAP = 10;
+export const ASTEROID_GAP = 22;
 export const ASTEROID_FILL = 0.92;
-export const SPAWN_SPACING = 14;
+export const CENTER_CLEAR = 170;
+export const SPAWN_SPACING = 28;
 export const SPAWN_COLUMNS = 4;
 export const SPAWN_ROWS = 2;
 const MAX_ATTEMPTS = 40_000;
@@ -98,7 +99,9 @@ function placeAsteroids( seed: number, radius: number, bases: readonly Base[] ):
         const y = ( rand() * 2 - 1 ) * span;
         const z = ( rand() * 2 - 1 ) * span;
         const reach = span - r;
-        if ( x * x + y * y + z * z > reach * reach ) continue;
+        const d2 = x * x + y * y + z * z;
+        const clear = CENTER_CLEAR + r;
+        if ( d2 > reach * reach || d2 < clear * clear ) continue;
         if ( ! clearOfBases( x, y, z, r, bases ) ) continue;
         if ( ! clearOfRocks( x, y, z, r, rocks ) ) continue;
         rocks.push( { id: rocks.length, x, y, z, r } );

@@ -4,11 +4,11 @@ import { samplePose } from './remote-interp';
 
 function snap( t: number, x: number, turn: number ) {
     const q = new THREE.Quaternion().setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), turn );
-    return { t, x, y: 0, z: 0, qx: q.x, qy: q.y, qz: q.z, qw: q.w };
+    return { t, x, y: 0, z: 0, qx: q.x, qy: q.y, qz: q.z, qw: q.w, vx: x * 2, vy: 0, vz: 0 };
 }
 
 function pose() {
-    return { position: new THREE.Vector3(), quaternion: new THREE.Quaternion() };
+    return { position: new THREE.Vector3(), quaternion: new THREE.Quaternion(), velocity: new THREE.Vector3() };
 }
 
 describe( 'samplePose', () => {
@@ -18,6 +18,7 @@ describe( 'samplePose', () => {
         const p = pose();
         expect( samplePose( buffer, 75, p ) ).toBe( true );
         expect( p.position.x ).toBeCloseTo( 15 );
+        expect( p.velocity.x ).toBeCloseTo( 30 );
         const angle = 2 * Math.acos( p.quaternion.w );
         expect( angle ).toBeCloseTo( Math.PI / 4 );
     } );

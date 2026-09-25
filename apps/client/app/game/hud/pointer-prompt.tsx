@@ -9,7 +9,7 @@ export function PointerPrompt() {
     return (
         <button
             type="button"
-            onClick={ () => requestLock( document.documentElement ) }
+            onClick={ () => void requestLock( document.documentElement ) }
             className="fixed inset-0 z-30 flex cursor-pointer flex-col items-center justify-center gap-4 bg-void/55 font-readout text-readout uppercase"
         >
             <span className="text-[clamp(20px,3.4vh,34px)] font-bold tracking-[0.35em] text-marigold">

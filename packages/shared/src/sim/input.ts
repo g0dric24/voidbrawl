@@ -6,10 +6,11 @@ export interface FlightInput {
     pitch: number;
     yaw: number;
     boost: boolean;
+    fire: boolean;
 }
 
 export function idleInput(): FlightInput {
-    return { thrust: 0, strafe: 0, lift: 0, roll: 0, pitch: 0, yaw: 0, boost: false };
+    return { thrust: 0, strafe: 0, lift: 0, roll: 0, pitch: 0, yaw: 0, boost: false, fire: false };
 }
 
 function unit( v: number ): number {
@@ -30,5 +31,6 @@ export function sanitizeInput( input: FlightInput, turnCap: number, out: FlightI
     out.pitch = capped( input.pitch, turnCap );
     out.yaw = capped( input.yaw, turnCap );
     out.boost = input.boost === true;
+    out.fire = input.fire === true;
     return out;
 }

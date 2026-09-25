@@ -11,6 +11,10 @@ export interface ShipState extends Orientation {
     rollRate: number;
     boost: number;
     impact: number;
+    heat: number;
+    cooldown: number;
+    overheated: boolean;
+    shot: boolean;
 }
 
 export function emptyShip(): ShipState {
@@ -28,6 +32,10 @@ export function emptyShip(): ShipState {
         rollRate: 0,
         boost: 1,
         impact: 0,
+        heat: 0,
+        cooldown: 0,
+        overheated: false,
+        shot: false,
     };
 }
 
@@ -60,4 +68,8 @@ export function copyShip( into: ShipState, from: ShipState ): void {
     into.rollRate = from.rollRate;
     into.boost = from.boost;
     into.impact = from.impact;
+    into.heat = from.heat;
+    into.cooldown = from.cooldown;
+    into.overheated = from.overheated;
+    into.shot = from.shot;
 }

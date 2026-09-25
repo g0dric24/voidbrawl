@@ -1,9 +1,11 @@
 import { MapSchema, Schema, type } from '@colyseus/schema';
 import type { ArenaDescriptor, TeamId } from '../arena/arena.js';
+import type { BoltLaunch } from '../combat/bolt.js';
+import type { Vitals } from '../combat/vitals.js';
 import { DEFAULT_CLASS, isShipClassId, type ShipClassId } from '../sim/ship-classes.js';
 import type { ShipState } from '../sim/ship-state.js';
 
-export class PlayerState extends Schema implements ShipState {
+export class PlayerState extends Schema implements ShipState, Vitals {
     @type( 'float32' ) x = 0;
     @type( 'float32' ) y = 0;
     @type( 'float32' ) z = 0;
@@ -23,6 +25,36 @@ export class PlayerState extends Schema implements ShipState {
     @type( 'string' ) name = '';
     @type( 'uint8' ) team: TeamId = 0;
     @type( 'string' ) classId: ShipClassId = DEFAULT_CLASS;
+
+    @type( 'float32' ) heat = 0;
+    @type( 'float32' ) cooldown = 0;
+    @type( 'boolean' ) overheated = false;
+    shot = false;
+
+    @type( 'float32' ) hull = 0;
+    @type( 'float32' ) shield = 0;
+    @type( 'float32' ) protect = 0;
+    @type( 'boolean' ) dead = false;
+    @type( 'float32' ) respawnTimer = 0;
+    @type( 'uint16' ) kills = 0;
+    @type( 'uint16' ) deaths = 0;
+    @type( 'string' ) nextClassId: ShipClassId | '' = '';
+    maxShield = 0;
+    shieldDelay = 0;
+}
+
+export class Bolt extends Schema implements BoltLaunch {
+    @type( 'float32' ) x0 = 0;
+    @type( 'float32' ) y0 = 0;
+    @type( 'float32' ) z0 = 0;
+    @type( 'float32' ) vx = 0;
+    @type( 'float32' ) vy = 0;
+    @type( 'float32' ) vz = 0;
+    @type( 'float64' ) t0 = 0;
+    @type( 'string' ) ownerId = '';
+    @type( 'uint8' ) team: TeamId = 0;
+    @type( 'float64' ) tEnd = 0;
+    @type( 'boolean' ) struck = false;
 }
 
 export class ArenaDescriptorState extends Schema {
@@ -33,6 +65,8 @@ export class ArenaDescriptorState extends Schema {
 export class MatchState extends Schema {
     @type( ArenaDescriptorState ) arena = new ArenaDescriptorState();
     @type( { map: PlayerState } ) players = new MapSchema< PlayerState >();
+    @type( 'float64' ) time = 0;
+    @type( { map: Bolt } ) bolts = new MapSchema< Bolt >();
 }
 
 export function applyArenaDescriptor( state: ArenaDescriptorState, d: ArenaDescriptor ): void {

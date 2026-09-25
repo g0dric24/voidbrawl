@@ -4,7 +4,9 @@ export const MATCH_ROOM = 'match';
 
 export const INPUT_MESSAGE = 'input';
 export const SET_CLASS_MESSAGE = 'class';
-export const RESPAWN_MESSAGE = 'respawn';
+export const SELF_DESTRUCT_MESSAGE = 'selfDestruct';
+export const HIT_MESSAGE = 'hit';
+export const KILL_MESSAGE = 'kill';
 
 export interface NetInput extends FlightInput {
     seq: number;
@@ -16,6 +18,24 @@ export interface InputMessage {
 
 export interface JoinOptions {
     name?: string;
+}
+
+export interface HitMessage {
+    victimId: string;
+    shooterId: string;
+    x: number;
+    y: number;
+    z: number;
+    shield: number;
+    hull: number;
+}
+
+export type DeathCause = 'bolt' | 'crash' | 'self';
+
+export interface KillMessage {
+    victimId: string;
+    killerId: string;
+    cause: DeathCause;
 }
 
 export const MAX_NAME = 16;

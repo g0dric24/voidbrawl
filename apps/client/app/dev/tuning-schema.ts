@@ -25,9 +25,9 @@ const VISUAL_TUNABLES = {
     'Bloom.threshold': { value: 0.6, min: 0, max: 2, step: 0.01 },
     'Bloom.smoothing': { value: 0.2, min: 0, max: 1, step: 0.01 },
 
-    'Camera.back': { value: 11, min: 2, max: 40, step: 0.5 },
-    'Camera.height': { value: 3.2, min: 0, max: 15, step: 0.1 },
-    'Camera.aim': { value: 40, min: 5, max: 300, step: 1 },
+    'Camera.back': { value: 26, min: 4, max: 80, step: 0.5 },
+    'Camera.height': { value: 8, min: 0, max: 40, step: 0.1 },
+    'Camera.aim': { value: 90, min: 5, max: 400, step: 1 },
     'Camera.fov': { value: 72, min: 40, max: 110, step: 1 },
     'Camera.boostFov': { value: 10, min: 0, max: 40, step: 0.5 },
     'Camera.follow': { value: 0, min: 0, max: 40, step: 0.5 },
@@ -37,7 +37,7 @@ const VISUAL_TUNABLES = {
     'Mouse.stickRadius': { value: 220, min: 40, max: 600, step: 5 },
     'Mouse.stickDeadzone': { value: 0.06, min: 0, max: 0.5, step: 0.01 },
 
-    'Reticle.distance': { value: 160, min: 20, max: 600, step: 5 },
+    'Reticle.distance': { value: 220, min: 20, max: 600, step: 5 },
 
     'Boundary.near': { value: 90, min: 20, max: 600, step: 5 },
     'Boundary.glow': { value: 2.6, min: 0.5, max: 6, step: 0.05 },
@@ -82,8 +82,12 @@ const VISUAL_TUNABLES = {
     'Rock.spin': { value: 1, min: 0, max: 6, step: 0.05 },
 
     'Ship.keyLight': { value: 2.5, min: 0, max: 10, step: 0.05 },
-    'Ship.rimStrength': { value: 2.4, min: 0, max: 10, step: 0.05 },
-    'Ship.rimPower': { value: 2.6, min: 0.5, max: 8, step: 0.05 },
+    'Ship.rimStrength': { value: 3.5, min: 0, max: 10, step: 0.05 },
+    'Ship.rimPower': { value: 2.2, min: 0.5, max: 8, step: 0.05 },
+    'Ship.bodyGlow': { value: 0.35, min: 0, max: 2, step: 0.01 },
+    'Trail.width': { value: 1.6, min: 0, max: 8, step: 0.05 },
+    'Trail.length': { value: 50, min: 2, max: 120, step: 1 },
+    'Trail.glow': { value: 2.5, min: 0, max: 8, step: 0.05 },
 } as const satisfies Record< string, NumberTunable >;
 
 export type VisualPath = keyof typeof VISUAL_TUNABLES;

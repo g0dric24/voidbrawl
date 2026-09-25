@@ -68,6 +68,8 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 | V | switch aim mode (direct / joystick) |
 | Left mouse | primary gun |
 | Right mouse or F | use the held pickup |
+| 1 / 2 / 3 | ship class for your next spawn |
+| K | self-destruct (counts as a death) |
 | Tab | scoreboard |
 | M | mute |
 | Esc | release the mouse / menu |
@@ -111,7 +113,14 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 ### 7.2 Primary gun
 
 - Unlimited ammo, **overheat** meter. Firing builds heat; at max heat the gun locks until it cools.
-- Fires fast projectiles (bolts) straight along the nose. **No aim assist, no lock-on.**
+- Fires fast projectiles (bolts) straight along the nose. **No aim assist, no lock-on** — bolts go exactly
+  where the nose points.
+- **Lead marker (client, 2026-09-25):** a small circle in the enemy's team colour shows where to shoot a
+  moving enemy (Everspace 2 "aim leader", War Thunder arcade "lead marker"). It is a hint only; it never
+  moves a bolt.
+- **Hit sphere:** each class has an invisible hit sphere that covers the whole model (measured from the
+  model files) plus 10 %, so a hit anywhere on the ship counts whatever way it is turned: Fighter 6.1u,
+  Interceptor 4.5u, Heavy 10.9u. It is separate from the smaller collision sphere used against rocks.
 - Hits are decided by the server.
 
 ### 7.3 Pickups
@@ -129,10 +138,24 @@ Pickups float at fixed points in the arena and respawn after a delay *(tune)*. A
 
 ### 7.4 Death and respawn
 
-- Death → explosion (the SLUR derezz / shatter VFX) → **3 s** wait (spectate your killer) → spawn at a free
-  point of your team base.
+- Death → explosion → **3 s** wait (the camera holds where you died; spectating your killer is an S6 polish
+  item) → spawn at a free point of your team base.
 - **2 s spawn protection:** invulnerable; ends early if you fire.
-- Ship class can be changed while waiting to respawn.
+- **Ship class:** press 1 / 2 / 3 at any time; the new class applies at your **next spawn**, never mid-life,
+  so switching can't be used to heal.
+- **K = self-destruct** (to get unstuck or change ship now); it counts as a death.
+
+**First-pass combat numbers** (`ship-classes.ts`, tune at the S3 gate):
+
+| Class | Hull / shield | Damage per bolt | Fire interval |
+|---|:--:|:--:|:--:|
+| Fighter | 100 / 50 | 9 | 0.09 s |
+| Interceptor | 75 / 40 | 7 | 0.075 s |
+| Heavy | 150 / 75 | 13 | 0.12 s |
+
+Bolts fly at 420 u/s plus the ship's forward speed for 1.4 s. Continuous fire overheats in about 2.3 s; the gun
+unlocks when heat falls to 30 %. The shield starts regenerating 4 s after the last hit, at 20 per second.
+Hitting an asteroid or the wall faster than 14 u/s does damage.
 
 ## 8. Ships
 
@@ -145,7 +168,10 @@ Three classes to start. Stats are **data** (server-authoritative), so balancing 
 | **Heavy** | split-crown | slow tank | high | low | low |
 
 The other models (bob, comet, dispatcher, imperial) are reserved for later classes or skins.
-**Hitbox:** a box that matches the model's measured bounds (SLUR's WYSIWYG rule), rotated with the ship.
+**Scale and hit area:** ships are drawn at **3× the SLUR size** (`SHIP_SCALE`) so they read at range — a
+Fighter is about 8u wide. Two spheres per class: a **collision sphere** (~ship width, used against rocks and
+the wall) and a larger **hit sphere** that covers the whole model (§7.2). Rock gaps (22u) always fit the
+widest collision sphere.
 
 ## 9. Teams, rooms, players
 
@@ -162,13 +188,22 @@ The other models (bob, comet, dispatcher, imperial) are reserved for later class
 - Art direction carried over from SLUR: **"Cold Space. Warm Energy."** Dark graphite and stone, cold
   desaturated space, sparse emissive energy. References in `docs/art-reference/`.
 - Team colour is the energy colour on ships, bolts and HUD. **Every ship's edges glow in its team colour**
-  (a rim light), which is how you tell friend from foe. No rings or markers around ships (client).
+  (a rim light), the hull carries a little self-light so it reads against dark space, and other ships
+  leave an **engine trail** in their team colour (your own trail is hidden — it would point at the camera).
+  No 3D rings around ships (client).
+- **Readability lesson from research:** Everspace 2 chose a "colorful universe" with bright ships; our dark
+  graphite ships on a dark scene were near-invisible at range. Keep the world dark and the ships bright.
 - Audio carried over: Kenney CC0 SFX, synth engine hum, synthwave music.
 
 ## 11. HUD
 
 Hull + shield bars · boost meter · gun heat · held pickups · team score + target + timer · kill feed ·
 off-screen enemy indicators · hit markers · boundary warning · damage direction indicator.
+
+**Ship markers (built in S3):** every other ship gets a screen-space bracket in its team colour with its name
+and distance (teammates smaller and dimmer). Enemies off screen show as an arrow at the screen edge. Enemies
+on screen get the lead marker (§7.2). **You never see another player's health** — only your own hull and
+shield (client).
 
 ## 12. Hosting
 

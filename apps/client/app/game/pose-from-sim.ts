@@ -43,6 +43,8 @@ export function writeViewPose(
     p.boostShare = share < 0 ? 0 : share > 1 ? 1 : share;
     p.edgeDistance = arena.radius - p.position.length();
     p.impact = Math.max( sim.impact, p.impact * Math.exp( -IMPACT_DECAY * delta ) );
+    p.heat = sim.heat;
+    p.overheated = sim.overheated;
 }
 
 export function capturePrev( sim: ShipState, prev: PoseSample ): void {
