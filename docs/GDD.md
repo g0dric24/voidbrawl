@@ -90,12 +90,13 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 - **Bases:** two spawn zones on opposite poles. Each has several spawn points so squadmates do not stack.
 - **Cover:** asteroids and monoliths fill the space between the bases. They are solid: collision.
 - **Boundary: a solid wall (client, 2026-09-25).** No ship can leave the sphere. The hull hits the wall and
-  bounces back, like hitting an asteroid. The wall is always visible as a faint marigold grid, and it
-  glows brighter as you get close. The HUD warns within 60u. There is no "outside" zone and no
-  out-of-bounds damage.
+  bounces back, like hitting an asteroid. The wall *is* the sky: the nebula is painted on the inside of the
+  sphere, so the whole environment is inside it and nothing exists beyond it. A soft marigold glow appears
+  on the wall where you get close (no grid lines). The camera never leaves the sphere. The HUD warns
+  within 60u. There is no "outside" zone and no out-of-bounds damage.
 - **One map in v1.** The arena is data from a descriptor (seed + map id), built identically on both ends —
   the SLUR contract, now in 3D. More maps later. A WOW-style map editor is a much-later idea.
-- **Sky:** the SLUR procedural nebula / deep-space sky. It already wraps the full sphere.
+- **Sky:** the SLUR procedural nebula / deep-space sky, drawn on the arena wall (see Boundary).
 
 ## 7. Combat
 
@@ -160,7 +161,8 @@ The other models (bob, comet, dispatcher, imperial) are reserved for later class
 
 - Art direction carried over from SLUR: **"Cold Space. Warm Energy."** Dark graphite and stone, cold
   desaturated space, sparse emissive energy. References in `docs/art-reference/`.
-- Team colour is the energy colour on ships, bolts and HUD.
+- Team colour is the energy colour on ships, bolts and HUD. **Every ship's edges glow in its team colour**
+  (a rim light), which is how you tell friend from foe. No rings or markers around ships (client).
 - Audio carried over: Kenney CC0 SFX, synth engine hum, synthwave music.
 
 ## 11. HUD

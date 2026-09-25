@@ -17,7 +17,8 @@ import { prefersReducedMotion } from './reduced-motion';
 
 const FIELD_FACE = 1024;
 const LIGHT_FACE = 128;
-const BACKGROUND_SCALE = 100;
+const DOME_WIDTH_SEGMENTS = 96;
+const DOME_HEIGHT_SEGMENTS = 48;
 const DEG = Math.PI / 180;
 
 export const NEBULA_HORIZON = new THREE.Color( 0, 0, 0 );
@@ -63,6 +64,15 @@ function cubeMaterial( fragmentShader: string, uniforms: Record< string, THREE.I
 
 function skyBox( material: THREE.ShaderMaterial ): THREE.Mesh {
     const mesh = new THREE.Mesh( new THREE.BoxGeometry( 2, 2, 2 ), material );
+    mesh.frustumCulled = false;
+    mesh.renderOrder = -1000;
+    return mesh;
+}
+
+function skyDome( material: THREE.ShaderMaterial, radius: number ): THREE.Mesh {
+    const geometry = new THREE.SphereGeometry( 1, DOME_WIDTH_SEGMENTS, DOME_HEIGHT_SEGMENTS );
+    const mesh = new THREE.Mesh( geometry, material );
+    mesh.scale.setScalar( radius );
     mesh.frustumCulled = false;
     mesh.renderOrder = -1000;
     return mesh;
@@ -155,13 +165,8 @@ export class NebulaBaker {
     private readonly bakeState = new Float64Array( SKY_BAKE_KEYS.length ).fill( Number.NaN );
     private readonly lookState = new Float64Array( SKY_LOOK_KEYS.length ).fill( Number.NaN );
 
-    constructor() {
-        this.background = skyBox( this.backgroundMaterial );
-        this.background.scale.setScalar( BACKGROUND_SCALE );
-        this.background.onBeforeRender = ( _renderer, _scene, camera ) => {
-            this.background.position.setFromMatrixPosition( camera.matrixWorld );
-            this.background.updateMatrixWorld();
-        };
+    constructor( domeRadius: number ) {
+        this.background = skyDome( this.backgroundMaterial, domeRadius );
 
         const gain = { value: 1 };
         const fill = { value: new THREE.Color( 0, 0, 0 ) };

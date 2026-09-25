@@ -3,6 +3,7 @@ import { useQueryFirst, useTrait } from 'koota/react';
 import { Suspense, useRef } from 'react';
 import type * as THREE from 'three';
 import { LocalPlayer, Pilot } from '../ecs/traits';
+import { TEAM_COLORS } from '../team-colors';
 import { viewPose } from '../view-pose';
 import { ShipModel } from './ship-model';
 
@@ -20,7 +21,9 @@ export function LocalShipView() {
 
     return (
         <group ref={ ref }>
-            <Suspense fallback={ null }>{ pilot ? <ShipModel classId={ pilot.classId } /> : null }</Suspense>
+            <Suspense fallback={ null }>
+                { pilot ? <ShipModel classId={ pilot.classId } glow={ TEAM_COLORS[ pilot.team ] } /> : null }
+            </Suspense>
         </group>
     );
 }

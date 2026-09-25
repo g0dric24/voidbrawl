@@ -39,8 +39,7 @@ const VISUAL_TUNABLES = {
 
     'Reticle.distance': { value: 160, min: 20, max: 600, step: 5 },
 
-    'Boundary.idle': { value: 0.22, min: 0, max: 1, step: 0.01 },
-    'Boundary.near': { value: 140, min: 20, max: 600, step: 5 },
+    'Boundary.near': { value: 90, min: 20, max: 600, step: 5 },
     'Boundary.glow': { value: 2.6, min: 0.5, max: 6, step: 0.05 },
 
     'Dust.count': { value: 1400, min: 0, max: 6000, step: 100 },
@@ -83,6 +82,8 @@ const VISUAL_TUNABLES = {
     'Rock.spin': { value: 1, min: 0, max: 6, step: 0.05 },
 
     'Ship.keyLight': { value: 2.5, min: 0, max: 10, step: 0.05 },
+    'Ship.rimStrength': { value: 2.4, min: 0, max: 10, step: 0.05 },
+    'Ship.rimPower': { value: 2.6, min: 0.5, max: 8, step: 0.05 },
 } as const satisfies Record< string, NumberTunable >;
 
 export type VisualPath = keyof typeof VISUAL_TUNABLES;

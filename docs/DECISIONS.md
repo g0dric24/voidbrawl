@@ -87,3 +87,50 @@ new rule for kills out of bounds.
 **Rejected:** a damage zone outside the sphere (the previous design); a soft push-back force (still lets
 a fast ship drift out, and it fights the player's input); wrapping to the opposite side (disorienting and
 breaks line of sight).
+
+---
+
+## ADR-004 — Networked flight: inputs in, prediction for self, interpolation for others
+
+- **Status:** Accepted · **Date:** 2026-09-25 · **Inherited from:** SLUR's netcode (`conventions/netcode.md`)
+
+**Decision.**
+
+- The client sends **sequence-numbered `FlightInput`s** (one per 60 Hz tick, batched at 30 Hz). Mouse turn is
+  already an angle per tick, so the server needs nothing but the input to reproduce the move.
+- The server **queues** each player's inputs (drops malformed and already-seen seqs, caps the queue at 120)
+  and steps a ship **only when it has an input for it**, one input per tick, recording `lastProcessedInput`.
+  A client that stops sending (a hidden tab) freezes in place instead of drifting on stale input.
+- The local ship is **predicted** with the same `stepShip()` and **reconciled** on every patch: snap to the
+  server state, drop acknowledged inputs, replay the rest.
+- Remote ships are **interpolated 100 ms in the past** (two patches at 20 Hz): linear position, slerped
+  rotation, held at the newest snapshot rather than extrapolated.
+- Teams are **auto-balanced on join** (smaller team, ties to Marigold). S4 adds picking in the lobby.
+
+**Rejected:** clients sending positions (no authority, no replay); stepping idle ships with an empty input
+(the client cannot predict inputs it never sent, so every hidden-tab gap becomes a correction);
+extrapolating remote ships (overshoots on every turn in 6-DOF).
+
+---
+
+## ADR-005 — The sky is the arena wall; ships glow in their team colour
+
+- **Status:** Accepted (client) · **Date:** 2026-09-25 · **Amends:** ADR-003 (how the wall is drawn)
+
+**Decision.**
+
+- The nebula sky is drawn on a sphere of `arena.radius` fixed at the centre, not on a box that follows the
+  camera. The environment is literally inside the sphere, and flying toward the wall brings the sky closer.
+  The follow camera is clamped 2u inside the wall, so the view never reaches past it.
+- ADR-003's lat/long grid is removed. The only wall cue is a soft marigold glow on the wall near the
+  camera (`Boundary.near`, `Boundary.glow`), plus the HUD distance warning.
+- Remote ships lose their team ring. Every ship (local and remote) gets a fresnel rim light in its team
+  colour, patched into its cloned glTF materials (`Ship.rimStrength`, `Ship.rimPower`).
+
+**Why.** The client: *"i dont want to see the ring surrounding the ships make the ships edges glow"* and
+*"i dont want the sphere of lines … all should be pitch black whatever env is there its inside the
+sphere."*
+
+**Known cost.** At long range a ship is a few pixels, so its rim reads as a coloured glint, not a shape.
+If spotting enemies at range proves hard in play, the lever is rim strength or an off-screen indicator
+(GDD §11), not the ring.

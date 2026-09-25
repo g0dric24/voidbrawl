@@ -49,3 +49,6 @@ scratchpad/
 
 # Browser-automation scratch output.
 .playwright-mcp/
+
+# Local scratch output (screenshots, logs, probe scripts).
+/.scratch/

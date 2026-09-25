@@ -35,7 +35,8 @@ export default function TuningPanel() {
         'Flight',
         Object.fromEntries( SHIP_ORDER.map( ( id ) => [ SHIP_CLASSES[ id ].name, classFolder( id ) ] ) ),
     );
-    useControls( 'Boundary', group( 'Boundary', [ 'idle', 'near', 'glow' ] ), { collapsed: true } );
+    useControls( 'Boundary', group( 'Boundary', [ 'near', 'glow' ] ), { collapsed: true } );
+    useControls( 'Ship glow', group( 'Ship', [ 'rimStrength', 'rimPower' ] ), { collapsed: true } );
     useControls( 'Mouse', group( 'Mouse', [ 'sensitivity', 'invertY', 'stickRadius', 'stickDeadzone' ] ) );
     useControls( 'Camera', group( 'Camera', [ 'back', 'height', 'aim', 'fov', 'boostFov', 'follow' ] ) );
     useControls( 'Reticle', group( 'Reticle', [ 'distance' ] ), { collapsed: true } );
