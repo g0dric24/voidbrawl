@@ -39,6 +39,10 @@ const VISUAL_TUNABLES = {
 
     'Reticle.distance': { value: 160, min: 20, max: 600, step: 5 },
 
+    'Boundary.idle': { value: 0.22, min: 0, max: 1, step: 0.01 },
+    'Boundary.near': { value: 140, min: 20, max: 600, step: 5 },
+    'Boundary.glow': { value: 2.6, min: 0.5, max: 6, step: 0.05 },
+
     'Dust.count': { value: 1400, min: 0, max: 6000, step: 100 },
     'Dust.streak': { value: 0.035, min: 0, max: 0.2, step: 0.005 },
 

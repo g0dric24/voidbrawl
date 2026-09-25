@@ -12,7 +12,6 @@ import { stepShip } from './step.js';
 const FIGHTER = SHIP_CLASSES.fighter.tuning;
 const EMPTY: Arena = {
     radius: 10_000,
-    hardRadius: 11_000,
     asteroids: [],
     bases: materializeArena( DEFAULT_ARENA ).bases,
 };
@@ -130,9 +129,15 @@ test( 'a ship flown into an asteroid never ends inside it and bounces back', () 
     assert.ok( minGap > -1e-9 );
 } );
 
-test( 'the hard boundary holds the ship inside', () => {
-    const arena: Arena = { ...EMPTY, radius: 100, hardRadius: 115 };
-    const s = fly( emptyShip(), input( { thrust: 1, boost: true } ), 20, arena );
-    assert.ok( Math.sqrt( s.x * s.x + s.y * s.y + s.z * s.z ) <= 115 - FIGHTER.hullRadius + 1e-9 );
-    assert.equal( s.outside, true );
+test( 'the sphere wall holds the hull inside on every tick and bounces the ship', () => {
+    const arena: Arena = { ...EMPTY, radius: 100 };
+    const s = emptyShip();
+    let hit = false;
+    for ( let n = 0; n < 1200; n++ ) {
+        stepShip( s, input( { thrust: 1, boost: true, yaw: n % 240 < 120 ? 0.01 : 0 } ), FIGHTER, arena, FIXED_DT );
+        const reach = Math.sqrt( s.x * s.x + s.y * s.y + s.z * s.z ) + FIGHTER.hullRadius;
+        assert.ok( reach <= arena.radius + 1e-9 );
+        if ( s.impact > 0 ) hit = true;
+    }
+    assert.ok( hit );
 } );

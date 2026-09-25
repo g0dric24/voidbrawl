@@ -11,7 +11,6 @@ export interface ShipState extends Orientation {
     rollRate: number;
     boost: number;
     impact: number;
-    outside: boolean;
 }
 
 export function emptyShip(): ShipState {
@@ -29,7 +28,6 @@ export function emptyShip(): ShipState {
         rollRate: 0,
         boost: 1,
         impact: 0,
-        outside: false,
     };
 }
 
@@ -62,5 +60,4 @@ export function copyShip( into: ShipState, from: ShipState ): void {
     into.rollRate = from.rollRate;
     into.boost = from.boost;
     into.impact = from.impact;
-    into.outside = from.outside;
 }

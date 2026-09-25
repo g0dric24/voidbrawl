@@ -25,13 +25,11 @@ export interface Base {
 
 export interface Arena {
     radius: number;
-    hardRadius: number;
     asteroids: readonly Asteroid[];
     bases: readonly [ Base, Base ];
 }
 
 export const ARENA_RADIUS = 600;
-export const HARD_RADIUS_FACTOR = 1.15;
 export const BASE_INSET = 70;
 export const BASE_CLEARANCE = 140;
 export const ASTEROID_COUNT = 170;
@@ -113,7 +111,6 @@ export function materializeArena( descriptor: ArenaDescriptor ): Arena {
     const bases = [ makeBase( 0, radius ), makeBase( 1, radius ) ] as const;
     return {
         radius,
-        hardRadius: radius * HARD_RADIUS_FACTOR,
         asteroids: placeAsteroids( descriptor.seed, radius, bases ),
         bases,
     };

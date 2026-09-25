@@ -32,8 +32,7 @@ export function collideAsteroids( s: ShipState, arena: Arena, hull: number, rest
 
 export function collideBoundary( s: ShipState, arena: Arena, hull: number, restitution: number ): void {
     const d2 = s.x * s.x + s.y * s.y + s.z * s.z;
-    s.outside = d2 > arena.radius * arena.radius;
-    const max = arena.hardRadius - hull;
+    const max = arena.radius - hull;
     if ( d2 <= max * max ) return;
     const d = Math.sqrt( d2 );
     const nx = s.x / d;

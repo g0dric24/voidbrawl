@@ -9,8 +9,6 @@ export const viewPose = {
     speed: 0,
     boost: 1,
     boostShare: 0,
-    outside: false,
     edgeDistance: 0,
     impact: 0,
-    classId: 'fighter' as string,
 };

@@ -48,8 +48,8 @@ Inside a match: **spawn → fly → fight → die → 3 s → respawn** until on
 | Squad | 2v2 | 20 | 10 min |
 | Team | 4v4 | 40 | 10 min |
 
-- A **kill** scores 1 for the killer's team. Out-of-bounds, collision and self-inflicted deaths give the
-  point to the other team.
+- A **kill** scores 1 for the killer's team. Collision and self-inflicted deaths give the point to the
+  other team.
 - At the time limit the higher score wins. On a tie: **sudden death** — the next kill wins.
 - The host picks the mode in the lobby.
 
@@ -89,8 +89,10 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 - A **sphere**, medium size — two bases can see each other across it. Radius **600u** *(tune)*.
 - **Bases:** two spawn zones on opposite poles. Each has several spawn points so squadmates do not stack.
 - **Cover:** asteroids and monoliths fill the space between the bases. They are solid: collision.
-- **Boundary:** a visible warning shell at the edge. Outside the sphere a ship takes damage each second
-  *(tune)* and sees a warning on the HUD.
+- **Boundary: a solid wall (client, 2026-09-25).** No ship can leave the sphere. The hull hits the wall and
+  bounces back, like hitting an asteroid. The wall is always visible as a faint marigold grid, and it
+  glows brighter as you get close. The HUD warns within 60u. There is no "outside" zone and no
+  out-of-bounds damage.
 - **One map in v1.** The arena is data from a descriptor (seed + map id), built identically on both ends —
   the SLUR contract, now in 3D. More maps later. A WOW-style map editor is a much-later idea.
 - **Sky:** the SLUR procedural nebula / deep-space sky. It already wraps the full sphere.

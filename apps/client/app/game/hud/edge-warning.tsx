@@ -2,7 +2,7 @@ import { addEffect } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import { viewPose } from '../view-pose';
 
-const WARN_AT = 40;
+const WARN_AT = 60;
 
 export function EdgeWarning() {
     const ref = useRef< HTMLDivElement >( null );
@@ -14,12 +14,9 @@ export function EdgeWarning() {
             addEffect( () => {
                 const el = ref.current;
                 if ( ! el ) return;
-                const near = viewPose.outside || viewPose.edgeDistance < WARN_AT;
-                el.style.setProperty( '--shown', near ? '1' : '0' );
+                el.style.setProperty( '--shown', viewPose.edgeDistance < WARN_AT ? '1' : '0' );
                 if ( textRef.current ) {
-                    textRef.current.textContent = viewPose.outside
-                        ? 'Outside the arena — turn back'
-                        : `Arena edge ${ Math.max( 0, Math.round( viewPose.edgeDistance ) ) }u`;
+                    textRef.current.textContent = `Arena wall ${ Math.max( 0, Math.round( viewPose.edgeDistance ) ) }u`;
                 }
             } ),
         [],

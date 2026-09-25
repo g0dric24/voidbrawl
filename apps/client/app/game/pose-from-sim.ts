@@ -41,7 +41,6 @@ export function writeViewPose(
     const top = topSpeed( tuning );
     const share = ( p.speed - top ) / Math.max( 1e-6, boostSpeed( tuning ) - top );
     p.boostShare = share < 0 ? 0 : share > 1 ? 1 : share;
-    p.outside = sim.outside;
     p.edgeDistance = arena.radius - p.position.length();
     p.impact = Math.max( sim.impact, p.impact * Math.exp( -IMPACT_DECAY * delta ) );
 }
