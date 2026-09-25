@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 
-const BASE = process.env.COMMENT_RATCHET_BASE ?? 'origin/dev';
+const BASE = process.env.COMMENT_RATCHET_BASE ?? 'origin/main';
 const NEW_FILE_MAX_RATIO = 0.2;
 const NEW_FILE_FLOOR = 6;
 const COMMENT_LINE = /^\s*(\/\/|\/\*|\*\/|\*|\{\s*\/\*)/;

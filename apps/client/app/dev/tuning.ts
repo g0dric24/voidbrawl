@@ -1,0 +1,28 @@
+import { remember, restore } from './tuning-persist';
+import { COLOR_TUNABLES, type ColorPath, NUMBER_TUNABLES, type NumberPath } from './tuning-schema';
+
+const numbers = Object.fromEntries(
+    Object.entries( NUMBER_TUNABLES ).map( ( [ path, spec ] ) => [ path, restore( path, spec.value ) ] ),
+) as Record< NumberPath, number >;
+
+const colors = Object.fromEntries(
+    Object.entries( COLOR_TUNABLES ).map( ( [ path, spec ] ) => [ path, restore( path, spec.value ) ] ),
+) as Record< ColorPath, string >;
+
+export function num( path: NumberPath ): number {
+    return numbers[ path ];
+}
+
+export function col( path: ColorPath ): string {
+    return colors[ path ];
+}
+
+export function setNum( path: NumberPath, value: number ): void {
+    numbers[ path ] = value;
+    remember( path, value, NUMBER_TUNABLES[ path ].value );
+}
+
+export function setCol( path: ColorPath, value: string ): void {
+    colors[ path ] = value;
+    remember( path, value, COLOR_TUNABLES[ path ].value );
+}

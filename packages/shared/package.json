@@ -1,0 +1,28 @@
+{
+    "name": "@voidbrawl/shared",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc -b",
+        "dev": "tsc -b --watch --preserveWatchOutput",
+        "typecheck": "tsc -b",
+        "test": "rm -rf test-dist && tsc -p tsconfig.test.json && node --test \"test-dist/**/*.test.js\""
+    },
+    "dependencies": {
+        "@colyseus/schema": "catalog:"
+    },
+    "devDependencies": {
+        "@types/node": "catalog:",
+        "typescript": "catalog:"
+    }
+}

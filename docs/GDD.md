@@ -48,8 +48,8 @@ Inside a match: **spawn → fly → fight → die → 3 s → respawn** until on
 | Squad | 2v2 | 20 | 10 min |
 | Team | 4v4 | 40 | 10 min |
 
-- A **kill** scores 1 for the killer's team. Out-of-bounds, collision and self-inflicted deaths give the
-  point to the other team.
+- A **kill** scores 1 for the killer's team. Collision and self-inflicted deaths give the point to the
+  other team.
 - At the time limit the higher score wins. On a tie: **sudden death** — the next kill wins.
 - The host picks the mode in the lobby.
 
@@ -63,8 +63,9 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 | Q / E | roll left / right |
 | W / S | thrust forward / reverse |
 | A / D | strafe left / right |
-| Space / Ctrl | strafe up / down (ship's own up) |
+| Space / C | strafe up / down (ship's own up). Not Ctrl: Ctrl+W closes the browser tab |
 | Shift | boost (drains a meter; the meter recharges) |
+| V | switch aim mode (direct / joystick) |
 | Left mouse | primary gun |
 | Right mouse or F | use the held pickup |
 | Tab | scoreboard |
@@ -73,9 +74,13 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 
 - **Pointer lock** captures the mouse during a match.
 - **Can stop and hover.** Thrust accelerates up to a max speed; with no input, linear drag bleeds speed to
-  zero *(tune)*. Rotation also damps to zero when the mouse stops, so the ship holds its heading.
-- **Rotation is rate-based:** mouse delta sets a turn rate, capped per class. No mouse smoothing that
-  delays aim.
+  zero *(tune)*. Rotation stops when the mouse stops, so the ship holds its heading.
+- **Two aim modes, picked at the S1 feel-gate** *(both built)*:
+  - **Direct** (default): mouse movement turns the nose by an angle, like an FPS. The class turn rate caps
+    each tick; a fast flick finishes over a few ticks (carry ≤ 0.15 rad), never drifts further.
+  - **Joystick**: the mouse moves a virtual stick; its offset from centre sets the turn rate. The stick
+    stays where you leave it.
+- No mouse smoothing that delays aim.
 - **Camera:** third-person, behind and slightly above the ship, **locked to the ship's roll** (the
   horizon turns with you). A small lag on position only, never on aim. Cockpit view is a later option.
 
@@ -84,8 +89,10 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 - A **sphere**, medium size — two bases can see each other across it. Radius **600u** *(tune)*.
 - **Bases:** two spawn zones on opposite poles. Each has several spawn points so squadmates do not stack.
 - **Cover:** asteroids and monoliths fill the space between the bases. They are solid: collision.
-- **Boundary:** a visible warning shell at the edge. Outside the sphere a ship takes damage each second
-  *(tune)* and sees a warning on the HUD.
+- **Boundary: a solid wall (client, 2026-09-25).** No ship can leave the sphere. The hull hits the wall and
+  bounces back, like hitting an asteroid. The wall is always visible as a faint marigold grid, and it
+  glows brighter as you get close. The HUD warns within 60u. There is no "outside" zone and no
+  out-of-bounds damage.
 - **One map in v1.** The arena is data from a descriptor (seed + map id), built identically on both ends —
   the SLUR contract, now in 3D. More maps later. A WOW-style map editor is a much-later idea.
 - **Sky:** the SLUR procedural nebula / deep-space sky. It already wraps the full sphere.

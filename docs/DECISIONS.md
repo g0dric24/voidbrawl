@@ -68,3 +68,22 @@ sim.
 | A physics engine (Rapier, cannon) | Not deterministic across both ends without lock-step; SLUR's kinematic sim already proves the model. |
 
 **Open (S1 feel-gate):** max turn rates, drag values, mouse sensitivity, inverted-Y option.
+
+---
+
+## ADR-003 — The arena edge is a solid wall
+
+- **Status:** Accepted (client) · **Date:** 2026-09-25 · **Replaces:** GDD §6 "outside the sphere a ship takes damage each second"
+
+**Decision.** The sphere's surface is a wall at `arena.radius`. `collideBoundary()` clamps the hull inside
+it and bounces the ship with the class restitution, the same response as an asteroid. `Arena.hardRadius`
+and `ShipState.outside` are removed. The wall is drawn as a faint grid everywhere and glows near the
+ship; the HUD warns within 60u.
+
+**Why.** The client: *"I should see the boundary clearly of sphere, also I should not be able to go beyond
+boundary."* A damage zone lets players leave the fight; a wall keeps every ship in play and needs no
+new rule for kills out of bounds.
+
+**Rejected:** a damage zone outside the sphere (the previous design); a soft push-back force (still lets
+a fast ship drift out, and it fights the player's input); wrapping to the opposite side (disorienting and
+breaks line of sight).
