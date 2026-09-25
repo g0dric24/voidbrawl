@@ -18,9 +18,9 @@ function enter( room: Room< MatchState > ): Room< MatchState > {
     return room;
 }
 
-export async function createMatch( mode: MatchMode, name: string ): Promise< Room< MatchState > > {
+export async function createMatch( mode: MatchMode, name: string, bot = false ): Promise< Room< MatchState > > {
     leaveMatch();
-    const options: JoinOptions = { name, mode };
+    const options: JoinOptions = { name, mode, bot };
     return enter( await getClient().create< MatchState >( MATCH_ROOM, options ) );
 }
 

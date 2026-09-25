@@ -209,11 +209,28 @@ room is joined from the `/game/:roomId` route loader and left from the `/lobby` 
 component unmount.
 
 **Readability pass** (from the environment research): the default sky is the darker Deep Space preset;
-the wall glow is neutral steel so team colours mean teams only; a ring of eight solid monolith pillars
-stands in the open centre as cover and an orientation landmark (axis-aligned boxes, so ship and bolt
-collision stay basic maths); remote ships carry two fixed-pixel-size wingtip beacons in their team colour;
-base rings move 50u behind the spawn line so they no longer cross the view at spawn.
+the wall glow is neutral steel so team colours mean teams only; remote ships carry two fixed-pixel-size
+wingtip beacons in their team colour; base rings move 50u behind the spawn line so they no longer cross the
+view at spawn. (A centre ring of pillars was built here and removed by ADR-009.)
 
 **Rejected:** client-decided phases or scores (cheatable and racy); a separate lobby room per match (one
-room through all phases keeps players, sides and the arena warm); rotated pillars (oriented boxes add maths
-for no gameplay gain).
+room through all phases keeps players, sides and the arena warm).
+
+## ADR-009 — Asteroids only; a server-side practice bot
+
+- **Status:** Accepted (client) · **Date:** 2026-09-26 · **Issue:** #7
+
+**Arena.** The client asked to keep the original asteroid theme. The pillar ring and the open centre are
+removed. 150 asteroids fill the whole sphere with the same 22u flyable gap. Ship and bolt collision go back
+to spheres only.
+
+**Practice bot.** `JoinOptions.bot = true` makes a private 1v1 room with one bot on Cyan. The bot lives on
+the server as a player without a client: `BotRoster` gives it a `bot:` session id and an input queue, and
+each fixed step it pushes one `NetInput` from `botInput()` before the pilots step. So the bot obeys the same
+flight, heat, damage and respawn rules as a human, and needs no new sync. Its brain: nearest enemy → lead
+point with random aim error → steer away from the wall and rocks ahead → throttle by range → jink → fire
+inside a small off-axis cone. The host is never a bot.
+
+**Rejected:** a client-side bot (the client is not authoritative, and a tab that closes kills the bot); a
+bot that sets positions directly (skips the shared sim, so it would fly by different rules); listing
+practice rooms in the lobby (another player joining would find the seat taken).

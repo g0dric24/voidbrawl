@@ -23,59 +23,20 @@ export interface Base {
     spawns: readonly Vec3[];
 }
 
-export interface Box {
-    id: number;
-    x0: number;
-    y0: number;
-    z0: number;
-    x1: number;
-    y1: number;
-    z1: number;
-}
-
 export interface Arena {
     radius: number;
     asteroids: readonly Asteroid[];
-    pillars: readonly Box[];
     bases: readonly [ Base, Base ];
-}
-
-export const PILLAR_RING = 110;
-export const PILLAR_HALF_WIDTH = 10;
-export const PILLAR_HALF_HEIGHT = 70;
-
-function pillarRing(): Box[] {
-    const h = Math.sqrt( 0.5 );
-    const dirs = [
-        [ 1, 0 ],
-        [ h, h ],
-        [ 0, 1 ],
-        [ -h, h ],
-        [ -1, 0 ],
-        [ -h, -h ],
-        [ 0, -1 ],
-        [ h, -h ],
-    ];
-    return dirs.map( ( [ dx, dz ], id ) => ( {
-        id,
-        x0: dx * PILLAR_RING - PILLAR_HALF_WIDTH,
-        x1: dx * PILLAR_RING + PILLAR_HALF_WIDTH,
-        y0: -PILLAR_HALF_HEIGHT,
-        y1: PILLAR_HALF_HEIGHT,
-        z0: dz * PILLAR_RING - PILLAR_HALF_WIDTH,
-        z1: dz * PILLAR_RING + PILLAR_HALF_WIDTH,
-    } ) );
 }
 
 export const ARENA_RADIUS = 600;
 export const BASE_INSET = 70;
 export const BASE_CLEARANCE = 140;
-export const ASTEROID_COUNT = 130;
+export const ASTEROID_COUNT = 150;
 export const ASTEROID_MIN_R = 5;
 export const ASTEROID_MAX_R = 45;
 export const ASTEROID_GAP = 22;
 export const ASTEROID_FILL = 0.92;
-export const CENTER_CLEAR = 170;
 export const SPAWN_SPACING = 28;
 export const SPAWN_COLUMNS = 4;
 export const SPAWN_ROWS = 2;
@@ -137,9 +98,7 @@ function placeAsteroids( seed: number, radius: number, bases: readonly Base[] ):
         const y = ( rand() * 2 - 1 ) * span;
         const z = ( rand() * 2 - 1 ) * span;
         const reach = span - r;
-        const d2 = x * x + y * y + z * z;
-        const clear = CENTER_CLEAR + r;
-        if ( d2 > reach * reach || d2 < clear * clear ) continue;
+        if ( x * x + y * y + z * z > reach * reach ) continue;
         if ( ! clearOfBases( x, y, z, r, bases ) ) continue;
         if ( ! clearOfRocks( x, y, z, r, rocks ) ) continue;
         rocks.push( { id: rocks.length, x, y, z, r } );
@@ -153,7 +112,6 @@ export function materializeArena( descriptor: ArenaDescriptor ): Arena {
     return {
         radius,
         asteroids: placeAsteroids( descriptor.seed, radius, bases ),
-        pillars: pillarRing(),
         bases,
     };
 }

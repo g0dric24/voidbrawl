@@ -32,6 +32,8 @@ import {
     START_MESSAGE,
     type TeamId,
 } from '@voidbrawl/shared';
+import { isBot } from '../bots/bot-pilot.js';
+import { BotRoster } from '../bots/bot-roster.js';
 import { addBolt, type BoltBook, createBoltBook, stepBolts } from './bolts-step.js';
 import { createInputQueue, enqueue, type InputQueue } from './input-queue.js';
 import { awardDeath, returnToLobby, sendToBase, startCountdown, stepClock } from './match-flow.js';
@@ -42,6 +44,7 @@ import { fillVitals, markDead } from './vitals-ops.js';
 
 const RECONNECT_SECONDS = 20;
 const PATCH_MS = 50;
+const BOT_NAME = 'Bot · Rookie';
 
 function pilotMode( phase: number ): PilotMode {
     if ( phase === PHASE.live ) return 'fight';
@@ -53,6 +56,7 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
     private advance = createFixedStep( FIXED_DT );
     private arena!: Arena;
     private bolts: BoltBook = createBoltBook();
+    private bots = new BotRoster();
 
     onCreate( options?: JoinOptions ): void {
         this.state = new MatchState();
@@ -61,6 +65,7 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
         applyArenaDescriptor( this.state.arena, DEFAULT_ARENA );
         this.arena = materializeArena( DEFAULT_ARENA );
         this.patchRate = PATCH_MS;
+        if ( options?.bot === true ) this.addPracticeBot();
 
         this.onMessage< InputMessage >( INPUT_MESSAGE, ( client, msg ) => {
             const q = this.queues.get( client.sessionId );
@@ -99,9 +104,19 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
         this.refreshMeta();
     }
 
+    private addPracticeBot(): void {
+        this.state.mode = 'duel';
+        this.maxClients = MODES.duel.teamSize * 2;
+        const bot = this.bots.add( this.state, this.queues, BOT_NAME, 1 );
+        sendToBase( this.state, bot, this.arena );
+        fillVitals( bot );
+        void this.setPrivate( true );
+    }
+
     fixedStep( dt: number ): void {
         const phaseBefore = this.state.phase;
         const now = this.state.time + dt;
+        this.bots.feed( this.state, this.queues, this.arena, dt );
         stepPilots( this.state.players, this.queues, {
             arena: this.arena,
             now,
@@ -184,7 +199,7 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
         this.queues.delete( sessionId );
         this.state.players.delete( sessionId );
         if ( this.state.hostId === sessionId ) {
-            this.state.hostId = ( this.state.players.keys().next().value as string | undefined ) ?? '';
+            this.state.hostId = [ ...this.state.players.keys() ].find( ( id ) => ! isBot( id ) ) ?? '';
         }
         this.refreshMeta();
     }

@@ -35,10 +35,10 @@ export default function Lobby( { loaderData }: Route.ComponentProps ) {
     const [ busy, setBusy ] = useState( false );
     const navigate = useNavigate();
 
-    const create = async ( mode: MatchMode ) => {
+    const create = async ( mode: MatchMode, bot = false ) => {
         setBusy( true );
         try {
-            const room = await createMatch( mode, setCallSign( name ) );
+            const room = await createMatch( mode, setCallSign( name ), bot );
             navigate( `/game/${ room.roomId }` );
         } finally {
             setBusy( false );
@@ -83,6 +83,14 @@ export default function Lobby( { loaderData }: Route.ComponentProps ) {
                         </button>
                     ) ) }
                 </div>
+                <button
+                    type="button"
+                    disabled={ busy || ! loaderData.online }
+                    onClick={ () => void create( 'duel', true ) }
+                    className="mt-2 border border-cyan px-5 py-2 text-sm font-bold tracking-[0.3em] text-cyan uppercase hover:bg-cyan hover:text-void focus-visible:bg-cyan focus-visible:text-void focus-visible:outline-none disabled:opacity-30"
+                >
+                    Practice 1v1 vs bot
+                </button>
             </section>
             <section className="flex w-[min(640px,100%)] flex-col gap-3">
                 <span className="text-xs tracking-[0.3em] text-readout-dim">Open rooms</span>

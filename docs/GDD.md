@@ -90,10 +90,9 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 
 - A **sphere**, medium size — two bases can see each other across it. Radius **600u** *(tune)*.
 - **Bases:** two spawn zones on opposite poles. Each has several spawn points so squadmates do not stack.
-- **Cover:** 130 asteroids fill the space between the bases, with 22u gaps (every ship fits) and an open
-  170u centre. In that centre stands the **landmark: a ring of eight monolith pillars** (20 × 140 × 20u,
-  110u from the centre) — cover to fight around and a fixed reference for orientation. Rocks and pillars
-  are solid: ships bounce off them and bolts stop on them.
+- **Cover (client, 2026-09-26):** 150 asteroids fill the whole space between the bases, the centre too,
+  with 22u gaps (every ship fits). There are no built structures — the arena is asteroids only. Rocks are
+  solid: ships bounce off them and bolts stop on them.
 - **Boundary: a solid wall (client, 2026-09-25).** No ship can leave the sphere. The hull hits the wall and
   bounces back, like hitting an asteroid. The wall *is* the sky: the nebula is painted on the inside of the
   sphere, so the whole environment is inside it and nothing exists beyond it. A soft **steel** glow appears
@@ -193,7 +192,10 @@ widest collision sphere.
 - **Results:** winner, score, kills and deaths per pilot; the host's **Play again** returns everyone to the
   lobby with sides kept.
 - **Identity:** a call sign only. No accounts, no saved stats in v1.
-- **Bots:** not in v1.
+- **Practice vs bot (client, 2026-09-26):** the lobby's **Practice 1v1 vs bot** creates a private 1v1
+  room. The bot flies Cyan; the player is host on Marigold and starts the match. The bot uses the same
+  inputs and the same `simulate()` as a player: it hunts the nearest enemy, aims at the lead point with a
+  small random error, avoids rocks and the wall, jinks and fires when on target. No bots in 2v2 / 4v4 yet.
 - **Team colours:** **Marigold** (`#F59A24`) vs **Cyan** (`#3BD6FF`).
 
 ## 10. Look and sound
@@ -224,7 +226,7 @@ Web server (the authoritative Colyseus server plus the static client). Works on 
 
 ## 13. Out of scope for v1
 
-Mobile / touch · bots · accounts and stats · map editor · cockpit view · voice chat · ranked play.
+Mobile / touch · bots in team modes · accounts and stats · map editor · cockpit view · voice chat · ranked play.
 
 ## 14. OPEN QUESTIONS
 

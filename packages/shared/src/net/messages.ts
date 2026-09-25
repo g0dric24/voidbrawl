@@ -24,6 +24,7 @@ export interface InputMessage {
 export interface JoinOptions {
     name?: string;
     mode?: string;
+    bot?: boolean;
 }
 
 export interface MovePlayerMessage {
