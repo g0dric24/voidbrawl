@@ -3,6 +3,8 @@ export * from './combat/bolt.js';
 export * from './combat/gun.js';
 export * from './combat/lead.js';
 export * from './combat/vitals.js';
+export * from './match/modes.js';
+export * from './match/rules.js';
 export * from './net/messages.js';
 export * from './net/schema.js';
 export * from './sim/collide.js';

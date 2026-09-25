@@ -3,14 +3,7 @@ import { test } from 'node:test';
 import { forwardOf, vec3 } from '../sim/quat.js';
 import { SHIP_CLASSES } from '../sim/ship-classes.js';
 import { spawnShip } from '../sim/ship-state.js';
-import {
-    ASTEROID_COUNT,
-    ASTEROID_GAP,
-    BASE_CLEARANCE,
-    CENTER_CLEAR,
-    DEFAULT_ARENA,
-    materializeArena,
-} from './arena.js';
+import { ASTEROID_COUNT, ASTEROID_GAP, BASE_CLEARANCE, DEFAULT_ARENA, materializeArena } from './arena.js';
 
 test( 'the same descriptor materializes the same arena', () => {
     assert.deepEqual( materializeArena( DEFAULT_ARENA ), materializeArena( DEFAULT_ARENA ) );
@@ -22,14 +15,11 @@ test( 'a different seed gives a different field', () => {
     assert.notDeepEqual( a.asteroids, b.asteroids );
 } );
 
-test( 'the field is filled, inside the arena, and leaves the centre open for fighting', () => {
+test( 'the field is filled and every asteroid sits inside the arena', () => {
     const arena = materializeArena( DEFAULT_ARENA );
     assert.equal( arena.asteroids.length, ASTEROID_COUNT );
-    for ( const a of arena.asteroids ) {
-        const d = Math.sqrt( a.x * a.x + a.y * a.y + a.z * a.z );
-        assert.ok( d + a.r <= arena.radius );
-        assert.ok( d - a.r >= CENTER_CLEAR );
-    }
+    for ( const a of arena.asteroids )
+        assert.ok( Math.sqrt( a.x * a.x + a.y * a.y + a.z * a.z ) + a.r <= arena.radius );
 } );
 
 test( 'the widest ship fits through every gap between rocks', () => {

@@ -3,7 +3,7 @@ import type { AddressInfo } from 'node:net';
 import { Server } from '@colyseus/core';
 import { ColyseusTestServer } from '@colyseus/testing';
 import { WebSocketTransport } from '@colyseus/ws-transport';
-import { FIXED_DT, MATCH_ROOM, type PlayerState } from '@voidbrawl/shared';
+import { FIXED_DT, MATCH_ROOM, type MatchMode, PHASE, type PlayerState } from '@voidbrawl/shared';
 import { MatchRoom } from './match-room.js';
 
 export async function startTestServer(): Promise< ColyseusTestServer > {
@@ -17,8 +17,8 @@ export async function startTestServer(): Promise< ColyseusTestServer > {
     return new ColyseusTestServer( gameServer );
 }
 
-export async function openMatch( colyseus: ColyseusTestServer, clients: number ) {
-    const room = await colyseus.createRoom< MatchRoom >( MATCH_ROOM );
+export async function openMatch( colyseus: ColyseusTestServer, clients: number, mode: MatchMode = 'team' ) {
+    const room = await colyseus.createRoom< MatchRoom >( MATCH_ROOM, { mode } );
     room.setSimulationInterval();
     const connections = [];
     for ( let i = 0; i < clients; i++ ) connections.push( await colyseus.connectTo( room, { name: `P${ i }` } ) );
@@ -33,4 +33,8 @@ export function playerOf( room: MatchRoom, sessionId: string ): PlayerState {
     const p = room.state.players.get( sessionId );
     assert.ok( p, `player ${ sessionId } is in the room` );
     return p;
+}
+
+export function goLive( room: MatchRoom ): void {
+    room.state.phase = PHASE.live;
 }

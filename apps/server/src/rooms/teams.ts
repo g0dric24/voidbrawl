@@ -1,17 +1,16 @@
-import type { TeamId } from '@voidbrawl/shared';
+import type { TeamCounts, TeamId } from '@voidbrawl/shared';
 
 interface Member {
     team: TeamId;
 }
 
-export function smallerTeam( members: Iterable< Member > ): TeamId {
-    let marigold = 0;
-    let cyan = 0;
+export function teamCounts( members: Iterable< Member > ): TeamCounts {
+    const counts = { marigold: 0, cyan: 0 };
     for ( const m of members ) {
-        if ( m.team === 0 ) marigold++;
-        else cyan++;
+        if ( m.team === 0 ) counts.marigold++;
+        else counts.cyan++;
     }
-    return cyan < marigold ? 1 : 0;
+    return counts;
 }
 
 export function freeSlot( members: Iterable< Member >, team: TeamId ): number {

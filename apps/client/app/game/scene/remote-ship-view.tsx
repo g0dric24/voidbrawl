@@ -1,4 +1,5 @@
 import { useFrame } from '@react-three/fiber';
+import { SHIP_CLASSES } from '@voidbrawl/shared';
 import type { Entity } from 'koota';
 import { useTrait } from 'koota/react';
 import { Fragment, Suspense, useMemo, useRef } from 'react';
@@ -8,6 +9,9 @@ import { TEAM_COLORS } from '../team-colors';
 import { EngineTrail, type TrailSource } from './engine-trail';
 import { ShipModel } from './ship-model';
 import { SHIP_VISUALS } from './ship-visuals';
+import { WingBeacons } from './wing-beacons';
+
+const WING_SPAN = 0.95;
 
 export function RemoteShipView( { entity }: { entity: Entity } ) {
     const ref = useRef< THREE.Group >( null );
@@ -34,6 +38,7 @@ export function RemoteShipView( { entity }: { entity: Entity } ) {
                 <Suspense fallback={ null }>
                     <ShipModel classId={ pilot.classId } glow={ color } />
                 </Suspense>
+                <WingBeacons span={ SHIP_CLASSES[ pilot.classId ].tuning.hullRadius * WING_SPAN } color={ color } />
             </group>
             <EngineTrail source={ trail } color={ color } tail={ SHIP_VISUALS[ pilot.classId ].tail } />
         </Fragment>

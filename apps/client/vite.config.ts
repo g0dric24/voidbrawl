@@ -16,6 +16,8 @@ export default defineConfig( ( { mode } ) => {
             tsconfigPaths: true,
         },
         optimizeDeps: {
+            entries: [ 'app/root.tsx', 'app/routes/**/*.tsx' ],
+            include: [ '@voidbrawl/shared > @colyseus/schema' ],
             exclude: [ '@voidbrawl/shared' ],
         },
     };

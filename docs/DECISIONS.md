@@ -190,3 +190,66 @@ Fighter's hit sphere (1.4u) did not even cover its wings (the model needs 1.85u)
 
 **Rejected:** bullet magnetism / auto-aim (client ruled out assists); lock-on guns (same); a lead marker
 that moves the reticle (would feel like assist); health bars over enemies (client dropped them).
+
+---
+
+## ADR-008 — Match flow on the server; readability pass on the arena
+
+- **Status:** Accepted (client) · **Date:** 2026-09-26 · **Issue:** #7
+
+**Match flow.** `MatchState` gains `phase` (lobby → countdown → live → results), `mode`, `hostId`, the two
+scores, `timeLeft`, `countdown`, `suddenDeath` and `winner`. The rules are pure functions in
+`@voidbrawl/shared/match` (team caps, open side, start rule, verdict) so the server and tests share them.
+Every death scores for the other side — a bolt kill, a crash or a self-destruct alike. At the time limit the
+leader wins; a tie sets `suddenDeath` and the next point wins. The pilot step runs in three modes: `fly`
+(lobby — movement, no guns, no damage), `fight` (live) and `frozen` (countdown, results — inputs are
+acknowledged and dropped, and the client stops predicting). Rooms are listed through Colyseus
+`LobbyRoom` + `enableRealtimeListing()` with `{ hostName, mode, phase, players, capacity }` metadata. The
+room is joined from the `/game/:roomId` route loader and left from the `/lobby` loader, never from a
+component unmount.
+
+**Readability pass** (from the environment research): the default sky is the darker Deep Space preset;
+the wall glow is neutral steel so team colours mean teams only; remote ships carry two fixed-pixel-size
+wingtip beacons in their team colour; base rings move 50u behind the spawn line so they no longer cross the
+view at spawn. (A centre ring of pillars was built here and removed by ADR-009.)
+
+**Rejected:** client-decided phases or scores (cheatable and racy); a separate lobby room per match (one
+room through all phases keeps players, sides and the arena warm).
+
+## ADR-009 — Asteroids only; a server-side practice bot
+
+- **Status:** Accepted (client) · **Date:** 2026-09-26 · **Issue:** #7
+
+**Arena.** The client asked to keep the original asteroid theme. The pillar ring and the open centre are
+removed. 150 asteroids fill the whole sphere with the same 22u flyable gap. Ship and bolt collision go back
+to spheres only.
+
+**Practice bot.** `JoinOptions.bot = true` makes a private 1v1 room with one bot on Cyan. The bot lives on
+the server as a player without a client: `BotRoster` gives it a `bot:` session id and an input queue, and
+each fixed step it pushes one `NetInput` from `botInput()` before the pilots step. So the bot obeys the same
+flight, heat, damage and respawn rules as a human, and needs no new sync. Its brain: nearest enemy → lead
+point with random aim error → steer away from the wall and rocks ahead → throttle by range → jink → fire
+inside a small off-axis cone. The host is never a bot.
+
+**Rejected:** a client-side bot (the client is not authoritative, and a tab that closes kills the bot); a
+bot that sets positions directly (skips the shared sim, so it would fly by different rules); listing
+practice rooms in the lobby (another player joining would find the seat taken).
+
+## ADR-010 — An empty side forfeits; dev pre-bundles every route
+
+- **Status:** Accepted (client) · **Date:** 2026-09-26 · **Issue:** #7
+
+**Forfeit.** When a player is removed (a leave, or a reconnect that timed out) during countdown or live,
+the room counts the sides. If one side has no pilots and the other has some, `forfeitWinner()` names the
+side that stays, and the match goes to results with `MatchState.forfeit = true`. One leaver on a side that
+still has pilots changes nothing. The client frees the pointer lock when `phase` becomes results (a
+Colyseus `listen` on the room state), and shows **Leave match** whenever the mouse is free in countdown or
+live.
+
+**Dev black screen.** Vite found three, R3F and koota only when the game route first loaded, re-bundled
+them, and force-reloaded the page mid-navigation. `optimizeDeps.entries` now lists the root and every route
+module, and `@colyseus/schema` is included through `@voidbrawl/shared` (which is excluded, so the scanner
+cannot see through it). A cold start makes no reload. The root also has a `HydrateFallback`.
+
+**Rejected:** ending on the first leaver (the user wants 2v2 and 4v4 to go on); a bot that fills the empty
+seat (not asked for); forfeit during the lobby (nothing to win yet).

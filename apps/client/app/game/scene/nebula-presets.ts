@@ -86,3 +86,5 @@ export const DEEP_SPACE_PRESET: SkyPreset = {
     environment: 2.5,
     keyLight: 5,
 };
+
+export const SKY_PRESET: SkyPreset = DEEP_SPACE_PRESET;
