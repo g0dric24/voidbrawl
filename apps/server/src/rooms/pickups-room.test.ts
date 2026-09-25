@@ -19,6 +19,7 @@ import {
 } from '@voidbrawl/shared';
 import type { MatchRoom } from './match-room.js';
 import { goLive, openMatch, playerOf, startTestServer, tick } from './test-server.test.js';
+import { markDead } from './vitals-ops.js';
 
 const ARENA = materializeArena( DEFAULT_ARENA );
 const HOME = ARENA.bases[ 0 ].center;
@@ -181,12 +182,11 @@ describe( 'pickups', () => {
     } );
 
     test( 'dying drops every held pickup', async () => {
-        const { room, connections, me } = await duel();
+        const { room, me } = await duel();
         goLive( room );
         me.slot0 = PICKUP.seeker;
         me.slot1 = PICKUP.mine;
-        connections[ 0 ].send( 'selfDestruct' );
-        await room.waitForMessage( 'selfDestruct' );
+        markDead( me );
         assert.deepEqual( [ me.slot0, me.slot1, me.slot2 ], [ 0, 0, 0 ] );
     } );
 

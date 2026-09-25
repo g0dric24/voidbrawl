@@ -26,7 +26,6 @@ import {
     PLAY_AGAIN_MESSAGE,
     PlayerState,
     type RoomMeta,
-    SELF_DESTRUCT_MESSAGE,
     SET_CLASS_MESSAGE,
     SHIP_CLASSES,
     SHIP_ORDER,
@@ -46,7 +45,7 @@ import { createPickupBook, type PickupBook, resetPickups, stepPads, useSlot } fr
 import { type PilotMode, stepPilots } from './pilots-step.js';
 import { registerTeamMessages } from './team-messages.js';
 import { teamCounts } from './teams.js';
-import { fillVitals, markDead } from './vitals-ops.js';
+import { fillVitals } from './vitals-ops.js';
 
 const RECONNECT_SECONDS = 20;
 const PATCH_MS = 50;
@@ -87,12 +86,6 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
             if ( isShipClassId( classId ) ) this.setClass( client.sessionId, classId );
         } );
         this.onMessage( USE_PICKUP_MESSAGE, ( client, slot: unknown ) => this.use( client.sessionId, slot ) );
-        this.onMessage( SELF_DESTRUCT_MESSAGE, ( client ) => {
-            const p = this.state.players.get( client.sessionId );
-            if ( ! p || p.dead || this.state.phase !== PHASE.live ) return;
-            markDead( p );
-            this.announceKill( client.sessionId, '', 'self' );
-        } );
         this.onMessage( START_MESSAGE, ( client ) => {
             const ready = canStart( teamCounts( this.state.players.values() ) );
             if ( ! this.isHost( client ) || this.state.phase !== PHASE.lobby || ! ready ) return;

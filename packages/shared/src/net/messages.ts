@@ -4,7 +4,6 @@ export const MATCH_ROOM = 'match';
 
 export const INPUT_MESSAGE = 'input';
 export const SET_CLASS_MESSAGE = 'class';
-export const SELF_DESTRUCT_MESSAGE = 'selfDestruct';
 export const HIT_MESSAGE = 'hit';
 export const KILL_MESSAGE = 'kill';
 export const LOBBY_ROOM = 'lobby';
@@ -43,7 +42,7 @@ export interface HitMessage {
     hull: number;
 }
 
-export type DeathCause = 'bolt' | 'seeker' | 'mine' | 'crash' | 'self';
+export type DeathCause = 'bolt' | 'seeker' | 'mine' | 'crash';
 
 export interface KillMessage {
     victimId: string;

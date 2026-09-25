@@ -67,9 +67,8 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 | Shift | boost (drains a meter; the meter recharges) |
 | V | switch aim mode (direct / joystick) |
 | Left mouse | primary gun |
-| Right mouse or F | use the held pickup |
-| 1 / 2 / 3 | ship class for your next spawn |
-| K | self-destruct (counts as a death) |
+| 1 / 2 / 3 | use the pickup in that slot |
+| A A / D D | dash (Interceptor only) |
 | Tab | scoreboard |
 | M | mute |
 | Esc | release the mouse / menu |
@@ -150,9 +149,10 @@ Dying drops everything you hold.
 - Death → explosion → **3 s** wait (the camera holds where you died; spectating your killer is an S6 polish
   item) → spawn at a free point of your team base.
 - **2 s spawn protection:** invulnerable; ends early if you fire.
-- **Ship class:** press 1 / 2 / 3 at any time; the new class applies at your **next spawn**, never mid-life,
-  so switching can't be used to heal.
-- **K = self-destruct** (to get unstuck or change ship now); it counts as a death.
+- **Ship class:** pick it in the Esc menu at any time; the new class applies at your **next spawn**, never
+  mid-life, so switching can't be used to heal.
+- **No self-destruct** (removed at the client's request, 2026-09-26). The only deaths are bolts, seekers,
+  mines and crashes.
 
 **First-pass combat numbers** (`ship-classes.ts`, tune at the S3 gate):
 

@@ -33,7 +33,7 @@ function killText( room: Room< MatchState >, m: KillMessage ): string {
     if ( m.cause === 'bolt' ) return `${ nameOf( room, m.killerId ) } destroyed ${ victim }`;
     if ( m.cause === 'seeker' ) return `${ nameOf( room, m.killerId ) } hit ${ victim } with a seeker`;
     if ( m.cause === 'mine' ) return `${ victim } hit ${ nameOf( room, m.killerId ) }'s mine`;
-    return m.cause === 'crash' ? `${ victim } crashed` : `${ victim } self-destructed`;
+    return `${ victim } crashed`;
 }
 
 export function attachCombat( room: Room< MatchState >, entityOf: ( sessionId: string ) => Entity | undefined ) {

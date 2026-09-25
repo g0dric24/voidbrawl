@@ -12,13 +12,13 @@ import {
     type NetInput,
     type PlayerState,
     RESPAWN_DELAY,
-    SELF_DESTRUCT_MESSAGE,
     SET_CLASS_MESSAGE,
     SHIP_CLASSES,
     SPAWN_PROTECTION,
 } from '@voidbrawl/shared';
 import type { MatchRoom } from './match-room.js';
 import { goLive, openMatch, playerOf, startTestServer, tick } from './test-server.test.js';
+import { markDead } from './vitals-ops.js';
 
 const ARENA = materializeArena( DEFAULT_ARENA );
 const LANE_Z = ARENA.bases[ 0 ].center.z;
@@ -133,17 +133,15 @@ describe( 'MatchRoom combat', () => {
         assert.equal( victim.protect, 0 );
     } );
 
-    test( 'self-destruct kills, and a pending class change applies at the respawn', async () => {
+    test( 'a pending class change applies at the respawn', async () => {
         const { room, connections } = await openMatch( colyseus, 1 );
         goLive( room );
         const [ a ] = connections;
         a.onMessage( KILL_MESSAGE, () => {} );
         a.send( SET_CLASS_MESSAGE, 'heavy' );
         await room.waitForMessage( SET_CLASS_MESSAGE );
-        a.send( SELF_DESTRUCT_MESSAGE );
-        await room.waitForMessage( SELF_DESTRUCT_MESSAGE );
         const p = playerOf( room, a.sessionId );
-        assert.equal( p.dead, true );
+        markDead( p );
         tick( room, Math.ceil( RESPAWN_DELAY * 60 ) + 1 );
         assert.equal( p.dead, false );
         assert.equal( p.classId, 'heavy' );

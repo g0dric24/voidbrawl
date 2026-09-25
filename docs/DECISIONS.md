@@ -281,6 +281,9 @@ already regenerated shield, so the Heavy trait is a shorter delay and a faster r
 **Class picker.** In the lobby a class change applies at once; in a match it applies at the next spawn. Keys
 1/2/3 moved from class switching to pickups; class choice moved to the lobby cards and the Esc menu.
 
+**Self-destruct removed** (client request). `SELF_DESTRUCT_MESSAGE` and the `'self'` death cause are gone, and
+K does nothing. It was the way to change ship at once (ADR-006); now a class change waits for a real death.
+
 **Rejected:** syncing pad positions (breaks the descriptor contract); select-then-fire slots (slower in a
 fight than one key per slot); client-side seekers (a client could steer them); line-of-sight lock breaking
 (rocks already stop seekers physically, and a LOS test every tick costs a rock sweep per missile).
