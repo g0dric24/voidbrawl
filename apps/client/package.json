@@ -23,7 +23,8 @@
         "react-dom": "catalog:",
         "react-router": "^8.3.0",
         "three": "catalog:",
-        "@voidbrawl/shared": "workspace:*"
+        "@voidbrawl/shared": "workspace:*",
+        "@colyseus/sdk": "catalog:"
     },
     "devDependencies": {
         "@react-router/dev": "^8.3.0",

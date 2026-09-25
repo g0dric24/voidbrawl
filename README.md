@@ -14,6 +14,10 @@ pnpm install
 pnpm dev      # shared (tsc-watch) · server (:2567) · client (:5173)
 ```
 
+- **http://localhost:5173/play** — join the match. Open it in a second window (or on another machine on
+  the same network, using the address the server prints) to see each other fly.
+- **http://localhost:5173/sandbox** — fly alone, no server needed.
+
 ## Docs
 
 - [docs/GDD.md](docs/GDD.md) — what we are building

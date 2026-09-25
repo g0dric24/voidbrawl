@@ -87,3 +87,26 @@ new rule for kills out of bounds.
 **Rejected:** a damage zone outside the sphere (the previous design); a soft push-back force (still lets
 a fast ship drift out, and it fights the player's input); wrapping to the opposite side (disorienting and
 breaks line of sight).
+
+---
+
+## ADR-004 — Networked flight: inputs in, prediction for self, interpolation for others
+
+- **Status:** Accepted · **Date:** 2026-09-25 · **Inherited from:** SLUR's netcode (`conventions/netcode.md`)
+
+**Decision.**
+
+- The client sends **sequence-numbered `FlightInput`s** (one per 60 Hz tick, batched at 30 Hz). Mouse turn is
+  already an angle per tick, so the server needs nothing but the input to reproduce the move.
+- The server **queues** each player's inputs (drops malformed and already-seen seqs, caps the queue at 120)
+  and steps a ship **only when it has an input for it**, one input per tick, recording `lastProcessedInput`.
+  A client that stops sending (a hidden tab) freezes in place instead of drifting on stale input.
+- The local ship is **predicted** with the same `stepShip()` and **reconciled** on every patch: snap to the
+  server state, drop acknowledged inputs, replay the rest.
+- Remote ships are **interpolated 100 ms in the past** (two patches at 20 Hz): linear position, slerped
+  rotation, held at the newest snapshot rather than extrapolated.
+- Teams are **auto-balanced on join** (smaller team, ties to Marigold). S4 adds picking in the lobby.
+
+**Rejected:** clients sending positions (no authority, no replay); stepping idle ships with an empty input
+(the client cannot predict inputs it never sent, so every hidden-tab gap becomes a correction);
+extrapolating remote ships (overshoots on every turn in 6-DOF).

@@ -1,4 +1,6 @@
 export * from './arena/arena.js';
+export * from './net/messages.js';
+export * from './net/schema.js';
 export * from './sim/collide.js';
 export * from './sim/fixed-step.js';
 export * from './sim/flight-tuning.js';
