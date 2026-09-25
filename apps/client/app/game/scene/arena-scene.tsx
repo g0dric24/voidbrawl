@@ -13,7 +13,7 @@ import { SpaceDust } from './space-dust';
 export function ArenaScene( { arena, children }: { arena: Arena; children?: ReactNode } ) {
     return (
         <Fragment>
-            <NebulaSky />
+            <NebulaSky radius={ arena.radius } />
             <SceneLighting />
             <Suspense fallback={ null }>
                 <AsteroidField arena={ arena } />

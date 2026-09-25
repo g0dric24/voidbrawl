@@ -32,7 +32,7 @@ export function PlayLoop( { arena, predictor }: { arena: Arena; predictor: Predi
             stepShip( sim, net, tuning, arena, dt );
         } );
         writeViewPose( prev, sim, alpha, tuning, arena, delta );
-        updateFollowCamera( state.camera as PerspectiveCamera, delta );
+        updateFollowCamera( state.camera as PerspectiveCamera, delta, arena.radius );
     }, -2 );
 
     return null;

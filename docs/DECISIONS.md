@@ -110,3 +110,27 @@ breaks line of sight).
 **Rejected:** clients sending positions (no authority, no replay); stepping idle ships with an empty input
 (the client cannot predict inputs it never sent, so every hidden-tab gap becomes a correction);
 extrapolating remote ships (overshoots on every turn in 6-DOF).
+
+---
+
+## ADR-005 — The sky is the arena wall; ships glow in their team colour
+
+- **Status:** Accepted (client) · **Date:** 2026-09-25 · **Amends:** ADR-003 (how the wall is drawn)
+
+**Decision.**
+
+- The nebula sky is drawn on a sphere of `arena.radius` fixed at the centre, not on a box that follows the
+  camera. The environment is literally inside the sphere, and flying toward the wall brings the sky closer.
+  The follow camera is clamped 2u inside the wall, so the view never reaches past it.
+- ADR-003's lat/long grid is removed. The only wall cue is a soft marigold glow on the wall near the
+  camera (`Boundary.near`, `Boundary.glow`), plus the HUD distance warning.
+- Remote ships lose their team ring. Every ship (local and remote) gets a fresnel rim light in its team
+  colour, patched into its cloned glTF materials (`Ship.rimStrength`, `Ship.rimPower`).
+
+**Why.** The client: *"i dont want to see the ring surrounding the ships make the ships edges glow"* and
+*"i dont want the sphere of lines … all should be pitch black whatever env is there its inside the
+sphere."*
+
+**Known cost.** At long range a ship is a few pixels, so its rim reads as a coloured glint, not a shape.
+If spotting enemies at range proves hard in play, the lever is rim strength or an off-screen indicator
+(GDD §11), not the ring.

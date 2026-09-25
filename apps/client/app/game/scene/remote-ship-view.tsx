@@ -4,8 +4,8 @@ import { useTrait } from 'koota/react';
 import { Suspense, useRef } from 'react';
 import type * as THREE from 'three';
 import { Pilot, RemotePose } from '../ecs/traits';
+import { TEAM_COLORS } from '../team-colors';
 import { ShipModel } from './ship-model';
-import { TeamMarker } from './team-marker';
 
 export function RemoteShipView( { entity }: { entity: Entity } ) {
     const ref = useRef< THREE.Group >( null );
@@ -25,9 +25,8 @@ export function RemoteShipView( { entity }: { entity: Entity } ) {
     return (
         <group ref={ ref } visible={ false }>
             <Suspense fallback={ null }>
-                <ShipModel classId={ pilot.classId } />
+                <ShipModel classId={ pilot.classId } glow={ TEAM_COLORS[ pilot.team ] } />
             </Suspense>
-            <TeamMarker team={ pilot.team } />
         </group>
     );
 }
