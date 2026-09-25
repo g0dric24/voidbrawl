@@ -15,7 +15,7 @@ import {
     stepShip,
     toArenaDescriptor,
 } from '@voidbrawl/shared';
-import { openMatch, playerOf, startTestServer, tick } from './test-server.test.js';
+import { goLive, openMatch, playerOf, startTestServer, tick } from './test-server.test.js';
 
 const ARENA = materializeArena( DEFAULT_ARENA );
 
@@ -91,8 +91,9 @@ describe( 'MatchRoom flight', () => {
         assert.equal( playerOf( room, client.sessionId ).lastProcessedInput, 10 );
     } );
 
-    test( 'a class switch accepts only known classes and waits for the next spawn', async () => {
+    test( 'a class switch in a live match accepts only known classes and waits for the next spawn', async () => {
         const { room, connections } = await openMatch( colyseus, 1 );
+        goLive( room );
         const [ client ] = connections;
         client.send( SET_CLASS_MESSAGE, 'battleship' );
         await room.waitForMessage( SET_CLASS_MESSAGE );

@@ -9,6 +9,8 @@ import { HeatMeter } from './heat-meter';
 import { HitMarker } from './hit-marker';
 import { HudLayer } from './hud-layer';
 import { KillFeed } from './kill-feed';
+import { MissileWarning } from './missile-warning';
+import { PickupSlots } from './pickup-slots';
 import { PilotsReadout } from './pilots-readout';
 import { ShipMarkers } from './ship-markers';
 import { StickCursor } from './stick-cursor';
@@ -23,10 +25,12 @@ export function PlayHud() {
                 <StickCursor />
                 <HitMarker />
                 <EdgeWarning />
+                <MissileWarning />
                 <PilotsReadout />
                 <AimModeReadout />
                 <KillFeed />
                 <HeatMeter />
+                <PickupSlots />
                 <VitalsReadout />
                 <DeathOverlay />
                 <FlightReadout />

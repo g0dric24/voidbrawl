@@ -1,4 +1,4 @@
-import { MapSchema, Schema, type } from '@colyseus/schema';
+import { ArraySchema, MapSchema, Schema, type } from '@colyseus/schema';
 import type { ArenaDescriptor, TeamId } from '../arena/arena.js';
 import type { BoltLaunch } from '../combat/bolt.js';
 import type { Vitals } from '../combat/vitals.js';
@@ -20,6 +20,7 @@ export class PlayerState extends Schema implements ShipState, Vitals {
     @type( 'float32' ) rollRate = 0;
     @type( 'float32' ) boost = 1;
     @type( 'float32' ) impact = 0;
+    @type( 'float32' ) dashCooldown = 0;
 
     @type( 'uint32' ) lastProcessedInput = 0;
     @type( 'boolean' ) connected = true;
@@ -40,8 +41,40 @@ export class PlayerState extends Schema implements ShipState, Vitals {
     @type( 'uint16' ) kills = 0;
     @type( 'uint16' ) deaths = 0;
     @type( 'string' ) nextClassId: ShipClassId | '' = '';
+    @type( 'uint8' ) slot0 = 0;
+    @type( 'uint8' ) slot1 = 0;
+    @type( 'uint8' ) slot2 = 0;
     maxShield = 0;
     shieldDelay = 0;
+    regenDelay = 0;
+    regenRate = 0;
+}
+
+export class PadState extends Schema {
+    @type( 'uint8' ) kind = 0;
+}
+
+export class Missile extends Schema {
+    @type( 'float32' ) x = 0;
+    @type( 'float32' ) y = 0;
+    @type( 'float32' ) z = 0;
+    @type( 'float32' ) vx = 0;
+    @type( 'float32' ) vy = 0;
+    @type( 'float32' ) vz = 0;
+    @type( 'string' ) ownerId = '';
+    @type( 'string' ) targetId = '';
+    @type( 'uint8' ) team: TeamId = 0;
+    life = 0;
+}
+
+export class Mine extends Schema {
+    @type( 'float32' ) x = 0;
+    @type( 'float32' ) y = 0;
+    @type( 'float32' ) z = 0;
+    @type( 'string' ) ownerId = '';
+    @type( 'uint8' ) team: TeamId = 0;
+    @type( 'boolean' ) armed = false;
+    age = 0;
 }
 
 export class Bolt extends Schema implements BoltLaunch {
@@ -79,6 +112,14 @@ export class MatchState extends Schema {
     @type( 'boolean' ) suddenDeath = false;
     @type( 'int8' ) winner = -1;
     @type( 'boolean' ) forfeit = false;
+
+    @type( [ PadState ] ) pads = new ArraySchema< PadState >();
+    @type( { map: Missile } ) missiles = new MapSchema< Missile >();
+    @type( { map: Mine } ) mines = new MapSchema< Mine >();
+}
+
+export function slotsOf( p: { slot0: number; slot1: number; slot2: number } ): [ number, number, number ] {
+    return [ p.slot0, p.slot1, p.slot2 ];
 }
 
 export interface RoomMeta {

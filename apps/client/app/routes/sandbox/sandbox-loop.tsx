@@ -11,7 +11,7 @@ import {
 import { useWorld } from 'koota/react';
 import { useMemo } from 'react';
 import type { PerspectiveCamera } from 'three';
-import { updateFollowCamera } from '../../game/camera/follow-camera';
+import { cameraScale, updateFollowCamera } from '../../game/camera/follow-camera';
 import { LocalPlayer, Pilot, Prev, Sim } from '../../game/ecs/traits';
 import { stepParticles } from '../../game/fx/fx-store';
 import { readFlightInput } from '../../game/input/flight-input';
@@ -44,7 +44,7 @@ export function SandboxLoop( { arena }: { arena: Arena } ) {
             addTracer( launch, ship.gun.boltLife, TEAM_COLORS[ pilot.team ] );
         } );
         writeViewPose( prev, sim, alpha, ship.tuning, arena, delta );
-        updateFollowCamera( state.camera as PerspectiveCamera, delta, arena.radius );
+        updateFollowCamera( state.camera as PerspectiveCamera, delta, arena.radius, cameraScale( ship.hitRadius ) );
     }, -2 );
 
     return null;

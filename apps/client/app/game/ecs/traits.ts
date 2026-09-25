@@ -19,6 +19,9 @@ export const Vital = trait( {
     nextClassId: '',
     kills: 0,
     deaths: 0,
+    slot0: 0,
+    slot1: 0,
+    slot2: 0,
 } );
 
 export const LocalPlayer = trait();

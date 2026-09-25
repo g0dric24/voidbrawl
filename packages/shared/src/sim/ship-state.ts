@@ -15,6 +15,7 @@ export interface ShipState extends Orientation {
     cooldown: number;
     overheated: boolean;
     shot: boolean;
+    dashCooldown: number;
 }
 
 export function emptyShip(): ShipState {
@@ -36,6 +37,7 @@ export function emptyShip(): ShipState {
         cooldown: 0,
         overheated: false,
         shot: false,
+        dashCooldown: 0,
     };
 }
 
@@ -72,4 +74,5 @@ export function copyShip( into: ShipState, from: ShipState ): void {
     into.cooldown = from.cooldown;
     into.overheated = from.overheated;
     into.shot = from.shot;
+    into.dashCooldown = from.dashCooldown;
 }

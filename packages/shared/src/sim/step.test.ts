@@ -14,7 +14,27 @@ const EMPTY: Arena = {
     radius: 10_000,
     asteroids: [],
     bases: materializeArena( DEFAULT_ARENA ).bases,
+    pads: [],
 };
+
+test( 'an Interceptor dash kicks the ship sideways once, then waits for the cooldown', () => {
+    const t = SHIP_CLASSES.interceptor.tuning;
+    const s = emptyShip();
+    stepShip( s, input( { dash: 1 } ), t, EMPTY, FIXED_DT );
+    const kick = rightOf( s, vec3() );
+    const side = s.vx * kick.x + s.vy * kick.y + s.vz * kick.z;
+    assert.ok( Math.abs( side ) > t.dashSpeed * 0.9 );
+    assert.ok( s.dashCooldown > 0 );
+    const before = speed( s );
+    stepShip( s, input( { dash: 1 } ), t, EMPTY, FIXED_DT );
+    assert.ok( speed( s ) <= before );
+} );
+
+test( 'a Fighter cannot dash', () => {
+    const s = emptyShip();
+    stepShip( s, input( { dash: 1 } ), FIGHTER, EMPTY, FIXED_DT );
+    assert.equal( speed( s ), 0 );
+} );
 
 function input( patch: Partial< FlightInput > ): FlightInput {
     return { ...idleInput(), ...patch };

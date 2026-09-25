@@ -131,15 +131,18 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 
 ### 7.3 Pickups
 
-Pickups float at fixed points in the arena and respawn after a delay *(tune)*. A ship holds up to
-**3** in slots (SLUR model: 1/2/3 select, the use key fires the selected one).
+**Built in S5 (client, 2026-09-26).** **12 pads** in 6 mirrored pairs (fair to both bases), placed from the
+arena descriptor in rock gaps away from the bases. Each pad shows a spinning coloured core; the server rolls
+its pickup and restocks it **12 s** after someone takes it. Pads work only in a live match. Fly through a pad
+to take it if you have a free slot. **Fighter 3 slots, others 2.** Keys **1 / 2 / 3 use that slot at once**.
+Dying drops everything you hold.
 
 | Pickup | Effect |
 |---|---|
-| **Seeker** | Homing missile. Locks the nearest enemy in a forward cone at launch; dodge it late or break line of sight. A weapon, not an aim assist — the client approved it. |
-| **Mine** | Laid in space; arms after a short delay; the first enemy that comes near triggers it. |
-| **Shield** | Instantly refills the shield. |
-| **Health** | Restores hull. |
+| **Seeker** | Homing missile, 170 u/s, 6 s life, 45 damage. At launch it locks the nearest enemy inside a **20° cone within 300u**; with no lock it flies straight. It turns at most 1.6 rad/s, so a late hard turn beats it, and a rock in the way stops it. The target sees **MISSILE LOCK**. A weapon, not an aim assist — the client approved it. |
+| **Mine** | Dropped behind you. Arms after **1 s**, lasts **30 s**, **max 3** per pilot (a fourth removes your oldest). The first enemy within 18u sets it off; it deals 55 to every enemy within 26u. Armed mines show their trigger zone in the owner's team colour. |
+| **Shield** | Refills the shield at once. |
+| **Health** | Restores half the class's hull. |
 | **Boost** | Refills the boost meter. |
 
 ### 7.4 Death and respawn
@@ -172,6 +175,17 @@ Three classes to start. Stats are **data** (server-authoritative), so balancing 
 | **Fighter** | challenger | all-rounder | mid | mid | mid |
 | **Interceptor** | executioner | fast, fragile, twitchy | low | high | high |
 | **Heavy** | split-crown | slow tank | high | low | low |
+
+**Class traits (built in S5, client 2026-09-26)** — one thing each class does that the others cannot:
+
+| Class | Trait |
+|---|---|
+| **Fighter** | Holds **3** pickups (others 2). |
+| **Interceptor** | **Dash**: double-tap A or D for a 55 u/s sideways kick, 2.5 s cooldown. Boost refills 2× faster. |
+| **Heavy** | Shield starts to recover after **2 s** without damage (others 4 s) and recovers at **2×** the rate. |
+
+**Picking a class:** cards in the room lobby (applies at once); during a match, Esc opens the menu with the
+same cards (applies at the next spawn). The chase camera sits further back for bigger ships.
 
 The other models (bob, comet, dispatcher, imperial) are reserved for later classes or skins.
 **Scale and hit area:** ships are drawn at **3× the SLUR size** (`SHIP_SCALE`) so they read at range — a
@@ -236,6 +250,6 @@ Mobile / touch · bots in team modes · accounts and stats · map editor · cock
 ## 14. OPEN QUESTIONS
 
 1. Arena radius, speeds, turn rates, damage numbers — set at the S1 / S3 feel-gates.
-2. Seeker cone angle and lock range.
-3. Does boost also raise turn rate, or only speed?
-4. Mine count per player and lifetime in open space.
+2. Pickup and trait numbers (seeker, mine, dash, regen) — set at the S5 feel-gate.
+
+Resolved in S5: seeker cone 20° / range 300u; mines max 3 per pilot, 30 s life; boost raises speed only.

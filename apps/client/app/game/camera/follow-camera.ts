@@ -1,3 +1,4 @@
+import { SHIP_CLASSES } from '@voidbrawl/shared';
 import * as THREE from 'three';
 import { num } from '../../dev/tuning';
 import { sceneCamera } from '../scene-camera';
@@ -14,10 +15,19 @@ export function keepInside( position: THREE.Vector3, radius: number ): void {
     if ( position.lengthSq() > max * max ) position.setLength( max );
 }
 
-export function updateFollowCamera( camera: THREE.PerspectiveCamera, delta: number, arenaRadius: number ): void {
+export function cameraScale( hitRadius: number ): number {
+    return hitRadius / SHIP_CLASSES.fighter.hitRadius;
+}
+
+export function updateFollowCamera(
+    camera: THREE.PerspectiveCamera,
+    delta: number,
+    arenaRadius: number,
+    scale: number,
+): void {
     sceneCamera.current = camera;
     const pose = viewPose;
-    _offset.set( 0, num( 'Camera.height' ), -num( 'Camera.back' ) ).applyQuaternion( pose.quaternion );
+    _offset.set( 0, num( 'Camera.height' ) * scale, -num( 'Camera.back' ) * scale ).applyQuaternion( pose.quaternion );
     _desired.copy( pose.position ).add( _offset );
     const follow = num( 'Camera.follow' );
     if ( follow > 0 ) camera.position.lerp( _desired, 1 - Math.exp( -follow * delta ) );

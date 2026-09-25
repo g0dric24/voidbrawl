@@ -15,13 +15,14 @@ const SANDBOX: readonly [ string, string ][] = [
 ];
 
 const PLAY: readonly [ string, string ][] = [
-    [ '1 2 3', 'ship at next spawn' ],
+    [ '1 2 3', 'use pickup' ],
+    [ 'A A / D D', 'dash (Interceptor)' ],
     [ 'K', 'self-destruct' ],
 ];
 
 const TAIL: readonly [ string, string ][] = [
     [ '`', 'tuning panel' ],
-    [ 'Esc', 'release mouse' ],
+    [ 'Esc', 'menu · change ship' ],
 ];
 
 export function ControlsHint( { mode }: { mode: 'sandbox' | 'play' } ) {

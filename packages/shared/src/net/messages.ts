@@ -12,6 +12,7 @@ export const PICK_TEAM_MESSAGE = 'pickTeam';
 export const MOVE_PLAYER_MESSAGE = 'movePlayer';
 export const START_MESSAGE = 'start';
 export const PLAY_AGAIN_MESSAGE = 'playAgain';
+export const USE_PICKUP_MESSAGE = 'usePickup';
 
 export interface NetInput extends FlightInput {
     seq: number;
@@ -42,7 +43,7 @@ export interface HitMessage {
     hull: number;
 }
 
-export type DeathCause = 'bolt' | 'crash' | 'self';
+export type DeathCause = 'bolt' | 'seeker' | 'mine' | 'crash' | 'self';
 
 export interface KillMessage {
     victimId: string;

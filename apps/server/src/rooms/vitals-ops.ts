@@ -16,6 +16,14 @@ export function fillVitals( p: PlayerState ): void {
     p.shield = ship.shield;
     p.maxShield = ship.shield;
     p.shieldDelay = 0;
+    p.regenDelay = ship.regenDelay;
+    p.regenRate = ship.regenRate;
+}
+
+export function clearSlots( p: PlayerState ): void {
+    p.slot0 = 0;
+    p.slot1 = 0;
+    p.slot2 = 0;
 }
 
 export function markDead( p: PlayerState ): void {
@@ -27,6 +35,7 @@ export function markDead( p: PlayerState ): void {
     p.vy = 0;
     p.vz = 0;
     p.rollRate = 0;
+    clearSlots( p );
 }
 
 export function revive( p: PlayerState, arena: Arena, others: Iterable< PlayerState > ): void {

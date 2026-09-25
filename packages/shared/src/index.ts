@@ -2,6 +2,8 @@ export * from './arena/arena.js';
 export * from './combat/bolt.js';
 export * from './combat/gun.js';
 export * from './combat/lead.js';
+export * from './combat/pickups.js';
+export * from './combat/seeker.js';
 export * from './combat/vitals.js';
 export * from './match/modes.js';
 export * from './match/rules.js';

@@ -11,6 +11,8 @@ export interface FlightTuning {
     boostDrain: number;
     boostRegen: number;
     restitution: number;
+    dashSpeed: number;
+    dashCooldown: number;
 }
 
 export function topSpeed( t: FlightTuning ): number {
