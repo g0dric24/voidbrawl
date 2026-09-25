@@ -78,6 +78,7 @@ export class MatchState extends Schema {
     @type( 'float32' ) countdown = 0;
     @type( 'boolean' ) suddenDeath = false;
     @type( 'int8' ) winner = -1;
+    @type( 'boolean' ) forfeit = false;
 }
 
 export interface RoomMeta {

@@ -1,11 +1,13 @@
 import {
     type Arena,
     COUNTDOWN,
+    forfeitWinner,
     judge,
     type MatchState,
     PHASE,
     type PlayerState,
     scoringTeam,
+    type TeamCounts,
     type TeamId,
     TIME_LIMIT,
 } from '@voidbrawl/shared';
@@ -41,6 +43,7 @@ export function startCountdown( state: MatchState, arena: Arena ): void {
     state.timeLeft = TIME_LIMIT;
     state.suddenDeath = false;
     state.winner = -1;
+    state.forfeit = false;
     state.countdown = COUNTDOWN;
     state.phase = PHASE.countdown;
 }
@@ -54,6 +57,16 @@ export function returnToLobby( state: MatchState, arena: Arena ): void {
 function finish( state: MatchState, winner: TeamId ): void {
     state.winner = winner;
     state.phase = PHASE.results;
+}
+
+export function endIfSideEmpty( state: MatchState, counts: TeamCounts ): boolean {
+    if ( state.phase !== PHASE.countdown && state.phase !== PHASE.live ) return false;
+    const winner = forfeitWinner( counts );
+    if ( winner === null ) return false;
+    state.bolts.clear();
+    state.forfeit = true;
+    finish( state, winner );
+    return true;
 }
 
 function verdict( state: MatchState ): void {

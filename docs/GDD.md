@@ -189,6 +189,11 @@ widest collision sphere.
   off; countdown and results freeze everyone.
 - **Join mid-match:** allowed; the joiner goes to the smaller side with room and spawns at its base.
 - **Host:** the room creator; if the host leaves, the next pilot becomes host.
+- **Leaving (client, 2026-09-26):** a pilot can leave at any time — Esc frees the mouse and shows
+  **Leave match**. When the last pilot of a side leaves during countdown or the match, the match ends and
+  the other side wins ("Cyan left the match"). If other pilots stay on that side, the match goes on. A
+  dropped connection holds its seat for 20 s before it counts as a leave. The mouse is freed when results
+  show.
 - **Results:** winner, score, kills and deaths per pilot; the host's **Play again** returns everyone to the
   lobby with sides kept.
 - **Identity:** a call sign only. No accounts, no saved stats in v1.

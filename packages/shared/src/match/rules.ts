@@ -25,6 +25,12 @@ export function canStart( counts: TeamCounts ): boolean {
     return counts.marigold >= 1 && counts.cyan >= 1 && Math.abs( counts.marigold - counts.cyan ) <= 1;
 }
 
+export function forfeitWinner( counts: TeamCounts ): TeamId | null {
+    if ( counts.marigold === 0 && counts.cyan > 0 ) return 1;
+    if ( counts.cyan === 0 && counts.marigold > 0 ) return 0;
+    return null;
+}
+
 export function scoringTeam( victimTeam: TeamId ): TeamId {
     return victimTeam === 0 ? 1 : 0;
 }

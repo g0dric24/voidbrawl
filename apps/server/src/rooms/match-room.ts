@@ -36,7 +36,7 @@ import { isBot } from '../bots/bot-pilot.js';
 import { BotRoster } from '../bots/bot-roster.js';
 import { addBolt, type BoltBook, createBoltBook, stepBolts } from './bolts-step.js';
 import { createInputQueue, enqueue, type InputQueue } from './input-queue.js';
-import { awardDeath, returnToLobby, sendToBase, startCountdown, stepClock } from './match-flow.js';
+import { awardDeath, endIfSideEmpty, returnToLobby, sendToBase, startCountdown, stepClock } from './match-flow.js';
 import { type PilotMode, stepPilots } from './pilots-step.js';
 import { registerTeamMessages } from './team-messages.js';
 import { teamCounts } from './teams.js';
@@ -201,6 +201,7 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
         if ( this.state.hostId === sessionId ) {
             this.state.hostId = [ ...this.state.players.keys() ].find( ( id ) => ! isBot( id ) ) ?? '';
         }
+        endIfSideEmpty( this.state, teamCounts( this.state.players.values() ) );
         this.refreshMeta();
     }
 

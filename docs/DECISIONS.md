@@ -234,3 +234,22 @@ inside a small off-axis cone. The host is never a bot.
 **Rejected:** a client-side bot (the client is not authoritative, and a tab that closes kills the bot); a
 bot that sets positions directly (skips the shared sim, so it would fly by different rules); listing
 practice rooms in the lobby (another player joining would find the seat taken).
+
+## ADR-010 — An empty side forfeits; dev pre-bundles every route
+
+- **Status:** Accepted (client) · **Date:** 2026-09-26 · **Issue:** #7
+
+**Forfeit.** When a player is removed (a leave, or a reconnect that timed out) during countdown or live,
+the room counts the sides. If one side has no pilots and the other has some, `forfeitWinner()` names the
+side that stays, and the match goes to results with `MatchState.forfeit = true`. One leaver on a side that
+still has pilots changes nothing. The client frees the pointer lock when `phase` becomes results (a
+Colyseus `listen` on the room state), and shows **Leave match** whenever the mouse is free in countdown or
+live.
+
+**Dev black screen.** Vite found three, R3F and koota only when the game route first loaded, re-bundled
+them, and force-reloaded the page mid-navigation. `optimizeDeps.entries` now lists the root and every route
+module, and `@colyseus/schema` is included through `@voidbrawl/shared` (which is excluded, so the scanner
+cannot see through it). A cold start makes no reload. The root also has a `HydrateFallback`.
+
+**Rejected:** ending on the first leaver (the user wants 2v2 and 4v4 to go on); a bot that fills the empty
+seat (not asked for); forfeit during the lobby (nothing to win yet).

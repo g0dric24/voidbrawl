@@ -19,6 +19,7 @@ export interface MatchView {
     score1: number;
     suddenDeath: boolean;
     winner: number;
+    forfeit: boolean;
     pilots: PilotRow[];
 }
 
@@ -31,6 +32,7 @@ const EMPTY: MatchView = {
     score1: 0,
     suddenDeath: false,
     winner: -1,
+    forfeit: false,
     pilots: [],
 };
 
@@ -79,6 +81,7 @@ function read( room: Room< MatchState > ): MatchView {
         score1: s.score1,
         suddenDeath: s.suddenDeath,
         winner: s.winner,
+        forfeit: s.forfeit,
         pilots,
     };
 }

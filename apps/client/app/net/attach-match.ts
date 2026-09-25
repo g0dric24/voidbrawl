@@ -15,6 +15,7 @@ import { pushSnapshot } from '../game/remote-interp';
 import { attachCombat } from './attach-combat';
 import { attachMatchStore } from './match-store';
 import type { Predictor } from './prediction';
+import { releaseOnResults } from './release-on-results';
 import { setRoster } from './roster-store';
 
 const INPUT_SEND_MS = 1000 / 30;
@@ -121,6 +122,7 @@ export function attachMatch( room: Room< MatchState >, world: World, predictor: 
 
     const offCombat = attachCombat( room, ( sid ) => byId.get( sid ) );
     const offStore = attachMatchStore( room );
+    const offRelease = releaseOnResults( room );
 
     // setInterval: wall clock, not useFrame — sends must hold 30 Hz when a backgrounded tab throttles rAF.
     const timer = setInterval( () => {
@@ -134,6 +136,7 @@ export function attachMatch( room: Room< MatchState >, world: World, predictor: 
         offRemove();
         offCombat();
         offStore();
+        offRelease();
         for ( const off of offs.values() ) off();
         offs.clear();
         for ( const e of byId.values() ) e.destroy();

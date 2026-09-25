@@ -28,6 +28,14 @@ export default function App() {
     return <Outlet />;
 }
 
+export function HydrateFallback() {
+    return (
+        <main className="flex min-h-screen items-center justify-center bg-void font-readout text-sm tracking-[0.35em] text-readout-dim uppercase">
+            Connecting…
+        </main>
+    );
+}
+
 export function ErrorBoundary( { error }: Route.ErrorBoundaryProps ) {
     let message = 'Oops!';
     let details = 'An unexpected error occurred.';

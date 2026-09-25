@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { MODES } from './modes.js';
-import { canJoinTeam, canStart, judge, openTeam, scoringTeam } from './rules.js';
+import { canJoinTeam, canStart, forfeitWinner, judge, openTeam, scoringTeam } from './rules.js';
+
+test( 'a side with no pilots left forfeits, and one leaver on a side with others does not', () => {
+    assert.equal( forfeitWinner( { marigold: 0, cyan: 1 } ), 1 );
+    assert.equal( forfeitWinner( { marigold: 3, cyan: 0 } ), 0 );
+    assert.equal( forfeitWinner( { marigold: 1, cyan: 2 } ), null );
+    assert.equal( forfeitWinner( { marigold: 0, cyan: 0 } ), null );
+} );
 
 test( 'a team is capped at the mode size', () => {
     assert.equal( canJoinTeam( 'duel', { marigold: 1, cyan: 0 }, 0 ), false );

@@ -22,6 +22,11 @@ export function ResultsPanel() {
                     >
                         { TEAM_NAME[ winner ] } wins
                     </span>
+                    { match.forfeit ? (
+                        <span className="text-xs tracking-[0.25em] text-readout-dim">
+                            { TEAM_NAME[ winner === 0 ? 1 : 0 ] } left the match
+                        </span>
+                    ) : null }
                     <span className="text-lg tabular-nums">
                         <span className="text-marigold">{ match.score0 }</span>
                         <span className="px-3 text-readout-dim">—</span>
