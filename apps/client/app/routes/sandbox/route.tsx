@@ -14,7 +14,7 @@ export default function Sandbox() {
     return (
         <Fragment>
             <SandboxCanvas />
-            <PointerPrompt />
+            <PointerPrompt inMatch={ false } />
             <TuningPanelMount />
         </Fragment>
     );

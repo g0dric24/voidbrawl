@@ -7,6 +7,11 @@ export const SET_CLASS_MESSAGE = 'class';
 export const SELF_DESTRUCT_MESSAGE = 'selfDestruct';
 export const HIT_MESSAGE = 'hit';
 export const KILL_MESSAGE = 'kill';
+export const LOBBY_ROOM = 'lobby';
+export const PICK_TEAM_MESSAGE = 'pickTeam';
+export const MOVE_PLAYER_MESSAGE = 'movePlayer';
+export const START_MESSAGE = 'start';
+export const PLAY_AGAIN_MESSAGE = 'playAgain';
 
 export interface NetInput extends FlightInput {
     seq: number;
@@ -18,6 +23,12 @@ export interface InputMessage {
 
 export interface JoinOptions {
     name?: string;
+    mode?: string;
+}
+
+export interface MovePlayerMessage {
+    sessionId: string;
+    team: number;
 }
 
 export interface HitMessage {

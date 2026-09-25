@@ -1,7 +1,7 @@
 import os from 'node:os';
-import { Server } from '@colyseus/core';
+import { LobbyRoom, Server } from '@colyseus/core';
 import { WebSocketTransport } from '@colyseus/ws-transport';
-import { MATCH_ROOM } from '@voidbrawl/shared';
+import { LOBBY_ROOM, MATCH_ROOM } from '@voidbrawl/shared';
 import { MatchRoom } from './rooms/match-room.js';
 
 const port = Number( process.env.PORT || 2567 );
@@ -19,14 +19,15 @@ function lanAddress(): string {
 
 const gameServer = new Server( { transport: new WebSocketTransport() } );
 
-gameServer.define( MATCH_ROOM, MatchRoom );
+gameServer.define( LOBBY_ROOM, LobbyRoom );
+gameServer.define( MATCH_ROOM, MatchRoom ).enableRealtimeListing();
 
 gameServer
     .listen( port, host )
     .then( () => {
         const ip = lanAddress();
         console.log( `[voidbrawl] server up on ws://${ ip }:${ port } (bound ${ host })` );
-        console.log( `[voidbrawl] players join at → http://${ ip }:${ clientPort }/play` );
+        console.log( `[voidbrawl] players join at → http://${ ip }:${ clientPort }/lobby` );
     } )
     .catch( ( err: unknown ) => {
         console.error( '[voidbrawl] server failed to start', err );

@@ -190,3 +190,30 @@ Fighter's hit sphere (1.4u) did not even cover its wings (the model needs 1.85u)
 
 **Rejected:** bullet magnetism / auto-aim (client ruled out assists); lock-on guns (same); a lead marker
 that moves the reticle (would feel like assist); health bars over enemies (client dropped them).
+
+---
+
+## ADR-008 — Match flow on the server; readability pass on the arena
+
+- **Status:** Accepted (client) · **Date:** 2026-09-26 · **Issue:** #7
+
+**Match flow.** `MatchState` gains `phase` (lobby → countdown → live → results), `mode`, `hostId`, the two
+scores, `timeLeft`, `countdown`, `suddenDeath` and `winner`. The rules are pure functions in
+`@voidbrawl/shared/match` (team caps, open side, start rule, verdict) so the server and tests share them.
+Every death scores for the other side — a bolt kill, a crash or a self-destruct alike. At the time limit the
+leader wins; a tie sets `suddenDeath` and the next point wins. The pilot step runs in three modes: `fly`
+(lobby — movement, no guns, no damage), `fight` (live) and `frozen` (countdown, results — inputs are
+acknowledged and dropped, and the client stops predicting). Rooms are listed through Colyseus
+`LobbyRoom` + `enableRealtimeListing()` with `{ hostName, mode, phase, players, capacity }` metadata. The
+room is joined from the `/game/:roomId` route loader and left from the `/lobby` loader, never from a
+component unmount.
+
+**Readability pass** (from the environment research): the default sky is the darker Deep Space preset;
+the wall glow is neutral steel so team colours mean teams only; a ring of eight solid monolith pillars
+stands in the open centre as cover and an orientation landmark (axis-aligned boxes, so ship and bolt
+collision stay basic maths); remote ships carry two fixed-pixel-size wingtip beacons in their team colour;
+base rings move 50u behind the spawn line so they no longer cross the view at spawn.
+
+**Rejected:** client-decided phases or scores (cheatable and racy); a separate lobby room per match (one
+room through all phases keeps players, sides and the arena warm); rotated pillars (oriented boxes add maths
+for no gameplay gain).

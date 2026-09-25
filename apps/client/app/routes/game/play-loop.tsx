@@ -19,6 +19,7 @@ import { addTracer, stepTracers } from '../../game/local-tracers';
 import { capturePrev, writeViewPose } from '../../game/pose-from-sim';
 import { remoteInterpSystem } from '../../game/remote-interp';
 import { TEAM_COLORS } from '../../game/team-colors';
+import { isFrozen, isLive } from '../../net/match-store';
 import type { Predictor } from '../../net/prediction';
 
 const input = idleInput();
@@ -37,14 +38,15 @@ export function PlayLoop( { arena, predictor }: { arena: Arena; predictor: Predi
         const pilot = entity?.get( Pilot );
         if ( ! sim || ! prev || ! pilot ) return;
         const ship = SHIP_CLASSES[ pilot.classId ];
-        const dead = entity?.get( Vital )?.dead === true;
+        const held = entity?.get( Vital )?.dead === true || isFrozen();
         let alpha = 1;
-        if ( dead ) {
+        if ( held ) {
             advance( delta, () => {} );
             capturePrev( sim, prev );
         } else {
             alpha = advance( delta, ( dt ) => {
                 readFlightInput( ship.tuning, dt, input );
+                input.fire = input.fire && isLive();
                 const net = { ...input, seq: predictor.nextSeq() };
                 predictor.record( net );
                 capturePrev( sim, prev );

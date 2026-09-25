@@ -2,6 +2,7 @@ import { MapSchema, Schema, type } from '@colyseus/schema';
 import type { ArenaDescriptor, TeamId } from '../arena/arena.js';
 import type { BoltLaunch } from '../combat/bolt.js';
 import type { Vitals } from '../combat/vitals.js';
+import { type MatchMode, PHASE, type Phase, TIME_LIMIT } from '../match/modes.js';
 import { DEFAULT_CLASS, isShipClassId, type ShipClassId } from '../sim/ship-classes.js';
 import type { ShipState } from '../sim/ship-state.js';
 
@@ -67,6 +68,24 @@ export class MatchState extends Schema {
     @type( { map: PlayerState } ) players = new MapSchema< PlayerState >();
     @type( 'float64' ) time = 0;
     @type( { map: Bolt } ) bolts = new MapSchema< Bolt >();
+
+    @type( 'uint8' ) phase: Phase = PHASE.lobby;
+    @type( 'string' ) mode: MatchMode = 'duel';
+    @type( 'string' ) hostId = '';
+    @type( 'uint16' ) score0 = 0;
+    @type( 'uint16' ) score1 = 0;
+    @type( 'float32' ) timeLeft = TIME_LIMIT;
+    @type( 'float32' ) countdown = 0;
+    @type( 'boolean' ) suddenDeath = false;
+    @type( 'int8' ) winner = -1;
+}
+
+export interface RoomMeta {
+    hostName: string;
+    mode: MatchMode;
+    phase: Phase;
+    players: number;
+    capacity: number;
 }
 
 export function applyArenaDescriptor( state: ArenaDescriptorState, d: ArenaDescriptor ): void {

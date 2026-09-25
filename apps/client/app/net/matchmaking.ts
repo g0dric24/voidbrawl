@@ -3,32 +3,52 @@ import {
     type ArenaDescriptor,
     arenaReady,
     type JoinOptions,
+    LOBBY_ROOM,
     MATCH_ROOM,
+    type MatchMode,
     type MatchState,
     toArenaDescriptor,
 } from '@voidbrawl/shared';
 import { getClient } from './client';
+import { attachLobbyStore } from './lobby-store';
 import { session } from './session';
 
-export function joinMatch( name: string ): Promise< Room< MatchState > > {
-    if ( session.room ) return Promise.resolve( session.room );
-    if ( session.joining ) return session.joining;
+function enter( room: Room< MatchState > ): Room< MatchState > {
+    session.room = room;
+    return room;
+}
+
+export async function createMatch( mode: MatchMode, name: string ): Promise< Room< MatchState > > {
+    leaveMatch();
+    const options: JoinOptions = { name, mode };
+    return enter( await getClient().create< MatchState >( MATCH_ROOM, options ) );
+}
+
+export function joinMatch( roomId: string, name: string ): Promise< Room< MatchState > > {
+    if ( session.room?.roomId === roomId ) return Promise.resolve( session.room );
+    if ( session.joining?.roomId === roomId ) return session.joining.room;
+    leaveMatch();
     const options: JoinOptions = { name };
-    session.joining = getClient()
-        .joinOrCreate< MatchState >( MATCH_ROOM, options )
-        .then( ( room ) => {
-            session.room = room;
-            return room;
-        } )
+    const room = getClient()
+        .joinById< MatchState >( roomId, options )
+        .then( enter )
         .finally( () => {
             session.joining = null;
         } );
-    return session.joining;
+    session.joining = { roomId, room };
+    return room;
 }
 
 export function leaveMatch(): void {
     session.room?.leave();
     session.room = null;
+}
+
+export async function joinLobby(): Promise< void > {
+    if ( session.lobby ) return;
+    const lobby = await getClient().joinOrCreate( LOBBY_ROOM );
+    session.lobby = lobby;
+    attachLobbyStore( lobby );
 }
 
 export function waitForArena( room: Room< MatchState > ): Promise< ArenaDescriptor > {

@@ -90,15 +90,22 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 
 - A **sphere**, medium size — two bases can see each other across it. Radius **600u** *(tune)*.
 - **Bases:** two spawn zones on opposite poles. Each has several spawn points so squadmates do not stack.
-- **Cover:** asteroids and monoliths fill the space between the bases. They are solid: collision.
+- **Cover:** 130 asteroids fill the space between the bases, with 22u gaps (every ship fits) and an open
+  170u centre. In that centre stands the **landmark: a ring of eight monolith pillars** (20 × 140 × 20u,
+  110u from the centre) — cover to fight around and a fixed reference for orientation. Rocks and pillars
+  are solid: ships bounce off them and bolts stop on them.
 - **Boundary: a solid wall (client, 2026-09-25).** No ship can leave the sphere. The hull hits the wall and
   bounces back, like hitting an asteroid. The wall *is* the sky: the nebula is painted on the inside of the
-  sphere, so the whole environment is inside it and nothing exists beyond it. A soft marigold glow appears
-  on the wall where you get close (no grid lines). The camera never leaves the sphere. The HUD warns
+  sphere, so the whole environment is inside it and nothing exists beyond it. A soft **steel** glow appears
+  on the wall where you get close (never a team colour) (no grid lines). The camera never leaves the sphere. The HUD warns
   within 60u. There is no "outside" zone and no out-of-bounds damage.
 - **One map in v1.** The arena is data from a descriptor (seed + map id), built identically on both ends —
   the SLUR contract, now in 3D. More maps later. A WOW-style map editor is a much-later idea.
-- **Sky:** the SLUR procedural nebula / deep-space sky, drawn on the arena wall (see Boundary).
+- **Sky:** the SLUR procedural sky, drawn on the arena wall (see Boundary). Default = the darker **Deep
+  Space** preset, so ships stay the brightest thing on screen; the brighter Nebula look is kept for a later
+  map.
+- **Base rings:** a dim ring in the team colour stands 50u behind each spawn line — it marks home without
+  crossing the view at spawn.
 
 ## 7. Combat
 
@@ -175,10 +182,16 @@ widest collision sphere.
 
 ## 9. Teams, rooms, players
 
-- **Rooms:** live room list (host name · mode · players · phase) plus a shareable **invite link**.
-- **Teams:** players pick a team in the lobby; the host can move players. Teams must be within one player
-  of each other to start.
-- **Join mid-match:** allowed; the joiner picks the smaller team and spawns at its base.
+- **Rooms (built in S4):** Play → `/lobby`: call sign, **Create 1v1 / 2v2 / 4v4**, and a live room list
+  (mode · host · players / capacity · phase · Join). A room is `/game/:roomId`; **Copy invite link** shares
+  it. Room capacity = 2 × team size; a full room refuses joiners.
+- **Teams:** players pick a side in the lobby, capped at the team size; the host can move players. The host
+  can **Start** when both sides have a pilot and differ by at most one. Ships can fly in the lobby with guns
+  off; countdown and results freeze everyone.
+- **Join mid-match:** allowed; the joiner goes to the smaller side with room and spawns at its base.
+- **Host:** the room creator; if the host leaves, the next pilot becomes host.
+- **Results:** winner, score, kills and deaths per pilot; the host's **Play again** returns everyone to the
+  lobby with sides kept.
 - **Identity:** a call sign only. No accounts, no saved stats in v1.
 - **Bots:** not in v1.
 - **Team colours:** **Marigold** (`#F59A24`) vs **Cyan** (`#3BD6FF`).

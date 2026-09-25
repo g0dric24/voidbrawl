@@ -1,4 +1,4 @@
-import type { Arena, TeamId } from '../arena/arena.js';
+import type { Arena, Box, TeamId } from '../arena/arena.js';
 import { forwardOf, vec3 } from '../sim/quat.js';
 import type { ShipState } from '../sim/ship-state.js';
 import type { GunTuning } from './gun.js';
@@ -65,7 +65,33 @@ export interface BoltTarget {
 export type BoltHit =
     | { kind: 'ship'; id: string; t: number }
     | { kind: 'rock'; id: number; t: number }
+    | { kind: 'pillar'; id: number; t: number }
     | { kind: 'wall'; t: number };
+
+function slab( p: number, d: number, lo: number, hi: number, span: [ number, number ] ): boolean {
+    if ( d === 0 ) return p >= lo && p <= hi;
+    let a = ( lo - p ) / d;
+    let b = ( hi - p ) / d;
+    if ( a > b ) [ a, b ] = [ b, a ];
+    if ( a > span[ 0 ] ) span[ 0 ] = a;
+    if ( b < span[ 1 ] ) span[ 1 ] = b;
+    return span[ 0 ] <= span[ 1 ];
+}
+
+export function segmentBox(
+    p: { x: number; y: number; z: number },
+    dx: number,
+    dy: number,
+    dz: number,
+    box: Box,
+    pad: number,
+): number {
+    const span: [ number, number ] = [ 0, 1 ];
+    if ( ! slab( p.x, dx, box.x0 - pad, box.x1 + pad, span ) ) return -1;
+    if ( ! slab( p.y, dy, box.y0 - pad, box.y1 + pad, span ) ) return -1;
+    if ( ! slab( p.z, dz, box.z0 - pad, box.z1 + pad, span ) ) return -1;
+    return span[ 0 ];
+}
 
 function segmentSphere(
     px: number,
@@ -103,6 +129,38 @@ function exitSphere( px: number, py: number, pz: number, dx: number, dy: number,
     return t >= 0 && t <= 1 ? t : -1;
 }
 
+interface Ray {
+    p: { x: number; y: number; z: number };
+    dx: number;
+    dy: number;
+    dz: number;
+}
+
+function earlier( best: BoltHit | null, next: BoltHit ): BoltHit | null {
+    if ( next.t < 0 ) return best;
+    return best === null || next.t < best.t ? next : best;
+}
+
+function sphereHit( r: Ray, cx: number, cy: number, cz: number, radius: number ): number {
+    return segmentSphere( r.p.x, r.p.y, r.p.z, r.dx, r.dy, r.dz, cx, cy, cz, radius + BOLT_RADIUS );
+}
+
+function obstacleHit( r: Ray, arena: Arena ): BoltHit | null {
+    let best: BoltHit | null = null;
+    const wall = exitSphere( r.p.x, r.p.y, r.p.z, r.dx, r.dy, r.dz, arena.radius );
+    if ( wall >= 0 ) best = { kind: 'wall', t: wall };
+    for ( const a of arena.asteroids )
+        best = earlier( best, { kind: 'rock', id: a.id, t: sphereHit( r, a.x, a.y, a.z, a.r ) } );
+    for ( const box of arena.pillars ) {
+        best = earlier( best, {
+            kind: 'pillar',
+            id: box.id,
+            t: segmentBox( r.p, r.dx, r.dy, r.dz, box, BOLT_RADIUS ),
+        } );
+    }
+    return best;
+}
+
 export function sweepBolt(
     b: BoltLaunch,
     from: number,
@@ -110,21 +168,16 @@ export function sweepBolt(
     arena: Arena,
     ships: readonly BoltTarget[],
 ): BoltHit | null {
-    const p = boltPosition( b, from );
-    const dx = b.vx * ( to - from );
-    const dy = b.vy * ( to - from );
-    const dz = b.vz * ( to - from );
-    let best: BoltHit | null = null;
-    const wall = exitSphere( p.x, p.y, p.z, dx, dy, dz, arena.radius );
-    if ( wall >= 0 ) best = { kind: 'wall', t: wall };
-    for ( const a of arena.asteroids ) {
-        const t = segmentSphere( p.x, p.y, p.z, dx, dy, dz, a.x, a.y, a.z, a.r + BOLT_RADIUS );
-        if ( t >= 0 && ( best === null || t < best.t ) ) best = { kind: 'rock', id: a.id, t };
-    }
+    const r: Ray = {
+        p: boltPosition( b, from ),
+        dx: b.vx * ( to - from ),
+        dy: b.vy * ( to - from ),
+        dz: b.vz * ( to - from ),
+    };
+    let best = obstacleHit( r, arena );
     for ( const s of ships ) {
         if ( s.id === b.ownerId || s.team === b.team ) continue;
-        const t = segmentSphere( p.x, p.y, p.z, dx, dy, dz, s.x, s.y, s.z, s.radius + BOLT_RADIUS );
-        if ( t >= 0 && ( best === null || t < best.t ) ) best = { kind: 'ship', id: s.id, t };
+        best = earlier( best, { kind: 'ship', id: s.id, t: sphereHit( r, s.x, s.y, s.z, s.radius ) } );
     }
     return best;
 }

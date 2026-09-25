@@ -3,9 +3,9 @@ import type { Arena } from '@voidbrawl/shared';
 import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 import { num } from '../../dev/tuning';
-import { MARIGOLD } from '../team-colors';
 
 const SHELL_INSET = 0.5;
+const WALL_STEEL = '#c9d4df';
 
 const VERTEX = `
 varying vec3 vWorld;
@@ -36,7 +36,7 @@ export function BoundaryShell( { arena }: { arena: Arena } ) {
                 vertexShader: VERTEX,
                 fragmentShader: FRAGMENT,
                 uniforms: {
-                    uColor: { value: new THREE.Color( MARIGOLD ) },
+                    uColor: { value: new THREE.Color( WALL_STEEL ) },
                     uCam: { value: new THREE.Vector3() },
                     uNear: { value: 1 },
                     uGlow: { value: 1 },

@@ -23,10 +23,48 @@ export interface Base {
     spawns: readonly Vec3[];
 }
 
+export interface Box {
+    id: number;
+    x0: number;
+    y0: number;
+    z0: number;
+    x1: number;
+    y1: number;
+    z1: number;
+}
+
 export interface Arena {
     radius: number;
     asteroids: readonly Asteroid[];
+    pillars: readonly Box[];
     bases: readonly [ Base, Base ];
+}
+
+export const PILLAR_RING = 110;
+export const PILLAR_HALF_WIDTH = 10;
+export const PILLAR_HALF_HEIGHT = 70;
+
+function pillarRing(): Box[] {
+    const h = Math.sqrt( 0.5 );
+    const dirs = [
+        [ 1, 0 ],
+        [ h, h ],
+        [ 0, 1 ],
+        [ -h, h ],
+        [ -1, 0 ],
+        [ -h, -h ],
+        [ 0, -1 ],
+        [ h, -h ],
+    ];
+    return dirs.map( ( [ dx, dz ], id ) => ( {
+        id,
+        x0: dx * PILLAR_RING - PILLAR_HALF_WIDTH,
+        x1: dx * PILLAR_RING + PILLAR_HALF_WIDTH,
+        y0: -PILLAR_HALF_HEIGHT,
+        y1: PILLAR_HALF_HEIGHT,
+        z0: dz * PILLAR_RING - PILLAR_HALF_WIDTH,
+        z1: dz * PILLAR_RING + PILLAR_HALF_WIDTH,
+    } ) );
 }
 
 export const ARENA_RADIUS = 600;
@@ -115,6 +153,7 @@ export function materializeArena( descriptor: ArenaDescriptor ): Arena {
     return {
         radius,
         asteroids: placeAsteroids( descriptor.seed, radius, bases ),
+        pillars: pillarRing(),
         bases,
     };
 }

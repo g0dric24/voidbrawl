@@ -13,6 +13,7 @@ const FIGHTER = SHIP_CLASSES.fighter.tuning;
 const EMPTY: Arena = {
     radius: 10_000,
     asteroids: [],
+    pillars: [],
     bases: materializeArena( DEFAULT_ARENA ).bases,
 };
 

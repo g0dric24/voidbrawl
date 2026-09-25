@@ -21,65 +21,63 @@ export interface PilotEvents {
     killed( victimId: string, killerId: string, cause: DeathCause ): void;
 }
 
-function stepDead(
-    p: PlayerState,
-    q: InputQueue | undefined,
-    arena: Arena,
-    others: Iterable< PlayerState >,
-    dt: number,
-) {
-    if ( q && q.inputs.length > 0 ) {
-        p.lastProcessedInput = q.inputs[ q.inputs.length - 1 ].seq;
-        q.inputs.length = 0;
-    }
-    p.respawnTimer -= dt;
-    if ( p.respawnTimer <= 0 ) revive( p, arena, others );
+export type PilotMode = 'frozen' | 'fly' | 'fight';
+
+export interface PilotStep {
+    arena: Arena;
+    now: number;
+    dt: number;
+    mode: PilotMode;
+    events: PilotEvents;
 }
 
-function stepAlive(
-    id: string,
-    p: PlayerState,
-    q: InputQueue | undefined,
-    arena: Arena,
-    now: number,
-    dt: number,
-    events: PilotEvents,
-) {
+export function drainInputs( p: PlayerState, q: InputQueue | undefined ): void {
+    if ( ! q || q.inputs.length === 0 ) return;
+    p.lastProcessedInput = q.inputs[ q.inputs.length - 1 ].seq;
+    q.inputs.length = 0;
+}
+
+function stepDead( p: PlayerState, q: InputQueue | undefined, others: Iterable< PlayerState >, step: PilotStep ) {
+    drainInputs( p, q );
+    p.respawnTimer -= step.dt;
+    if ( p.respawnTimer <= 0 ) revive( p, step.arena, others );
+}
+
+function stepAlive( id: string, p: PlayerState, q: InputQueue | undefined, step: PilotStep ) {
     const input = q?.inputs.shift();
     if ( ! input ) return;
     const ship = SHIP_CLASSES[ classOf( p ) ];
-    stepPilot( p, input, ship, arena, dt );
+    const fight = step.mode === 'fight';
+    stepPilot( p, fight ? input : { ...input, fire: false }, ship, step.arena, step.dt );
     p.lastProcessedInput = input.seq;
+    if ( ! fight ) return;
     if ( p.shot ) {
         p.protect = 0;
-        events.launch( launchBolt( p, ship.tuning.hullRadius, ship.gun, id, p.team as TeamId, now ), ship.gun.damage );
+        const bolt = launchBolt( p, ship.tuning.hullRadius, ship.gun, id, p.team as TeamId, step.now );
+        step.events.launch( bolt, ship.gun.damage );
     }
     if ( applyDamage( p, impactDamage( p.impact ) ).killed ) {
         markDead( p );
-        events.killed( id, '', 'crash' );
+        step.events.killed( id, '', 'crash' );
     }
 }
 
-export function stepPilots(
-    players: MatchState[ 'players' ],
-    queues: Map< string, InputQueue >,
-    arena: Arena,
-    now: number,
-    dt: number,
-    events: PilotEvents,
-): void {
+export function stepPilots( players: MatchState[ 'players' ], queues: Map< string, InputQueue >, step: PilotStep ) {
     players.forEach( ( p, id ) => {
-        tickVitals( p, dt );
-        if ( ! p.connected ) return;
         const q = queues.get( id );
+        if ( step.mode === 'frozen' ) {
+            drainInputs( p, q );
+            return;
+        }
+        tickVitals( p, step.dt );
+        if ( ! p.connected ) return;
         if ( p.dead )
             stepDead(
                 p,
                 q,
-                arena,
                 [ ...players.values() ].filter( ( o ) => o !== p ),
-                dt,
+                step,
             );
-        else stepAlive( id, p, q, arena, now, dt, events );
+        else stepAlive( id, p, q, step );
     } );
 }

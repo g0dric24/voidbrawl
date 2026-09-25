@@ -18,7 +18,7 @@ import {
     SPAWN_PROTECTION,
 } from '@voidbrawl/shared';
 import type { MatchRoom } from './match-room.js';
-import { openMatch, playerOf, startTestServer, tick } from './test-server.test.js';
+import { goLive, openMatch, playerOf, startTestServer, tick } from './test-server.test.js';
 
 const ARENA = materializeArena( DEFAULT_ARENA );
 const LANE_Z = ARENA.bases[ 0 ].center.z;
@@ -63,6 +63,7 @@ describe( 'MatchRoom combat', () => {
 
     test( 'bolts kill an enemy, credit the killer, and the victim respawns protected at its base', async () => {
         const { room, connections } = await openMatch( colyseus, 2 );
+        goLive( room );
         const [ a, b ] = connections;
         const shooter = playerOf( room, a.sessionId );
         const victim = playerOf( room, b.sessionId );
@@ -100,6 +101,7 @@ describe( 'MatchRoom combat', () => {
 
     test( 'teammates cannot hurt each other', async () => {
         const { room, connections } = await openMatch( colyseus, 3 );
+        goLive( room );
         const [ a, , c ] = connections;
         const shooter = playerOf( room, a.sessionId );
         const mate = playerOf( room, c.sessionId );
@@ -114,6 +116,7 @@ describe( 'MatchRoom combat', () => {
 
     test( 'spawn protection absorbs hits and ends when the protected ship fires', async () => {
         const { room, connections } = await openMatch( colyseus, 2 );
+        goLive( room );
         const [ a, b ] = connections;
         const shooter = playerOf( room, a.sessionId );
         const victim = playerOf( room, b.sessionId );
@@ -132,6 +135,7 @@ describe( 'MatchRoom combat', () => {
 
     test( 'self-destruct kills, and a pending class change applies at the respawn', async () => {
         const { room, connections } = await openMatch( colyseus, 1 );
+        goLive( room );
         const [ a ] = connections;
         a.onMessage( KILL_MESSAGE, () => {} );
         a.send( SET_CLASS_MESSAGE, 'heavy' );
@@ -148,6 +152,7 @@ describe( 'MatchRoom combat', () => {
 
     test( 'ramming an asteroid at speed damages the ship', async () => {
         const { room, connections } = await openMatch( colyseus, 1 );
+        goLive( room );
         const [ a ] = connections;
         const p = playerOf( room, a.sessionId );
         const rock = ARENA.asteroids[ 0 ];

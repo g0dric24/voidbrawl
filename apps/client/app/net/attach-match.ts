@@ -13,6 +13,7 @@ import { Interp, LocalPlayer, NetId, Pilot, Prev, Remote, RemotePose, Sim, Vital
 import { capturePrev } from '../game/pose-from-sim';
 import { pushSnapshot } from '../game/remote-interp';
 import { attachCombat } from './attach-combat';
+import { attachMatchStore } from './match-store';
 import type { Predictor } from './prediction';
 import { setRoster } from './roster-store';
 
@@ -119,6 +120,7 @@ export function attachMatch( room: Room< MatchState >, world: World, predictor: 
     } );
 
     const offCombat = attachCombat( room, ( sid ) => byId.get( sid ) );
+    const offStore = attachMatchStore( room );
 
     // setInterval: wall clock, not useFrame — sends must hold 30 Hz when a backgrounded tab throttles rAF.
     const timer = setInterval( () => {
@@ -131,6 +133,7 @@ export function attachMatch( room: Room< MatchState >, world: World, predictor: 
         offAdd();
         offRemove();
         offCombat();
+        offStore();
         for ( const off of offs.values() ) off();
         offs.clear();
         for ( const e of byId.values() ) e.destroy();

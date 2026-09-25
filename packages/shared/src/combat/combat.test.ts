@@ -10,7 +10,7 @@ import { stepGun } from './gun.js';
 import { applyDamage, impactDamage, SHIELD_REGEN_DELAY, tickVitals, type Vitals } from './vitals.js';
 
 const GUN = SHIP_CLASSES.fighter.gun;
-const OPEN: Arena = { radius: 5000, asteroids: [], bases: materializeArena( DEFAULT_ARENA ).bases };
+const OPEN: Arena = { radius: 5000, asteroids: [], pillars: [], bases: materializeArena( DEFAULT_ARENA ).bases };
 
 function fireFor( seconds: number, s = emptyShip() ) {
     let shots = 0;

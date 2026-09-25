@@ -1,5 +1,5 @@
 import type { Arena } from '../arena/arena.js';
-import { collideAsteroids, collideBoundary } from './collide.js';
+import { collideAsteroids, collideBoundary, collidePillars } from './collide.js';
 import type { FlightTuning } from './flight-tuning.js';
 import { type FlightInput, idleInput, sanitizeInput } from './input.js';
 import { rotateBody, rotateVector, vec3 } from './quat.js';
@@ -43,5 +43,6 @@ export function stepShip( s: ShipState, raw: FlightInput, t: FlightTuning, arena
     s.y += s.vy * dt;
     s.z += s.vz * dt;
     collideAsteroids( s, arena, t.hullRadius, t.restitution );
+    collidePillars( s, arena, t.hullRadius, t.restitution );
     collideBoundary( s, arena, t.hullRadius, t.restitution );
 }
