@@ -68,6 +68,8 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 | V | switch aim mode (direct / joystick) |
 | Left mouse | primary gun |
 | Right mouse or F | use the held pickup |
+| 1 / 2 / 3 | ship class for your next spawn |
+| K | self-destruct (counts as a death) |
 | Tab | scoreboard |
 | M | mute |
 | Esc | release the mouse / menu |
@@ -129,10 +131,24 @@ Pickups float at fixed points in the arena and respawn after a delay *(tune)*. A
 
 ### 7.4 Death and respawn
 
-- Death → explosion (the SLUR derezz / shatter VFX) → **3 s** wait (spectate your killer) → spawn at a free
-  point of your team base.
+- Death → explosion → **3 s** wait (the camera holds where you died; spectating your killer is an S6 polish
+  item) → spawn at a free point of your team base.
 - **2 s spawn protection:** invulnerable; ends early if you fire.
-- Ship class can be changed while waiting to respawn.
+- **Ship class:** press 1 / 2 / 3 at any time; the new class applies at your **next spawn**, never mid-life,
+  so switching can't be used to heal.
+- **K = self-destruct** (to get unstuck or change ship now); it counts as a death.
+
+**First-pass combat numbers** (`ship-classes.ts`, tune at the S3 gate):
+
+| Class | Hull / shield | Damage per bolt | Fire interval |
+|---|:--:|:--:|:--:|
+| Fighter | 100 / 50 | 9 | 0.09 s |
+| Interceptor | 75 / 40 | 7 | 0.075 s |
+| Heavy | 150 / 75 | 13 | 0.12 s |
+
+Bolts fly at 420 u/s plus the ship's forward speed for 1.4 s. Continuous fire overheats in about 2.3 s; the gun
+unlocks when heat falls to 30 %. The shield starts regenerating 4 s after the last hit, at 20 per second.
+Hitting an asteroid or the wall faster than 14 u/s does damage.
 
 ## 8. Ships
 

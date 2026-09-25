@@ -11,7 +11,10 @@ const state = {
     dy: 0,
     stickX: 0,
     stickY: 0,
+    firing: false,
 };
+
+const PRIMARY_BUTTON = 0;
 
 const listeners = new Set< () => void >();
 
@@ -67,24 +70,50 @@ function onLockChange(): void {
     state.locked = document.pointerLockElement !== null;
     state.dx = 0;
     state.dy = 0;
+    state.firing = false;
     notify();
+}
+
+function onDown( e: MouseEvent ): void {
+    if ( state.locked && e.button === PRIMARY_BUTTON ) state.firing = true;
+}
+
+function onUp( e: MouseEvent ): void {
+    if ( e.button === PRIMARY_BUTTON ) state.firing = false;
+}
+
+export function triggerHeld(): boolean {
+    return state.locked && state.firing;
 }
 
 function onKey( e: KeyboardEvent ): void {
     if ( e.code === 'KeyV' && ! e.repeat ) toggleAimMode();
 }
 
-export function requestLock( el: HTMLElement ): void {
-    const locking = el.requestPointerLock( { unadjustedMovement: true } );
-    locking?.catch( () => el.requestPointerLock() );
+async function lockPlain( el: HTMLElement ): Promise< void > {
+    try {
+        await el.requestPointerLock();
+    } catch {}
+}
+
+export async function requestLock( el: HTMLElement ): Promise< void > {
+    try {
+        await el.requestPointerLock( { unadjustedMovement: true } );
+    } catch {
+        await lockPlain( el );
+    }
 }
 
 export function attachMouse(): () => void {
     addEventListener( 'mousemove', onMove );
+    addEventListener( 'mousedown', onDown );
+    addEventListener( 'mouseup', onUp );
     addEventListener( 'keydown', onKey );
     document.addEventListener( 'pointerlockchange', onLockChange );
     return () => {
         removeEventListener( 'mousemove', onMove );
+        removeEventListener( 'mousedown', onDown );
+        removeEventListener( 'mouseup', onUp );
         removeEventListener( 'keydown', onKey );
         document.removeEventListener( 'pointerlockchange', onLockChange );
     };

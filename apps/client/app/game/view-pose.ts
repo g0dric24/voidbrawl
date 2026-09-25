@@ -11,4 +11,6 @@ export const viewPose = {
     boostShare: 0,
     edgeDistance: 0,
     impact: 0,
+    heat: 0,
+    overheated: false,
 };

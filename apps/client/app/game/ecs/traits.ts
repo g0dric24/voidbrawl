@@ -10,6 +10,17 @@ export const Pilot = trait( { classId: DEFAULT_CLASS as ShipClassId, team: 0 as 
 
 export const NetId = trait( { sessionId: '' } );
 
+export const Vital = trait( {
+    hull: 0,
+    shield: 0,
+    dead: false,
+    protect: 0,
+    respawnTimer: 0,
+    nextClassId: '',
+    kills: 0,
+    deaths: 0,
+} );
+
 export const LocalPlayer = trait();
 
 export const Remote = trait();

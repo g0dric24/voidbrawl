@@ -3,7 +3,7 @@ import type { Entity } from 'koota';
 import { useTrait } from 'koota/react';
 import { Suspense, useRef } from 'react';
 import type * as THREE from 'three';
-import { Pilot, RemotePose } from '../ecs/traits';
+import { Pilot, RemotePose, Vital } from '../ecs/traits';
 import { TEAM_COLORS } from '../team-colors';
 import { ShipModel } from './ship-model';
 
@@ -15,7 +15,7 @@ export function RemoteShipView( { entity }: { entity: Entity } ) {
         const g = ref.current;
         const pose = entity.get( RemotePose );
         if ( ! g || ! pose ) return;
-        g.visible = pose.ready;
+        g.visible = pose.ready && entity.get( Vital )?.dead !== true;
         g.position.copy( pose.position );
         g.quaternion.copy( pose.quaternion );
     } );

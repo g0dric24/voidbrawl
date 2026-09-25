@@ -3,7 +3,9 @@ import { Fragment, type ReactNode, Suspense } from 'react';
 import { AimReticle } from './aim-reticle';
 import { AsteroidField } from './asteroid-field';
 import { BaseMarkers } from './base-markers';
+import { BoltField } from './bolt-field';
 import { BoundaryShell } from './boundary-shell';
+import { FxField } from './fx-field';
 import { LocalShipView } from './local-ship-view';
 import { NebulaSky } from './nebula-sky';
 import { SceneEffects } from './scene-effects';
@@ -23,6 +25,8 @@ export function ArenaScene( { arena, children }: { arena: Arena; children?: Reac
             <SpaceDust />
             <LocalShipView />
             { children }
+            <BoltField />
+            <FxField />
             <AimReticle />
             <SceneEffects />
         </Fragment>

@@ -1,3 +1,4 @@
+import type { GunTuning } from '../combat/gun.js';
 import type { FlightTuning } from './flight-tuning.js';
 
 export type ShipClassId = 'fighter' | 'interceptor' | 'heavy';
@@ -6,7 +7,20 @@ export interface ShipClass {
     id: ShipClassId;
     name: string;
     tuning: FlightTuning;
+    gun: GunTuning;
+    hull: number;
+    shield: number;
 }
+
+const STANDARD_GUN: GunTuning = {
+    boltSpeed: 420,
+    boltLife: 1.4,
+    damage: 9,
+    fireInterval: 0.09,
+    heatPerShot: 0.07,
+    coolRate: 0.35,
+    unlockHeat: 0.3,
+};
 
 export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
     fighter: {
@@ -26,6 +40,9 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
             boostRegen: 0.2,
             restitution: 0.35,
         },
+        gun: STANDARD_GUN,
+        hull: 100,
+        shield: 50,
     },
     interceptor: {
         id: 'interceptor',
@@ -44,6 +61,9 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
             boostRegen: 0.22,
             restitution: 0.35,
         },
+        gun: { ...STANDARD_GUN, damage: 7, fireInterval: 0.075 },
+        hull: 75,
+        shield: 40,
     },
     heavy: {
         id: 'heavy',
@@ -62,6 +82,9 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
             boostRegen: 0.18,
             restitution: 0.25,
         },
+        gun: { ...STANDARD_GUN, damage: 13, fireInterval: 0.12, heatPerShot: 0.08 },
+        hull: 150,
+        shield: 75,
     },
 };
 

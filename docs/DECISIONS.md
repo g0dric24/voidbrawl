@@ -134,3 +134,32 @@ sphere."*
 **Known cost.** At long range a ship is a few pixels, so its rim reads as a coloured glint, not a shape.
 If spotting enemies at range proves hard in play, the lever is rim strength or an off-screen indicator
 (GDD §11), not the ring.
+
+---
+
+## ADR-006 — Combat: predicted heat, launch-only bolts, server-decided damage
+
+- **Status:** Accepted · **Date:** 2026-09-25 · **Issue:** #5
+
+**Decision.**
+
+- **The gun is part of the predicted sim.** `stepPilot()` = `stepShip()` + `stepGun()`. Heat, cooldown and
+  the overheat lock depend only on your own input, so the client predicts them and the heat bar reacts at
+  once. The cooldown carries its remainder, so the fire rate is exact rather than rounded to whole ticks.
+- **Bolts are synced as launch data only** (`x0 y0 z0 vx vy vz t0 owner team`, plus `tEnd` and `struck`).
+  A bolt never changes course, so each client computes its position from a server clock estimated off the
+  synced `MatchState.time` (minimum observed offset, drifting 0.5 ms per sample). No per-tick bolt
+  positions go over the wire. The server keeps a hit bolt for 0.3 s with `tEnd` = impact time so a client
+  rendering 100 ms behind still draws it to the impact point.
+- **Hits are server-only**: a swept segment against ship hull spheres, asteroids and the wall per tick,
+  earliest contact wins, teammates ignored. Damage, kills, deaths and respawns are server decisions. Your
+  own shots are drawn from **local cosmetic tracers** (spawned by the predicted gun) so they leave the nose
+  instantly; your own server bolts are not drawn.
+- **Health is not predicted.** Shield regen, spawn protection and the respawn timer tick on the server every
+  tick, whether or not an input arrived. A dead ship's inputs are acknowledged and dropped.
+- **Class changes apply at the next spawn** (`nextClassId`); **K self-destructs** so a player can change
+  ship now or get unstuck. It counts as a death (S4 decides who scores it).
+
+**Rejected:** syncing bolt positions every patch (≈100 changing entities × 20 Hz for no gain);
+client-side hit detection (trivially cheatable, and clients disagree about positions by design);
+lag-compensated hitscan (unneeded with projectiles on LAN); instant class switching (a free heal).
