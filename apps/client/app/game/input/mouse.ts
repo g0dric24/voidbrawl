@@ -12,9 +12,11 @@ const state = {
     stickX: 0,
     stickY: 0,
     firing: false,
+    aiming: false,
 };
 
 const PRIMARY_BUTTON = 0;
+const SECONDARY_BUTTON = 2;
 
 const listeners = new Set< () => void >();
 
@@ -71,19 +73,31 @@ function onLockChange(): void {
     state.dx = 0;
     state.dy = 0;
     state.firing = false;
+    state.aiming = false;
     notify();
 }
 
 function onDown( e: MouseEvent ): void {
-    if ( state.locked && e.button === PRIMARY_BUTTON ) state.firing = true;
+    if ( ! state.locked ) return;
+    if ( e.button === PRIMARY_BUTTON ) state.firing = true;
+    if ( e.button === SECONDARY_BUTTON ) state.aiming = true;
 }
 
 function onUp( e: MouseEvent ): void {
     if ( e.button === PRIMARY_BUTTON ) state.firing = false;
+    if ( e.button === SECONDARY_BUTTON ) state.aiming = false;
+}
+
+function onContextMenu( e: MouseEvent ): void {
+    if ( state.locked ) e.preventDefault();
 }
 
 export function triggerHeld(): boolean {
     return state.locked && state.firing;
+}
+
+export function lockHeld(): boolean {
+    return state.locked && state.aiming;
 }
 
 function onKey( e: KeyboardEvent ): void {
@@ -109,12 +123,14 @@ export function attachMouse(): () => void {
     addEventListener( 'mousedown', onDown );
     addEventListener( 'mouseup', onUp );
     addEventListener( 'keydown', onKey );
+    addEventListener( 'contextmenu', onContextMenu );
     document.addEventListener( 'pointerlockchange', onLockChange );
     return () => {
         removeEventListener( 'mousemove', onMove );
         removeEventListener( 'mousedown', onDown );
         removeEventListener( 'mouseup', onUp );
         removeEventListener( 'keydown', onKey );
+        removeEventListener( 'contextmenu', onContextMenu );
         document.removeEventListener( 'pointerlockchange', onLockChange );
     };
 }

@@ -7,7 +7,7 @@ import { SHIP_CLASSES } from '../sim/ship-classes.js';
 import { emptyShip } from '../sim/ship-state.js';
 import { type BoltTarget, boltPosition, launchBolt, sweepBolt } from './bolt.js';
 import { stepGun } from './gun.js';
-import { applyDamage, impactDamage, SHIELD_REGEN_DELAY, tickVitals, type Vitals } from './vitals.js';
+import { applyDamage, impactDamage, SHIELD_REGEN_DELAY, SHIELD_REGEN_RATE, tickVitals, type Vitals } from './vitals.js';
 
 const GUN = SHIP_CLASSES.fighter.gun;
 const OPEN: Arena = { radius: 5000, asteroids: [], bases: materializeArena( DEFAULT_ARENA ).bases };
@@ -83,8 +83,31 @@ test( 'a bolt that reaches the arena wall stops there', () => {
 } );
 
 function vitals(): Vitals {
-    return { hull: 100, shield: 50, maxShield: 50, shieldDelay: 0, protect: 0, dead: false };
+    return {
+        hull: 100,
+        shield: 50,
+        maxShield: 50,
+        shieldDelay: 0,
+        regenDelay: SHIELD_REGEN_DELAY,
+        regenRate: SHIELD_REGEN_RATE,
+        protect: 0,
+        dead: false,
+    };
 }
+
+test( 'the Heavy shield comes back sooner and faster than the Fighter shield', () => {
+    const heavy = SHIP_CLASSES.heavy;
+    const v = { ...vitals(), regenDelay: heavy.regenDelay, regenRate: heavy.regenRate };
+    const f = vitals();
+    applyDamage( v, 50 );
+    applyDamage( f, 50 );
+    for ( let t = 0; t < 3; t += FIXED_DT ) {
+        tickVitals( v, FIXED_DT );
+        tickVitals( f, FIXED_DT );
+    }
+    assert.ok( v.shield > 30 );
+    assert.equal( f.shield, 0 );
+} );
 
 test( 'damage drains the shield before the hull and kills at zero hull', () => {
     const v = vitals();

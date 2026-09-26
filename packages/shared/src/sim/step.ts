@@ -14,6 +14,17 @@ function steer( s: ShipState, input: FlightInput, t: FlightTuning, dt: number ):
     rotateBody( s, -input.pitch, -input.yaw, s.rollRate * dt );
 }
 
+function dash( s: ShipState, input: FlightInput, t: FlightTuning, dt: number ): void {
+    const left = s.dashCooldown - dt;
+    s.dashCooldown = left > 0 ? left : 0;
+    if ( input.dash === 0 || t.dashSpeed <= 0 || s.dashCooldown > 0 ) return;
+    rotateVector( s, -input.dash * t.dashSpeed, 0, 0, _a );
+    s.vx += _a.x;
+    s.vy += _a.y;
+    s.vz += _a.z;
+    s.dashCooldown = t.dashCooldown;
+}
+
 function boosting( s: ShipState, input: FlightInput ): boolean {
     return input.boost && input.thrust > 0 && s.boost > 0;
 }
@@ -38,6 +49,7 @@ export function stepShip( s: ShipState, raw: FlightInput, t: FlightTuning, arena
     const input = sanitizeInput( raw, t.turnRate * dt, _in );
     s.impact = 0;
     steer( s, input, t, dt );
+    dash( s, input, t, dt );
     thrust( s, input, t, dt );
     s.x += s.vx * dt;
     s.y += s.vy * dt;

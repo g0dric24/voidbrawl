@@ -10,6 +10,8 @@ export interface Vitals {
     shield: number;
     maxShield: number;
     shieldDelay: number;
+    regenDelay: number;
+    regenRate: number;
     protect: number;
     dead: boolean;
 }
@@ -26,7 +28,7 @@ export function applyDamage( v: Vitals, amount: number ): DamageResult {
     v.shield -= shieldHit;
     const hullHit = amount - shieldHit;
     v.hull -= hullHit;
-    v.shieldDelay = SHIELD_REGEN_DELAY;
+    v.shieldDelay = v.regenDelay;
     const killed = v.hull <= 0;
     if ( killed ) {
         v.hull = 0;
@@ -42,7 +44,7 @@ export function tickVitals( v: Vitals, dt: number ): void {
         v.shieldDelay = v.shieldDelay > dt ? v.shieldDelay - dt : 0;
         return;
     }
-    const regen = v.shield + SHIELD_REGEN_RATE * dt;
+    const regen = v.shield + v.regenRate * dt;
     v.shield = regen < v.maxShield ? regen : v.maxShield;
 }
 

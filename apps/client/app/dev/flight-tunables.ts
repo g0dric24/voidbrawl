@@ -24,6 +24,8 @@ const RANGES: Record< FlightKey, Omit< NumberTunable, 'value' > > = {
     boostDrain: { min: 0.05, max: 2, step: 0.01 },
     boostRegen: { min: 0.02, max: 2, step: 0.01 },
     restitution: { min: 0, max: 1, step: 0.01 },
+    dashSpeed: { min: 0, max: 150, step: 1 },
+    dashCooldown: { min: 0, max: 10, step: 0.1 },
 };
 
 export const FLIGHT_KEYS = Object.keys( RANGES ) as FlightKey[];

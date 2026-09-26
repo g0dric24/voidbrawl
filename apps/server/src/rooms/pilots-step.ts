@@ -19,6 +19,7 @@ import { markDead, revive } from './vitals-ops.js';
 export interface PilotEvents {
     launch( bolt: BoltLaunch, damage: number ): void;
     killed( victimId: string, killerId: string, cause: DeathCause ): void;
+    aim( id: string, held: boolean, dt: number ): void;
 }
 
 export type PilotMode = 'frozen' | 'fly' | 'fight';
@@ -51,8 +52,8 @@ function stepAlive( id: string, p: PlayerState, q: InputQueue | undefined, step:
     stepPilot( p, fight ? input : { ...input, fire: false }, ship, step.arena, step.dt );
     p.lastProcessedInput = input.seq;
     if ( ! fight ) return;
+    step.events.aim( id, input.lock === true, step.dt );
     if ( p.shot ) {
-        p.protect = 0;
         const bolt = launchBolt( p, ship.tuning.hullRadius, ship.gun, id, p.team as TeamId, step.now );
         step.events.launch( bolt, ship.gun.damage );
     }

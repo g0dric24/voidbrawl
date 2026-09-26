@@ -1,6 +1,7 @@
 import { canStart, MODES, PHASE, START_MESSAGE } from '@voidbrawl/shared';
 import { useState } from 'react';
 import { Link } from 'react-router';
+import { ClassPicker } from './class-picker';
 import { sendToRoom } from './send';
 import { TeamColumn } from './team-column';
 import { useMatch } from './use-match';
@@ -15,6 +16,7 @@ export function LobbyPanel() {
         cyan: match.pilots.filter( ( p ) => p.team === 1 ).length,
     };
     const ready = canStart( counts );
+    const you = match.pilots.find( ( p ) => p.id === match.youId );
 
     const copyInvite = () => {
         void navigator.clipboard?.writeText( window.location.href ).then( () => setCopied( true ) );
@@ -38,6 +40,7 @@ export function LobbyPanel() {
                 <TeamColumn team={ 0 } match={ match } />
                 <TeamColumn team={ 1 } match={ match } />
             </div>
+            { you ? <ClassPicker current={ you.classId } next={ you.nextClassId } title="Your ship" /> : null }
             <span className="text-[11px] tracking-[0.18em] text-readout-dim normal-case">
                 First to { MODES[ match.mode ].target } kills · 10 minutes · click the arena to fly while you wait
             </span>

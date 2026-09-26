@@ -31,7 +31,9 @@ function teamColor( room: Room< MatchState >, id: string ): string {
 function killText( room: Room< MatchState >, m: KillMessage ): string {
     const victim = nameOf( room, m.victimId );
     if ( m.cause === 'bolt' ) return `${ nameOf( room, m.killerId ) } destroyed ${ victim }`;
-    return m.cause === 'crash' ? `${ victim } crashed` : `${ victim } self-destructed`;
+    if ( m.cause === 'seeker' ) return `${ nameOf( room, m.killerId ) } hit ${ victim } with a seeker`;
+    if ( m.cause === 'mine' ) return `${ victim } hit ${ nameOf( room, m.killerId ) }'s mine`;
+    return `${ victim } crashed`;
 }
 
 export function attachCombat( room: Room< MatchState >, entityOf: ( sessionId: string ) => Entity | undefined ) {

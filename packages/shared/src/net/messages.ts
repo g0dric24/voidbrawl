@@ -4,7 +4,6 @@ export const MATCH_ROOM = 'match';
 
 export const INPUT_MESSAGE = 'input';
 export const SET_CLASS_MESSAGE = 'class';
-export const SELF_DESTRUCT_MESSAGE = 'selfDestruct';
 export const HIT_MESSAGE = 'hit';
 export const KILL_MESSAGE = 'kill';
 export const LOBBY_ROOM = 'lobby';
@@ -12,6 +11,7 @@ export const PICK_TEAM_MESSAGE = 'pickTeam';
 export const MOVE_PLAYER_MESSAGE = 'movePlayer';
 export const START_MESSAGE = 'start';
 export const PLAY_AGAIN_MESSAGE = 'playAgain';
+export const DROP_MINE_MESSAGE = 'dropMine';
 
 export interface NetInput extends FlightInput {
     seq: number;
@@ -42,7 +42,7 @@ export interface HitMessage {
     hull: number;
 }
 
-export type DeathCause = 'bolt' | 'crash' | 'self';
+export type DeathCause = 'bolt' | 'seeker' | 'mine' | 'crash';
 
 export interface KillMessage {
     victimId: string;

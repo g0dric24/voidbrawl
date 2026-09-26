@@ -12,13 +12,13 @@ import {
     type NetInput,
     type PlayerState,
     RESPAWN_DELAY,
-    SELF_DESTRUCT_MESSAGE,
     SET_CLASS_MESSAGE,
     SHIP_CLASSES,
     SPAWN_PROTECTION,
 } from '@voidbrawl/shared';
 import type { MatchRoom } from './match-room.js';
 import { goLive, openMatch, playerOf, startTestServer, tick } from './test-server.test.js';
+import { markDead } from './vitals-ops.js';
 
 const ARENA = materializeArena( DEFAULT_ARENA );
 const LANE_Z = ARENA.bases[ 0 ].center.z;
@@ -114,7 +114,7 @@ describe( 'MatchRoom combat', () => {
         assert.equal( mate.shield, SHIP_CLASSES.fighter.shield );
     } );
 
-    test( 'spawn protection absorbs hits and ends when the protected ship fires', async () => {
+    test( 'spawn protection absorbs hits and stays on while the protected ship fires', async () => {
         const { room, connections } = await openMatch( colyseus, 2 );
         goLive( room );
         const [ a, b ] = connections;
@@ -128,22 +128,21 @@ describe( 'MatchRoom combat', () => {
         await shoot( room, a, 1, 20 );
         tick( room, 30 );
         assert.equal( victim.shield, SHIP_CLASSES.fighter.shield );
+        const left = victim.protect;
         await shoot( room, b, 1, 1 );
         tick( room, 1 );
-        assert.equal( victim.protect, 0 );
+        assert.ok( victim.protect > left - 0.05 );
     } );
 
-    test( 'self-destruct kills, and a pending class change applies at the respawn', async () => {
+    test( 'a pending class change applies at the respawn', async () => {
         const { room, connections } = await openMatch( colyseus, 1 );
         goLive( room );
         const [ a ] = connections;
         a.onMessage( KILL_MESSAGE, () => {} );
         a.send( SET_CLASS_MESSAGE, 'heavy' );
         await room.waitForMessage( SET_CLASS_MESSAGE );
-        a.send( SELF_DESTRUCT_MESSAGE );
-        await room.waitForMessage( SELF_DESTRUCT_MESSAGE );
         const p = playerOf( room, a.sessionId );
-        assert.equal( p.dead, true );
+        markDead( p );
         tick( room, Math.ceil( RESPAWN_DELAY * 60 ) + 1 );
         assert.equal( p.dead, false );
         assert.equal( p.classId, 'heavy' );

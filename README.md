@@ -16,7 +16,8 @@ pnpm dev      # shared (tsc-watch) · server (:2567) · client (:5173)
 
 - **http://localhost:5173/lobby** — create a 1v1 / 2v2 / 4v4 room or join one. Share the room link (or open
   it in a second window, or on another machine using the address the server prints).
-- **http://localhost:5173/sandbox** — fly alone, no server needed.
+- **http://localhost:5173/sandbox** — debug only: fly alone, no server needed. Not linked from the game, and a
+  production build redirects it to the home page.
 
 ## Docs
 

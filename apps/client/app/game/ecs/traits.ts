@@ -19,6 +19,11 @@ export const Vital = trait( {
     nextClassId: '',
     kills: 0,
     deaths: 0,
+    seekers: 0,
+    mines: 0,
+    seekerCooldown: 0,
+    lockId: '',
+    lockProgress: 0,
 } );
 
 export const LocalPlayer = trait();

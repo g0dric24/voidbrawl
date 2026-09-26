@@ -33,10 +33,11 @@ export interface BotBrain {
     clock: number;
     aimTimer: number;
     aimError: Vec3;
+    usePause: number;
 }
 
 export function createBrain(): BotBrain {
-    return { seq: 0, clock: Math.random() * 10, aimTimer: 0, aimError: vec3() };
+    return { seq: 0, clock: Math.random() * 10, aimTimer: 0, aimError: vec3(), usePause: 0 };
 }
 
 export function isBot( sessionId: string ): boolean {

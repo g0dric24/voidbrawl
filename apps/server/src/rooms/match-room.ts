@@ -8,6 +8,7 @@ import {
     createFixedStep,
     DEFAULT_ARENA,
     type DeathCause,
+    DROP_MINE_MESSAGE,
     FIXED_DT,
     HIT_MESSAGE,
     INPUT_MESSAGE,
@@ -26,21 +27,25 @@ import {
     PLAY_AGAIN_MESSAGE,
     PlayerState,
     type RoomMeta,
-    SELF_DESTRUCT_MESSAGE,
     SET_CLASS_MESSAGE,
     SHIP_CLASSES,
+    SHIP_ORDER,
+    type ShipClassId,
     START_MESSAGE,
     type TeamId,
 } from '@voidbrawl/shared';
 import { isBot } from '../bots/bot-pilot.js';
 import { BotRoster } from '../bots/bot-roster.js';
 import { addBolt, type BoltBook, createBoltBook, stepBolts } from './bolts-step.js';
+import type { DamageEvents } from './damage.js';
 import { createInputQueue, enqueue, type InputQueue } from './input-queue.js';
 import { awardDeath, endIfSideEmpty, returnToLobby, sendToBase, startCountdown, stepClock } from './match-flow.js';
+import { stepMines, stepMissiles } from './ordnance-step.js';
 import { type PilotMode, stepPilots } from './pilots-step.js';
 import { registerTeamMessages } from './team-messages.js';
 import { teamCounts } from './teams.js';
-import { fillVitals, markDead } from './vitals-ops.js';
+import { createUtilityBook, dropMine, resetUtilities, stepAim, type UtilityBook } from './utilities-step.js';
+import { fillVitals } from './vitals-ops.js';
 
 const RECONNECT_SECONDS = 20;
 const PATCH_MS = 50;
@@ -57,6 +62,11 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
     private arena!: Arena;
     private bolts: BoltBook = createBoltBook();
     private bots = new BotRoster();
+    private utilities: UtilityBook = createUtilityBook();
+    private damage: DamageEvents = {
+        hit: ( msg ) => this.broadcast( HIT_MESSAGE, msg ),
+        killed: ( victimId, killerId, cause ) => this.announceKill( victimId, killerId, cause ),
+    };
 
     onCreate( options?: JoinOptions ): void {
         this.state = new MatchState();
@@ -72,24 +82,20 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
             if ( q ) enqueue( q, msg?.inputs );
         } );
         this.onMessage( SET_CLASS_MESSAGE, ( client, classId: unknown ) => {
-            const p = this.state.players.get( client.sessionId );
-            if ( p && isShipClassId( classId ) ) p.nextClassId = classId === p.classId ? '' : classId;
+            if ( isShipClassId( classId ) ) this.setClass( client.sessionId, classId );
         } );
-        this.onMessage( SELF_DESTRUCT_MESSAGE, ( client ) => {
-            const p = this.state.players.get( client.sessionId );
-            if ( ! p || p.dead || this.state.phase !== PHASE.live ) return;
-            markDead( p );
-            this.announceKill( client.sessionId, '', 'self' );
-        } );
+        this.onMessage( DROP_MINE_MESSAGE, ( client ) => this.dropMine( client.sessionId ) );
         this.onMessage( START_MESSAGE, ( client ) => {
             const ready = canStart( teamCounts( this.state.players.values() ) );
             if ( ! this.isHost( client ) || this.state.phase !== PHASE.lobby || ! ready ) return;
             startCountdown( this.state, this.arena );
+            resetUtilities( this.state );
             this.refreshMeta();
         } );
         this.onMessage( PLAY_AGAIN_MESSAGE, ( client ) => {
             if ( ! this.isHost( client ) || this.state.phase !== PHASE.results ) return;
             returnToLobby( this.state, this.arena );
+            resetUtilities( this.state );
             this.refreshMeta();
         } );
         registerTeamMessages(
@@ -108,15 +114,32 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
         this.state.mode = 'duel';
         this.maxClients = MODES.duel.teamSize * 2;
         const bot = this.bots.add( this.state, this.queues, BOT_NAME, 1 );
+        bot.classId = SHIP_ORDER[ Math.floor( Math.random() * SHIP_ORDER.length ) ];
         sendToBase( this.state, bot, this.arena );
         fillVitals( bot );
         void this.setPrivate( true );
     }
 
+    setClass( sessionId: string, classId: ShipClassId ): void {
+        const p = this.state.players.get( sessionId );
+        if ( ! p ) return;
+        if ( this.state.phase !== PHASE.lobby ) {
+            p.nextClassId = classId === p.classId ? '' : classId;
+            return;
+        }
+        p.classId = classId;
+        p.nextClassId = '';
+        fillVitals( p );
+    }
+
+    dropMine( sessionId: string ): void {
+        if ( this.state.phase === PHASE.live ) dropMine( this.state, this.utilities, sessionId );
+    }
+
     fixedStep( dt: number ): void {
         const phaseBefore = this.state.phase;
         const now = this.state.time + dt;
-        this.bots.feed( this.state, this.queues, this.arena, dt );
+        this.bots.feed( this.state, this.queues, this.arena, dt, ( id ) => this.dropMine( id ) );
         stepPilots( this.state.players, this.queues, {
             arena: this.arena,
             now,
@@ -128,14 +151,16 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
                     const life = owner ? SHIP_CLASSES[ classOf( owner ) ].gun.boltLife : 0;
                     addBolt( this.state, this.bolts, bolt, life, damage );
                 },
-                killed: ( victimId, killerId, cause ) => this.announceKill( victimId, killerId, cause ),
+                killed: this.damage.killed,
+                aim: ( id, held, step ) => stepAim( this.state, this.utilities, id, held, step ),
             },
         } );
         this.state.time = now;
-        stepBolts( this.state, this.bolts, this.arena, now, dt, {
-            hit: ( msg ) => this.broadcast( HIT_MESSAGE, msg ),
-            killed: ( victimId, killerId ) => this.announceKill( victimId, killerId, 'bolt' ),
-        } );
+        stepBolts( this.state, this.bolts, this.arena, now, dt, this.damage );
+        if ( this.state.phase === PHASE.live ) {
+            stepMissiles( this.state, this.arena, dt, this.damage );
+            stepMines( this.state, dt, this.damage );
+        }
         stepClock( this.state, dt );
         if ( this.state.phase !== phaseBefore ) this.refreshMeta();
     }

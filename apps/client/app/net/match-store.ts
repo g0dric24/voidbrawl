@@ -6,6 +6,7 @@ export interface PilotRow {
     name: string;
     team: TeamId;
     classId: ShipClassId;
+    nextClassId: ShipClassId | '';
     kills: number;
     deaths: number;
 }
@@ -68,6 +69,7 @@ function read( room: Room< MatchState > ): MatchView {
             name: p.name,
             team: p.team as TeamId,
             classId: p.classId,
+            nextClassId: p.nextClassId,
             kills: p.kills,
             deaths: p.deaths,
         } );
