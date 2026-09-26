@@ -11,6 +11,7 @@ import {
 import { useWorld } from 'koota/react';
 import { useMemo } from 'react';
 import type { PerspectiveCamera } from 'three';
+import { localStepCues } from '../../audio/cue-audio';
 import { cameraScale, updateFollowCamera } from '../../game/camera/follow-camera';
 import { LocalPlayer, Pilot, Prev, Sim, Vital } from '../../game/ecs/traits';
 import { stepParticles } from '../../game/fx/fx-store';
@@ -50,7 +51,9 @@ export function PlayLoop( { arena, predictor }: { arena: Arena; predictor: Predi
                 const net = { ...input, seq: predictor.nextSeq() };
                 predictor.record( net );
                 capturePrev( sim, prev );
+                const dashing = net.dash !== 0 && ship.tuning.dashSpeed > 0 && sim.dashCooldown <= dt;
                 stepPilot( sim, net, ship, arena, dt );
+                localStepCues( net, sim, dashing );
                 if ( ! sim.shot ) return;
                 const launch = launchBolt( sim, ship.tuning.hullRadius, ship.gun, 'local', pilot.team, 0 );
                 addTracer( launch, ship.gun.boltLife, TEAM_COLORS[ pilot.team ] );

@@ -9,6 +9,7 @@ import {
     type TeamId,
 } from '@voidbrawl/shared';
 import type { Entity, World } from 'koota';
+import { bindMatchAudio } from '../audio/match-audio';
 import { Interp, LocalPlayer, NetId, Pilot, Prev, Remote, RemotePose, Sim, Vital } from '../game/ecs/traits';
 import { capturePrev } from '../game/pose-from-sim';
 import { pushSnapshot } from '../game/remote-interp';
@@ -128,6 +129,7 @@ export function attachMatch( room: Room< MatchState >, world: World, predictor: 
     const offCombat = attachCombat( room, ( sid ) => byId.get( sid ) );
     const offStore = attachMatchStore( room );
     const offRelease = releaseOnResults( room );
+    const offAudio = bindMatchAudio( room );
 
     // setInterval: wall clock, not useFrame — sends must hold 30 Hz when a backgrounded tab throttles rAF.
     const timer = setInterval( () => {
@@ -142,6 +144,7 @@ export function attachMatch( room: Room< MatchState >, world: World, predictor: 
         offCombat();
         offStore();
         offRelease();
+        offAudio();
         for ( const off of offs.values() ) off();
         offs.clear();
         for ( const e of byId.values() ) e.destroy();

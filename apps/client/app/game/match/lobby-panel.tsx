@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { ClassPicker } from './class-picker';
 import { sendToRoom } from './send';
+import { SoundControl } from './sound-control';
 import { TeamColumn } from './team-column';
 import { useMatch } from './use-match';
 
@@ -41,6 +42,7 @@ export function LobbyPanel() {
                 <TeamColumn team={ 1 } match={ match } />
             </div>
             { you ? <ClassPicker current={ you.classId } next={ you.nextClassId } title="Your ship" /> : null }
+            <SoundControl />
             <span className="text-[11px] tracking-[0.18em] text-readout-dim normal-case">
                 First to { MODES[ match.mode ].target } kills · 10 minutes · click the arena to fly while you wait
             </span>

@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { type ArenaDescriptor, type MatchState, materializeArena } from '@voidbrawl/shared';
 import { WorldProvider } from 'koota/react';
 import { useMemo } from 'react';
+import { GameAudio } from '../../audio/game-audio';
 import { world } from '../../game/ecs/world';
 import { PlayHud } from '../../game/hud/play-hud';
 import { ArenaScene } from '../../game/scene/arena-scene';
@@ -25,6 +26,7 @@ export function PlayCanvas( { room, descriptor }: { room: Room< MatchState >; de
                 <MatchLink room={ room } predictor={ predictor } arena={ arena } />
                 <PlayControls room={ room } />
                 <PlayLoop arena={ arena } predictor={ predictor } />
+                <GameAudio />
                 <ArenaScene arena={ arena }>
                     <RemoteShips />
                     <MissileField />
