@@ -11,18 +11,27 @@ import {
 import { useWorld } from 'koota/react';
 import { useMemo } from 'react';
 import type { PerspectiveCamera } from 'three';
-import { cameraScale, updateFollowCamera } from '../../game/camera/follow-camera';
+import { localStepCues } from '../../audio/cue-audio';
+import { cameraScale, updateFollowCamera, watchKiller } from '../../game/camera/follow-camera';
 import { LocalPlayer, Pilot, Prev, Sim, Vital } from '../../game/ecs/traits';
-import { stepParticles } from '../../game/fx/fx-store';
+import { dashFx } from '../../game/fx/dash-fx';
+import { lastDeath, stepParticles } from '../../game/fx/fx-store';
 import { readFlightInput } from '../../game/input/flight-input';
 import { addTracer, stepTracers } from '../../game/local-tracers';
 import { capturePrev, writeViewPose } from '../../game/pose-from-sim';
 import { remoteInterpSystem } from '../../game/remote-interp';
+import { remotePosition } from '../../game/remote-position';
 import { TEAM_COLORS } from '../../game/team-colors';
 import { isFrozen, isLive } from '../../net/match-store';
 import type { Predictor } from '../../net/prediction';
 
 const input = idleInput();
+
+function aimCamera( camera: PerspectiveCamera, dead: boolean, hitRadius: number, radius: number, delta: number ) {
+    const killer = dead ? remotePosition( lastDeath.killerId ) : null;
+    if ( killer ) watchKiller( camera, killer, delta );
+    else updateFollowCamera( camera, delta, radius, cameraScale( hitRadius ) );
+}
 
 export function PlayLoop( { arena, predictor }: { arena: Arena; predictor: Predictor } ) {
     const world = useWorld();
@@ -38,7 +47,8 @@ export function PlayLoop( { arena, predictor }: { arena: Arena; predictor: Predi
         const pilot = entity?.get( Pilot );
         if ( ! sim || ! prev || ! pilot ) return;
         const ship = SHIP_CLASSES[ pilot.classId ];
-        const held = entity?.get( Vital )?.dead === true || isFrozen();
+        const dead = entity?.get( Vital )?.dead === true;
+        const held = dead || isFrozen();
         let alpha = 1;
         if ( held ) {
             advance( delta, () => {} );
@@ -50,14 +60,17 @@ export function PlayLoop( { arena, predictor }: { arena: Arena; predictor: Predi
                 const net = { ...input, seq: predictor.nextSeq() };
                 predictor.record( net );
                 capturePrev( sim, prev );
+                const dashing = net.dash !== 0 && ship.tuning.dashSpeed > 0 && sim.dashCooldown <= dt;
                 stepPilot( sim, net, ship, arena, dt );
+                localStepCues( net, sim, dashing );
+                if ( dashing ) dashFx( sim, net.dash, TEAM_COLORS[ pilot.team ] );
                 if ( ! sim.shot ) return;
                 const launch = launchBolt( sim, ship.tuning.hullRadius, ship.gun, 'local', pilot.team, 0 );
                 addTracer( launch, ship.gun.boltLife, TEAM_COLORS[ pilot.team ] );
             } );
         }
         writeViewPose( prev, sim, alpha, ship.tuning, arena, delta );
-        updateFollowCamera( state.camera as PerspectiveCamera, delta, arena.radius, cameraScale( ship.hitRadius ) );
+        aimCamera( state.camera as PerspectiveCamera, dead, ship.hitRadius, arena.radius, delta );
     }, -2 );
 
     return null;

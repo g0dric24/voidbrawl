@@ -293,3 +293,23 @@ K does nothing. It was the way to change ship at once (ADR-006); now a class cha
 **Rejected:** pickup pads (map control decides fights, not aim); 3 seekers for every class at 45 damage (135 of
 a Fighter's 150 with no aiming); instant seeker lock (fire-and-forget); client-side seekers (a client could steer them); line-of-sight lock breaking
 (rocks already stop seekers physically, and a LOS test every tick costs a rock sweep per missile).
+
+## ADR-012 — Audio and feedback live outside React, keyed off room events
+
+- **Status:** Accepted (client) · **Date:** 2026-09-26 · **Issue:** #11
+
+**Audio engine ported from SLUR** (`apps/client/app/audio/`): one `AudioContext`, five ducking buses, a
+limiter, voice rotation, saved mute and volume. New here: `playAt()` for 3D one-shots through a `PannerNode`;
+the `THREE.AudioListener` on the camera moves the Web Audio listener each frame. Room-driven sounds bind in
+`bindMatchAudio()` next to the other room listeners in `attachMatch` (Colyseus `listen` / `onAdd` / `onRemove`
+/ `onMessage`), so they live and die with the room, not with a component. Per-frame cues (engine hum, lock
+blips, threat beeps) run in one `useFrame` in `GameAudio`. Mine ticks fire from the same blink that draws them.
+
+**Feedback state is module data** (`feedback`, `lastDeath` in `fx-store`), written by room messages and read by
+`addEffect` / `addAfterEffect` painters, like every other HUD readout. The killer camera keeps the camera
+where you died and slerps its rotation toward the killer's interpolated pose; it reuses no server data beyond
+the kill message.
+
+**Rejected:** a React audio provider (ties the context to a mount); HRTF panning (costlier, and equal-power is
+enough to tell left from right and near from far); a free-flying spectator camera (moving the camera to the
+killer's ship reveals more of the map than facing them from where you fell).

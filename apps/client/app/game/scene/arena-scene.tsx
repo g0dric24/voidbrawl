@@ -10,6 +10,7 @@ import { LocalShipView } from './local-ship-view';
 import { NebulaSky } from './nebula-sky';
 import { SceneEffects } from './scene-effects';
 import { SceneLighting } from './scene-lighting';
+import { ShockwaveField } from './shockwave-field';
 import { SpaceDust } from './space-dust';
 
 export function ArenaScene( { arena, children }: { arena: Arena; children?: ReactNode } ) {
@@ -27,6 +28,7 @@ export function ArenaScene( { arena, children }: { arena: Arena; children?: Reac
             { children }
             <BoltField />
             <FxField />
+            <ShockwaveField />
             <AimReticle />
             <SceneEffects />
         </Fragment>

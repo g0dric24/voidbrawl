@@ -18,6 +18,8 @@ const PLAY: readonly [ string, string ][] = [
     [ 'Right hold / release', 'lock / fire seeker' ],
     [ 'F', 'drop mine' ],
     [ 'A A / D D', 'dash (Interceptor)' ],
+    [ 'Tab', 'scoreboard' ],
+    [ 'M', 'mute' ],
 ];
 
 const TAIL: readonly [ string, string ][] = [

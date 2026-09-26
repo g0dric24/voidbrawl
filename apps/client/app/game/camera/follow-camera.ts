@@ -42,3 +42,14 @@ export function updateFollowCamera(
         camera.updateProjectionMatrix();
     }
 }
+
+const KILLER_TURN = 3;
+const _look = new THREE.Matrix4();
+const _q = new THREE.Quaternion();
+
+export function watchKiller( camera: THREE.PerspectiveCamera, killer: THREE.Vector3, delta: number ): void {
+    sceneCamera.current = camera;
+    _look.lookAt( camera.position, killer, camera.up );
+    _q.setFromRotationMatrix( _look );
+    camera.quaternion.slerp( _q, 1 - Math.exp( -KILLER_TURN * delta ) );
+}

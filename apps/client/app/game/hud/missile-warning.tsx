@@ -1,32 +1,6 @@
-import type { Room } from '@colyseus/sdk';
 import { addEffect } from '@react-three/fiber';
-import type { MatchState } from '@voidbrawl/shared';
 import { useEffect, useRef } from 'react';
-import { session } from '../../net/session';
-
-type Threat = '' | 'Locking on you' | 'Missile lock' | 'Missile incoming';
-
-function incoming( room: Room< MatchState > ): boolean {
-    for ( const m of room.state.missiles.values() ) if ( m.targetId === room.sessionId ) return true;
-    return false;
-}
-
-function lockOn( room: Room< MatchState > ): number {
-    let best = 0;
-    room.state.players.forEach( ( p ) => {
-        if ( p.lockId === room.sessionId && p.lockProgress > best ) best = p.lockProgress;
-    } );
-    return best;
-}
-
-function threat(): Threat {
-    const room = session.room;
-    if ( ! room?.state?.missiles ) return '';
-    if ( incoming( room ) ) return 'Missile incoming';
-    const lock = lockOn( room );
-    if ( lock >= 1 ) return 'Missile lock';
-    return lock > 0 ? 'Locking on you' : '';
-}
+import { THREAT_TEXT, threatLevel } from '../threat';
 
 export function MissileWarning() {
     const ref = useRef< HTMLSpanElement >( null );
@@ -37,7 +11,7 @@ export function MissileWarning() {
             addEffect( () => {
                 const el = ref.current;
                 if ( ! el ) return;
-                const text = threat();
+                const text = THREAT_TEXT[ threatLevel() ];
                 if ( el.textContent !== text ) el.textContent = text;
             } ),
         [],

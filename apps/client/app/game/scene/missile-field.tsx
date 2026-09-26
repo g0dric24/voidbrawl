@@ -3,7 +3,7 @@ import type { TeamId } from '@voidbrawl/shared';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { session } from '../../net/session';
-import { explode } from '../fx/fx-store';
+import { blast, smoke } from '../fx/fx-store';
 import { TEAM_COLORS } from '../team-colors';
 import { flushInstances, glowInstances } from './instanced';
 import { useDisposeInstanced } from './use-dispose-instanced';
@@ -11,6 +11,7 @@ import { useDisposeInstanced } from './use-dispose-instanced';
 const MAX_MISSILES = 64;
 const MAX_LEAD = 0.12;
 const GLOW = 5;
+const BURST_RADIUS = 14;
 
 interface Track {
     x: number;
@@ -53,11 +54,12 @@ function draw( mesh: THREE.InstancedMesh ): void {
     for ( const [ id, t ] of tracks ) {
         const at = where( t, now );
         if ( ! live.has( id ) ) {
-            explode( at.clone(), TEAM_COLORS[ t.team ] );
+            blast( at, TEAM_COLORS[ t.team ], BURST_RADIUS );
             tracks.delete( id );
             continue;
         }
         if ( n >= MAX_MISSILES ) continue;
+        smoke( at );
         _o.position.copy( at );
         _o.quaternion.setFromUnitVectors( _z, _v.set( t.vx, t.vy, t.vz ).normalize() );
         _o.updateMatrix();

@@ -1,6 +1,6 @@
 import { type Arena, BOLT_RADIUS, type BoltLaunch, boltPosition, sweepBolt } from '@voidbrawl/shared';
 import * as THREE from 'three';
-import { spark } from './fx/fx-store';
+import { debris, spark } from './fx/fx-store';
 
 export interface Tracer {
     launch: BoltLaunch;
@@ -28,6 +28,7 @@ export function stepTracers( arena: Arena, dt: number ): void {
         if ( hit ) {
             const p = boltPosition( t.launch, from + ( t.age - from ) * hit.t, _p );
             spark( _at.set( p.x, p.y, p.z ), t.color );
+            if ( hit.kind === 'rock' ) debris( _at );
             tracers.splice( i, 1 );
         } else if ( t.age >= t.life ) tracers.splice( i, 1 );
     }

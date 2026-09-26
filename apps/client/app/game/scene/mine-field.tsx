@@ -2,9 +2,11 @@ import { useFrame } from '@react-three/fiber';
 import { MINE, type TeamId } from '@voidbrawl/shared';
 import { useMemo } from 'react';
 import * as THREE from 'three';
+import { playSfxAt } from '../../audio/sfx-map';
 import { session } from '../../net/session';
-import { explode } from '../fx/fx-store';
+import { blast } from '../fx/fx-store';
 import { TEAM_COLORS } from '../team-colors';
+import { viewPose } from '../view-pose';
 import { flushInstances, glowInstances } from './instanced';
 import { useDisposeInstanced } from './use-dispose-instanced';
 
@@ -15,6 +17,7 @@ const FLASH_SCALE = 1.6;
 const FLASH_SECONDS = 0.07;
 const SLOWEST_TICK = 0.9;
 const FASTEST_TICK = 0.1;
+const TICK_REACH = 160;
 
 interface Seen {
     x: number;
@@ -49,6 +52,9 @@ function flashing( s: Seen, now: number ): boolean {
     if ( age >= s.nextTick ) {
         s.flashEnd = age + FLASH_SECONDS;
         s.nextTick = age + tickGap( age );
+        if ( viewPose.position.distanceToSquared( _at.set( s.x, s.y, s.z ) ) < TICK_REACH * TICK_REACH ) {
+            playSfxAt( 'tick', s );
+        }
     }
     return age < s.flashEnd;
 }
@@ -74,7 +80,7 @@ function draw( mesh: THREE.InstancedMesh ): void {
     } );
     for ( const [ id, s ] of seen ) {
         if ( live.has( id ) ) continue;
-        explode( _at.set( s.x, s.y, s.z ), TEAM_COLORS[ s.team ] );
+        blast( _at.set( s.x, s.y, s.z ), TEAM_COLORS[ s.team ], MINE.blast );
         seen.delete( id );
     }
     flushInstances( mesh, n );

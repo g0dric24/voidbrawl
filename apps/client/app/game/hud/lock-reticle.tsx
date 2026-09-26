@@ -1,26 +1,21 @@
 import { addAfterEffect } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
-import type * as THREE from 'three';
-import { LocalPlayer, NetId, Remote, RemotePose, Vital } from '../ecs/traits';
+import { activeArena } from '../../net/active-arena';
+import { LocalPlayer, Vital } from '../ecs/traits';
 import { world } from '../ecs/world';
+import { rockBetween } from '../line-of-sight';
+import { remotePosition } from '../remote-position';
 import { sceneCamera } from '../scene-camera';
 import { type ScreenPoint, toScreen } from './marker-math';
 
 const _sp: ScreenPoint = { x: 0, y: 0, onScreen: false, angle: 0 };
 
-function poseOf( sessionId: string ): THREE.Vector3 | null {
-    let found: THREE.Vector3 | null = null;
-    world.query( Remote, NetId, RemotePose ).readEach( ( [ net, pose ] ) => {
-        if ( net.sessionId === sessionId && pose.ready ) found = pose.position;
-    } );
-    return found;
-}
-
 function paint( el: HTMLDivElement ): void {
     const vital = world.queryFirst( LocalPlayer, Vital )?.get( Vital );
     const camera = sceneCamera.current;
-    const at = vital?.lockId ? poseOf( vital.lockId ) : null;
-    if ( ! vital || ! camera || ! at ) {
+    const at = vital ? remotePosition( vital.lockId ) : null;
+    const arena = activeArena();
+    if ( ! vital || ! camera || ! at || ( arena && rockBetween( camera.position, at, arena ) ) ) {
         el.dataset.state = 'hidden';
         return;
     }

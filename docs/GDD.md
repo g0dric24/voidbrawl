@@ -150,8 +150,9 @@ a fill.
 
 ### 7.4 Death and respawn
 
-- Death → explosion → **3 s** wait (the camera holds where you died; spectating your killer is an S6 polish
-  item) → spawn at a free point of your team base.
+- Death → explosion → **3 s** wait → spawn at a free point of your team base. During the wait the camera
+  stays where you died and **turns to face your killer**; the screen reads "Destroyed by X · guns / seeker /
+  mine" or "You crashed" (built in S6).
 - **2 s spawn protection:** invulnerable for the full 2 s, **even while you fire** (client, 2026-09-26).
 - **Ship class:** pick it in the Esc menu at any time; the new class applies at your **next spawn**, never
   mid-life, so switching can't be used to heal.
@@ -231,17 +232,41 @@ widest collision sphere.
   No 3D rings around ships (client).
 - **Readability lesson from research:** Everspace 2 chose a "colorful universe" with bright ships; our dark
   graphite ships on a dark scene were near-invisible at range. Keep the world dark and the ships bright.
-- Audio carried over: Kenney CC0 SFX, synth engine hum, synthwave music.
+- **Audio (built in S6)** — Kenney CC0 SFX, a synth engine hum and two music tracks, on SLUR's Web Audio engine
+  (threat › combat › UI › engine › music buses; louder buses duck quieter ones).
+  - Other pilots' shots, hits, deaths, seeker launches and blasts, and mine blasts play **in 3D** from where they
+    happen, so you hear an enemy behind you. Other pilots' gunfire and hits are heard only **within 500u**;
+    deaths and blasts carry further.
+  - Your own gun, boost, dash, hits taken and hit confirms play flat. The engine hum rises with speed.
+  - Seeker: your lock blips quicken as the ring fills and chime on full lock. The target hears a warning that
+    quickens from *locking* to *locked* to *incoming*. Mines tick with their blink within 160u.
+  - Countdown blips, GO, respawn, a win or lose sting. Calm music in the lobby and results, synthwave in the match.
+  - **M** mutes; a volume slider sits in the room lobby and the Esc menu. Both are saved on the device.
 
 ## 11. HUD
 
 Hull + shield bars · boost meter · gun heat · seekers and mines left · team score + target + timer · kill feed ·
-off-screen enemy indicators · hit markers · boundary warning · damage direction indicator.
+off-screen enemy indicators · hit markers · boundary warning.
 
-**Ship markers (built in S3):** every other ship gets a screen-space bracket in its team colour with its name
-and distance (teammates smaller and dimmer). Enemies off screen show as an arrow at the screen edge. Enemies
-on screen get the lead marker (§7.2). **You never see another player's health** — only your own hull and
-shield (client).
+**Built in S6:** hold **Tab** for a per-team scoreboard (ship, kills, deaths) · a red **damage-direction** arc at
+the screen edge points at whoever just hit you · **+1 KILL** under the crosshair · the death screen names your
+killer and weapon.
+
+**VFX (S6):** expanding shockwave rings on ship deaths, mine blasts and seeker bursts · seeker smoke trails ·
+one neutral white spark for every hit, the same on shield or hull · grey debris when bolts hit rocks · a burst
+behind an Interceptor dash · bigger ship explosions.
+
+**Ship markers:** every other ship gets a screen-space bracket in its team colour with its name and class
+(teammates smaller and dimmer). Enemies on screen get the lead marker (§7.2). **What you may know about
+enemies (client, 2026-09-26):**
+- An enemy's marker shows **only when no rock blocks your view** of it; the seeker lock ring follows the
+  same rule.
+- The off-screen edge arrow shows only for enemies **within 400u**, or one that **hit you in the last 3 s**.
+- An enemy's distance shows only within 400u; beyond, the label is the class alone.
+- Only your own base ring is drawn.
+- **You never see another player's health**: no health bars, and a hit spark looks the same whether it hit
+  shield or hull. You see only your own hull and shield.
+- Teammates are always marked, with distance.
 
 ## 12. Hosting
 
