@@ -10,7 +10,7 @@ import {
 import type { Entity } from 'koota';
 import * as THREE from 'three';
 import { RemotePose } from '../game/ecs/traits';
-import { explode, feedback, spark } from '../game/fx/fx-store';
+import { explode, feedback, lastDeath, spark } from '../game/fx/fx-store';
 import { clearFeed, pushFeed } from '../game/fx/kill-feed';
 import { dropTracersNear } from '../game/local-tracers';
 import { TEAM_COLORS } from '../game/team-colors';
@@ -19,6 +19,7 @@ import { netBolts } from './bolt-store';
 import { resetClock, sampleServerTime, serverClock } from './server-clock';
 
 const _at = new THREE.Vector3();
+const NEAR_HIT = 16;
 
 function nameOf( room: Room< MatchState >, id: string ): string {
     return room.state.players.get( id )?.name ?? 'Pilot';
@@ -34,6 +35,15 @@ function killText( room: Room< MatchState >, m: KillMessage ): string {
     if ( m.cause === 'seeker' ) return `${ nameOf( room, m.killerId ) } hit ${ victim } with a seeker`;
     if ( m.cause === 'mine' ) return `${ victim } hit ${ nameOf( room, m.killerId ) }'s mine`;
     return `${ victim } crashed`;
+}
+
+function noteDamage( room: Room< MatchState >, m: HitMessage, now: number ): void {
+    feedback.damageAt = now;
+    feedback.damageFromAt = now;
+    _at.set( m.x, m.y, m.z );
+    const shooter = room.state.players.get( m.shooterId );
+    if ( _at.distanceTo( viewPose.position ) < NEAR_HIT && shooter ) _at.set( shooter.x, shooter.y, shooter.z );
+    feedback.damageFrom.copy( _at );
 }
 
 export function attachCombat( room: Room< MatchState >, entityOf: ( sessionId: string ) => Entity | undefined ) {
@@ -81,13 +91,17 @@ export function attachCombat( room: Room< MatchState >, entityOf: ( sessionId: s
             dropTracersNear( m.x, m.y, m.z );
             spark( _at.set( m.x, m.y, m.z ), teamColor( room, m.shooterId ) );
         }
-        if ( m.victimId === room.sessionId ) feedback.damageAt = now;
+        if ( m.victimId === room.sessionId ) noteDamage( room, m, now );
     } );
 
     const offKill = room.onMessage( KILL_MESSAGE, ( m: KillMessage ) => {
         const color = teamColor( room, m.victimId );
-        if ( m.victimId === room.sessionId ) explode( _at.copy( viewPose.position ), color );
-        else {
+        if ( m.killerId === room.sessionId && m.victimId !== room.sessionId ) feedback.killAt = performance.now();
+        if ( m.victimId === room.sessionId ) {
+            lastDeath.killerId = m.killerId;
+            lastDeath.cause = m.cause;
+            explode( _at.copy( viewPose.position ), color );
+        } else {
             const pose = entityOf( m.victimId )?.get( RemotePose );
             if ( pose ) explode( _at.copy( pose.position ), color );
         }

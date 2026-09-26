@@ -55,4 +55,12 @@ export function stepParticles( dt: number ): void {
 export const feedback = {
     hitMarkerAt: -Infinity,
     damageAt: -Infinity,
+    killAt: -Infinity,
+    damageFrom: new THREE.Vector3(),
+    damageFromAt: -Infinity,
+};
+
+export const lastDeath = {
+    killerId: '',
+    cause: '' as string,
 };

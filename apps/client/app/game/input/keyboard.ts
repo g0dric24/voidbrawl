@@ -13,6 +13,7 @@ const GAME_KEYS = new Set( [
     'Space',
     'ShiftLeft',
     'ShiftRight',
+    'Tab',
 ] );
 
 const DOUBLE_TAP_MS = 250;
