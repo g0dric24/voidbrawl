@@ -172,6 +172,25 @@ describe( 'utilities', () => {
         assert.equal( me.kills, 1 );
     } );
 
+    test( 'a mine blows up on its own when the fuse runs out and hits enemies in the blast', async () => {
+        const { room, a, me, foe } = await duel();
+        goLive( room );
+        place( me, HOME.x, HOME.y, HOME.z );
+        place( foe, AWAY.x, AWAY.y, AWAY.z );
+        await send( room, a, DROP_MINE_MESSAGE );
+        const [ mine ] = [ ...room.state.mines.values() ];
+        const gap = ( MINE.trigger + MINE.blast ) / 2 + SHIP_CLASSES.fighter.hitRadius;
+        place( foe, mine.x + gap, mine.y, mine.z );
+        foe.shieldDelay = 99;
+        const full = foe.hull + foe.shield;
+        tick( room, Math.floor( MINE.fuse * 60 ) - 2 );
+        assert.equal( room.state.mines.size, 1 );
+        assert.equal( foe.hull + foe.shield, full );
+        tick( room, 3 );
+        assert.equal( room.state.mines.size, 0 );
+        assert.equal( foe.hull + foe.shield, full - MINE.damage );
+    } );
+
     test( 'mines and seekers are ignored outside a live match', async () => {
         const { room, a } = await duel();
         assert.equal( room.state.phase, PHASE.lobby );

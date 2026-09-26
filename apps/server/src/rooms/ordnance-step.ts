@@ -76,15 +76,10 @@ export function stepMines( state: MatchState, dt: number, events: DamageEvents )
     const ships = shipTargets( state );
     for ( const [ id, mine ] of state.mines ) {
         mine.age += dt;
-        if ( mine.age >= MINE.life ) {
-            state.mines.delete( id );
-            continue;
-        }
-        if ( ! mine.armed ) {
-            if ( mine.age >= MINE.armDelay ) mine.armed = true;
-            continue;
-        }
-        if ( ! ships.some( ( s ) => s.team !== mine.team && reach( mine, s, MINE.trigger ) ) ) continue;
+        if ( ! mine.armed && mine.age >= MINE.armDelay ) mine.armed = true;
+        const timeUp = mine.age >= MINE.fuse;
+        const tripped = mine.armed && ships.some( ( s ) => s.team !== mine.team && reach( mine, s, MINE.trigger ) );
+        if ( ! timeUp && ! tripped ) continue;
         state.mines.delete( id );
         detonate( state, mine, ships, events );
     }

@@ -16,7 +16,7 @@ export const MINE = {
     trigger: 18,
     blast: 26,
     damage: 40,
-    life: 30,
+    fuse: 6,
     max: 3,
     drop: 6,
 } as const;
