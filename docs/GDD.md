@@ -121,9 +121,9 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 - Unlimited ammo, **overheat** meter. Firing builds heat; at max heat the gun locks until it cools.
 - Fires fast projectiles (bolts) straight along the nose. **No aim assist, no lock-on** — bolts go exactly
   where the nose points.
-- **Lead marker (client, 2026-09-25):** a small circle in the enemy's team colour shows where to shoot a
-  moving enemy (Everspace 2 "aim leader", War Thunder arcade "lead marker"). It is a hint only; it never
-  moves a bolt.
+- **No lead marker (client, 2026-09-26).** An S3 hint circle showed where to shoot a moving enemy. It sat
+  ahead of the enemy's nose and gave away where the enemy was heading, so it was removed. Leading a target is
+  now the pilot's own skill. The bot still aims with `leadPoint()` on the server.
 - **Hit sphere:** each class has an invisible hit sphere that covers the whole model (measured from the
   model files) plus 10 %, so a hit anywhere on the ship counts whatever way it is turned: Fighter 6.1u,
   Interceptor 4.5u, Heavy 10.9u. It is separate from the smaller collision sphere used against rocks.
@@ -257,7 +257,7 @@ one neutral white spark for every hit, the same on shield or hull · grey debris
 behind an Interceptor dash · bigger ship explosions.
 
 **Ship markers:** every other ship gets a screen-space bracket in its team colour with its name and class
-(teammates smaller and dimmer). Enemies on screen get the lead marker (§7.2). **What you may know about
+(teammates smaller and dimmer). **What you may know about
 enemies (client, 2026-09-26):**
 - An enemy's marker shows **only when no rock blocks your view** of it; the seeker lock ring follows the
   same rule.
