@@ -30,9 +30,11 @@ function vitalOf( p: PlayerState ) {
         nextClassId: p.nextClassId,
         kills: p.kills,
         deaths: p.deaths,
-        slot0: p.slot0,
-        slot1: p.slot1,
-        slot2: p.slot2,
+        seekers: p.seekers,
+        mines: p.mines,
+        seekerCooldown: p.seekerCooldown,
+        lockId: p.lockId,
+        lockProgress: p.lockProgress,
     };
 }
 

@@ -67,7 +67,8 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
 | Shift | boost (drains a meter; the meter recharges) |
 | V | switch aim mode (direct / joystick) |
 | Left mouse | primary gun |
-| 1 / 2 / 3 | use the pickup in that slot |
+| Right mouse hold / release | lock a seeker / fire it |
+| F | drop a mine |
 | A A / D D | dash (Interceptor only) |
 | Tab | scoreboard |
 | M | mute |
@@ -128,27 +129,30 @@ The ship is a free body in zero-g. **It never rolls, levels or aims for you.**
   Interceptor 4.5u, Heavy 10.9u. It is separate from the smaller collision sphere used against rocks.
 - Hits are decided by the server.
 
-### 7.3 Pickups
+### 7.3 Utilities — a fixed kit, no pickups
 
-**Built in S5 (client, 2026-09-26).** **12 pads** in 6 mirrored pairs (fair to both bases), placed from the
-arena descriptor in rock gaps away from the bases. Each pad shows a spinning coloured core; the server rolls
-its pickup and restocks it **12 s** after someone takes it. Pads work only in a live match. Fly through a pad
-to take it if you have a free slot. **Fighter 3 slots, others 2.** Keys **1 / 2 / 3 use that slot at once**.
-Dying drops everything you hold.
+**Pure deathmatch (client, 2026-09-26).** There is nothing to collect in the arena. Every pilot spawns with
+the same kit for the class and gets it back **only on respawn**, like the WOW-mode TDM loadout. The side
+that dies more refills more often, which pulls a one-sided match back.
 
-| Pickup | Effect |
+| Class | Seekers | Mines |
+|---|:--:|:--:|
+| Fighter | 3 | 3 |
+| Interceptor, Heavy | 2 | 2 |
+
+| Utility | How it works |
 |---|---|
-| **Seeker** | Homing missile, 170 u/s, 6 s life, 45 damage. At launch it locks the nearest enemy inside a **20° cone within 300u**; with no lock it flies straight. It turns at most 1.6 rad/s, so a late hard turn beats it, and a rock in the way stops it. The target sees **MISSILE LOCK**. A weapon, not an aim assist — the client approved it. |
-| **Mine** | Dropped behind you. Arms after **1 s**, lasts **30 s**, **max 3** per pilot (a fourth removes your oldest). The first enemy within 18u sets it off; it deals 55 to every enemy within 26u. Armed mines show their trigger zone in the owner's team colour. |
-| **Shield** | Refills the shield at once. |
-| **Health** | Restores half the class's hull. |
-| **Boost** | Refills the boost meter. |
+| **Seeker** | **Hold right mouse** with an enemy in a **20° cone within 300u**; the ring on the target fills over **0.6 s**. **Release** to fire. Releasing early fires nothing. 170 u/s, 6 s life, **35 damage** (never a kill on a full-health ship alone), **4 s** before the next one. Turns at most 1.6 rad/s, so a late hard turn beats it, and a rock stops it. The target sees **LOCKING ON YOU**, then **MISSILE LOCK**, then **MISSILE INCOMING**. |
+| **Mine** | **F** drops one behind you. Arms after **1 s**, lasts **30 s**, max 3 out per pilot (a fourth removes your oldest). The first enemy within 18u sets it off; **40 damage** to every enemy within 26u. Armed mines show their trigger zone in the owner's team colour. Mines may be dropped anywhere, the enemy base too (spawn protection covers fresh ships). |
+
+The HUD shows both under the health bars: **RMB SEEKER ■■□** and **F MINE ■■**, with the seeker cooldown as
+a fill.
 
 ### 7.4 Death and respawn
 
 - Death → explosion → **3 s** wait (the camera holds where you died; spectating your killer is an S6 polish
   item) → spawn at a free point of your team base.
-- **2 s spawn protection:** invulnerable; ends early if you fire.
+- **2 s spawn protection:** invulnerable for the full 2 s, **even while you fire** (client, 2026-09-26).
 - **Ship class:** pick it in the Esc menu at any time; the new class applies at your **next spawn**, never
   mid-life, so switching can't be used to heal.
 - **No self-destruct** (removed at the client's request, 2026-09-26). The only deaths are bolts, seekers,
@@ -180,7 +184,7 @@ Three classes to start. Stats are **data** (server-authoritative), so balancing 
 
 | Class | Trait |
 |---|---|
-| **Fighter** | Holds **3** pickups (others 2). |
+| **Fighter** | Carries **3** seekers and **3** mines (others 2 and 2). |
 | **Interceptor** | **Dash**: double-tap A or D for a 55 u/s sideways kick, 2.5 s cooldown. Boost refills 2× faster. |
 | **Heavy** | Shield starts to recover after **2 s** without damage (others 4 s) and recovers at **2×** the rate. |
 
@@ -231,7 +235,7 @@ widest collision sphere.
 
 ## 11. HUD
 
-Hull + shield bars · boost meter · gun heat · held pickups · team score + target + timer · kill feed ·
+Hull + shield bars · boost meter · gun heat · seekers and mines left · team score + target + timer · kill feed ·
 off-screen enemy indicators · hit markers · boundary warning · damage direction indicator.
 
 **Ship markers (built in S3):** every other ship gets a screen-space bracket in its team colour with its name
@@ -250,6 +254,9 @@ Mobile / touch · bots in team modes · accounts and stats · map editor · cock
 ## 14. OPEN QUESTIONS
 
 1. Arena radius, speeds, turn rates, damage numbers — set at the S1 / S3 feel-gates.
-2. Pickup and trait numbers (seeker, mine, dash, regen) — set at the S5 feel-gate.
+2. Utility and trait numbers (seeker, mine, dash, regen) — set at the S5 feel-gate.
+3. **Balance watch:** spawn protection now lasts through firing, so a fresh ship can deal up to ~200 damage
+   risk-free near its base. If that turns fights near a base one-sided, halve gun damage while protected.
+4. **Balance watch:** the Fighter's extra seeker + mine may make it the default pick; check at the S5 gate.
 
 Resolved in S5: seeker cone 20° / range 300u; mines max 3 per pilot, 30 s life; boost raises speed only.

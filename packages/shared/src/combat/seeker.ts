@@ -2,7 +2,7 @@ import type { TeamId } from '../arena/arena.js';
 import { forwardOf, type Vec3, vec3 } from '../sim/quat.js';
 import type { ShipState } from '../sim/ship-state.js';
 import type { BoltTarget } from './bolt.js';
-import { SEEKER } from './pickups.js';
+import { SEEKER } from './utilities.js';
 
 export interface SeekerFlight {
     x: number;

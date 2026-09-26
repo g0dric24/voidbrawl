@@ -9,7 +9,6 @@ import { ArenaScene } from '../../game/scene/arena-scene';
 import { CANVAS_CAMERA, CANVAS_GL } from '../../game/scene/canvas-gl';
 import { MineField } from '../../game/scene/mine-field';
 import { MissileField } from '../../game/scene/missile-field';
-import { PickupPads } from '../../game/scene/pickup-pads';
 import { RemoteShips } from '../../game/scene/remote-ships';
 import { createPredictor } from '../../net/prediction';
 import { MatchLink } from './match-link';
@@ -28,7 +27,6 @@ export function PlayCanvas( { room, descriptor }: { room: Room< MatchState >; de
                 <PlayLoop arena={ arena } predictor={ predictor } />
                 <ArenaScene arena={ arena }>
                     <RemoteShips />
-                    <PickupPads arena={ arena } />
                     <MissileField />
                     <MineField />
                 </ArenaScene>

@@ -8,6 +8,7 @@ import {
     createFixedStep,
     DEFAULT_ARENA,
     type DeathCause,
+    DROP_MINE_MESSAGE,
     FIXED_DT,
     HIT_MESSAGE,
     INPUT_MESSAGE,
@@ -32,7 +33,6 @@ import {
     type ShipClassId,
     START_MESSAGE,
     type TeamId,
-    USE_PICKUP_MESSAGE,
 } from '@voidbrawl/shared';
 import { isBot } from '../bots/bot-pilot.js';
 import { BotRoster } from '../bots/bot-roster.js';
@@ -41,10 +41,10 @@ import type { DamageEvents } from './damage.js';
 import { createInputQueue, enqueue, type InputQueue } from './input-queue.js';
 import { awardDeath, endIfSideEmpty, returnToLobby, sendToBase, startCountdown, stepClock } from './match-flow.js';
 import { stepMines, stepMissiles } from './ordnance-step.js';
-import { createPickupBook, type PickupBook, resetPickups, stepPads, useSlot } from './pickups-step.js';
 import { type PilotMode, stepPilots } from './pilots-step.js';
 import { registerTeamMessages } from './team-messages.js';
 import { teamCounts } from './teams.js';
+import { createUtilityBook, dropMine, resetUtilities, stepAim, type UtilityBook } from './utilities-step.js';
 import { fillVitals } from './vitals-ops.js';
 
 const RECONNECT_SECONDS = 20;
@@ -62,7 +62,7 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
     private arena!: Arena;
     private bolts: BoltBook = createBoltBook();
     private bots = new BotRoster();
-    private pickups: PickupBook = createPickupBook( DEFAULT_ARENA.seed );
+    private utilities: UtilityBook = createUtilityBook();
     private damage: DamageEvents = {
         hit: ( msg ) => this.broadcast( HIT_MESSAGE, msg ),
         killed: ( victimId, killerId, cause ) => this.announceKill( victimId, killerId, cause ),
@@ -74,7 +74,6 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
         this.maxClients = MODES[ this.state.mode ].teamSize * 2;
         applyArenaDescriptor( this.state.arena, DEFAULT_ARENA );
         this.arena = materializeArena( DEFAULT_ARENA );
-        resetPickups( this.state, this.arena, this.pickups );
         this.patchRate = PATCH_MS;
         if ( options?.bot === true ) this.addPracticeBot();
 
@@ -85,18 +84,18 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
         this.onMessage( SET_CLASS_MESSAGE, ( client, classId: unknown ) => {
             if ( isShipClassId( classId ) ) this.setClass( client.sessionId, classId );
         } );
-        this.onMessage( USE_PICKUP_MESSAGE, ( client, slot: unknown ) => this.use( client.sessionId, slot ) );
+        this.onMessage( DROP_MINE_MESSAGE, ( client ) => this.dropMine( client.sessionId ) );
         this.onMessage( START_MESSAGE, ( client ) => {
             const ready = canStart( teamCounts( this.state.players.values() ) );
             if ( ! this.isHost( client ) || this.state.phase !== PHASE.lobby || ! ready ) return;
             startCountdown( this.state, this.arena );
-            resetPickups( this.state, this.arena, this.pickups );
+            resetUtilities( this.state );
             this.refreshMeta();
         } );
         this.onMessage( PLAY_AGAIN_MESSAGE, ( client ) => {
             if ( ! this.isHost( client ) || this.state.phase !== PHASE.results ) return;
             returnToLobby( this.state, this.arena );
-            resetPickups( this.state, this.arena, this.pickups );
+            resetUtilities( this.state );
             this.refreshMeta();
         } );
         registerTeamMessages(
@@ -133,14 +132,14 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
         fillVitals( p );
     }
 
-    use( sessionId: string, slot: unknown ): void {
-        if ( this.state.phase === PHASE.live ) useSlot( this.state, this.pickups, sessionId, slot );
+    dropMine( sessionId: string ): void {
+        if ( this.state.phase === PHASE.live ) dropMine( this.state, this.utilities, sessionId );
     }
 
     fixedStep( dt: number ): void {
         const phaseBefore = this.state.phase;
         const now = this.state.time + dt;
-        this.bots.feed( this.state, this.queues, this.arena, dt, ( id, slot ) => this.use( id, slot ) );
+        this.bots.feed( this.state, this.queues, this.arena, dt, ( id ) => this.dropMine( id ) );
         stepPilots( this.state.players, this.queues, {
             arena: this.arena,
             now,
@@ -153,12 +152,12 @@ export class MatchRoom extends Room< { state: MatchState; metadata: RoomMeta } >
                     addBolt( this.state, this.bolts, bolt, life, damage );
                 },
                 killed: this.damage.killed,
+                aim: ( id, held, step ) => stepAim( this.state, this.utilities, id, held, step ),
             },
         } );
         this.state.time = now;
         stepBolts( this.state, this.bolts, this.arena, now, dt, this.damage );
         if ( this.state.phase === PHASE.live ) {
-            stepPads( this.state, this.arena, this.pickups, dt );
             stepMissiles( this.state, this.arena, dt, this.damage );
             stepMines( this.state, dt, this.damage );
         }

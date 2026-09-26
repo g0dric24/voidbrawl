@@ -1,6 +1,6 @@
 import type { FlightInput, FlightTuning } from '@voidbrawl/shared';
 import { axis, isHeld, takeDash } from './keyboard';
-import { takeTurn, triggerHeld } from './mouse';
+import { lockHeld, takeTurn, triggerHeld } from './mouse';
 
 const _turn = { pitch: 0, yaw: 0 };
 
@@ -15,5 +15,6 @@ export function readFlightInput( tuning: FlightTuning, dt: number, out: FlightIn
     out.boost = isHeld( 'ShiftLeft' ) || isHeld( 'ShiftRight' );
     out.fire = triggerHeld();
     out.dash = takeDash();
+    out.lock = lockHeld();
     return out;
 }

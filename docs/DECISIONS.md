@@ -254,18 +254,24 @@ cannot see through it). A cold start makes no reload. The root also has a `Hydra
 **Rejected:** ending on the first leaver (the user wants 2v2 and 4v4 to go on); a bot that fills the empty
 seat (not asked for); forfeit during the lobby (nothing to win yet).
 
-## ADR-011 — Pickups on the server; class traits as data
+## ADR-011 — A fixed utility kit, not pickups; class traits as data
 
 - **Status:** Accepted (client) · **Date:** 2026-09-26 · **Issue:** #9
 
-**Pads are geometry, pickups are state.** Pad positions come from the arena descriptor (a second seeded
-stream after the rocks, so the rock field does not move), in mirrored pairs so neither base is favoured.
-Only each pad's current kind is synced (`MatchState.pads`, one `uint8`). The server rolls kinds and runs the
-respawn timers.
+**Kit, not pickups.** A first S5 build had 12 pickup pads (seeker, mine, shield, health, boost). The client
+replaced it before merge: every pilot carries the class kit (Fighter 3 seekers + 3 mines, others 2 + 2) and
+refills it only on respawn. Reason: pure deathmatch, as in WOW-mode TDM — no map control over heals or
+weapons, and the side that dies more refills more, which works against one-sided matches.
 
-**Slots and use.** Held pickups are three `uint8` fields on `PlayerState`. Keys 1/2/3 send
-`USE_PICKUP_MESSAGE` with the slot index; the server checks the slot exists for the class and applies the
-effect at once. Using is a discrete event, so it is a message and not a field in the per-tick input.
+**Seeker lock is a held input.** `FlightInput.lock` carries the right mouse button each tick. The server
+(`stepAim`) grows `lockProgress` while the same enemy stays in the 20° cone within 300u (0.6 s to full), and
+fires on the release tick if the lock was full, a seeker is left and the 4 s cooldown is over. `lockId` and
+`lockProgress` are synced so the shooter sees a ring fill and the target sees the warning. Seeker damage is 35,
+below every class's full health, so a seeker never kills alone. A mine drop is a discrete event, so it is a
+message (`DROP_MINE_MESSAGE`, key F); mine damage is 40.
+
+**Spawn protection lasts the full 2 s even while firing** (client). Mines may be dropped at the enemy base
+because fresh ships are protected. Balance risk logged in GDD §14.
 
 **Seekers and mines run only on the server** and are synced as positions (`missiles`, `mines` maps). Unlike
 bolts, a seeker's path depends on a moving target, so clients cannot derive it from launch data; the client
@@ -273,17 +279,17 @@ extrapolates from the last patch for up to 120 ms. Seeker hits reuse `sweepBolt`
 the hit spheres grown by a 2u fuse. One `damageShip()` now serves bolts, seekers and mines, so kill credit and
 the hit message are the same for all three.
 
-**Traits are class data.** `ShipClass` gains `slots`, `regenDelay`, `regenRate`, and flight tuning gains
+**Traits are class data.** `ShipClass` gains `seekers`, `mines`, `regenDelay`, `regenRate`, and flight tuning gains
 `dashSpeed` and `dashCooldown` (zero for classes without a dash). Dash is part of `FlightInput` and runs inside
 `stepShip`, so the local ship predicts it and the server reconciles it like any other input. Every class
 already regenerated shield, so the Heavy trait is a shorter delay and a faster rate rather than regen itself.
 
-**Class picker.** In the lobby a class change applies at once; in a match it applies at the next spawn. Keys
-1/2/3 moved from class switching to pickups; class choice moved to the lobby cards and the Esc menu.
+**Class picker.** In the lobby a class change applies at once; in a match it applies at the next spawn. Class
+choice moved from keys 1/2/3 to the lobby cards and the Esc menu.
 
 **Self-destruct removed** (client request). `SELF_DESTRUCT_MESSAGE` and the `'self'` death cause are gone, and
 K does nothing. It was the way to change ship at once (ADR-006); now a class change waits for a real death.
 
-**Rejected:** syncing pad positions (breaks the descriptor contract); select-then-fire slots (slower in a
-fight than one key per slot); client-side seekers (a client could steer them); line-of-sight lock breaking
+**Rejected:** pickup pads (map control decides fights, not aim); 3 seekers for every class at 45 damage (135 of
+a Fighter's 150 with no aiming); instant seeker lock (fire-and-forget); client-side seekers (a client could steer them); line-of-sight lock breaking
 (rocks already stop seekers physically, and a LOS test every tick costs a rock sweep per missile).

@@ -16,7 +16,8 @@ export interface ShipClass {
     hull: number;
     shield: number;
     hitRadius: number;
-    slots: number;
+    seekers: number;
+    mines: number;
     regenDelay: number;
     regenRate: number;
 }
@@ -36,7 +37,7 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
         id: 'fighter',
         name: 'Fighter',
         role: 'All-rounder',
-        trait: 'Holds 3 pickups',
+        trait: 'Carries 3 seekers and 3 mines',
         tuning: {
             hullRadius: 4.2,
             thrustAccel: 66,
@@ -57,7 +58,8 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
         hull: 100,
         shield: 50,
         hitRadius: 6.1,
-        slots: 3,
+        seekers: 3,
+        mines: 3,
         regenDelay: SHIELD_REGEN_DELAY,
         regenRate: SHIELD_REGEN_RATE,
     },
@@ -86,7 +88,8 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
         hull: 75,
         shield: 40,
         hitRadius: 4.5,
-        slots: 2,
+        seekers: 2,
+        mines: 2,
         regenDelay: SHIELD_REGEN_DELAY,
         regenRate: SHIELD_REGEN_RATE,
     },
@@ -115,7 +118,8 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
         hull: 150,
         shield: 75,
         hitRadius: 10.9,
-        slots: 2,
+        seekers: 2,
+        mines: 2,
         regenDelay: SHIELD_REGEN_DELAY / 2,
         regenRate: SHIELD_REGEN_RATE * 2,
     },
@@ -124,8 +128,6 @@ export const SHIP_CLASSES: Record< ShipClassId, ShipClass > = {
 export const SHIP_ORDER: readonly ShipClassId[] = [ 'fighter', 'interceptor', 'heavy' ];
 
 export const DEFAULT_CLASS: ShipClassId = 'fighter';
-
-export const MAX_SLOTS = 3;
 
 export function isShipClassId( id: unknown ): id is ShipClassId {
     return typeof id === 'string' && id in SHIP_CLASSES;

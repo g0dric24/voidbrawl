@@ -14,7 +14,6 @@ const EMPTY: Arena = {
     radius: 10_000,
     asteroids: [],
     bases: materializeArena( DEFAULT_ARENA ).bases,
-    pads: [],
 };
 
 test( 'an Interceptor dash kicks the ship sideways once, then waits for the cooldown', () => {

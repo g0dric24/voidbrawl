@@ -11,7 +11,7 @@ export const PICK_TEAM_MESSAGE = 'pickTeam';
 export const MOVE_PLAYER_MESSAGE = 'movePlayer';
 export const START_MESSAGE = 'start';
 export const PLAY_AGAIN_MESSAGE = 'playAgain';
-export const USE_PICKUP_MESSAGE = 'usePickup';
+export const DROP_MINE_MESSAGE = 'dropMine';
 
 export interface NetInput extends FlightInput {
     seq: number;

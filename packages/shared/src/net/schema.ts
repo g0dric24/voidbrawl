@@ -1,4 +1,4 @@
-import { ArraySchema, MapSchema, Schema, type } from '@colyseus/schema';
+import { MapSchema, Schema, type } from '@colyseus/schema';
 import type { ArenaDescriptor, TeamId } from '../arena/arena.js';
 import type { BoltLaunch } from '../combat/bolt.js';
 import type { Vitals } from '../combat/vitals.js';
@@ -41,17 +41,16 @@ export class PlayerState extends Schema implements ShipState, Vitals {
     @type( 'uint16' ) kills = 0;
     @type( 'uint16' ) deaths = 0;
     @type( 'string' ) nextClassId: ShipClassId | '' = '';
-    @type( 'uint8' ) slot0 = 0;
-    @type( 'uint8' ) slot1 = 0;
-    @type( 'uint8' ) slot2 = 0;
+    @type( 'uint8' ) seekers = 0;
+    @type( 'uint8' ) mines = 0;
+    @type( 'float32' ) seekerCooldown = 0;
+    @type( 'string' ) lockId = '';
+    @type( 'float32' ) lockProgress = 0;
+    lockHeld = false;
     maxShield = 0;
     shieldDelay = 0;
     regenDelay = 0;
     regenRate = 0;
-}
-
-export class PadState extends Schema {
-    @type( 'uint8' ) kind = 0;
 }
 
 export class Missile extends Schema {
@@ -113,13 +112,8 @@ export class MatchState extends Schema {
     @type( 'int8' ) winner = -1;
     @type( 'boolean' ) forfeit = false;
 
-    @type( [ PadState ] ) pads = new ArraySchema< PadState >();
     @type( { map: Missile } ) missiles = new MapSchema< Missile >();
     @type( { map: Mine } ) mines = new MapSchema< Mine >();
-}
-
-export function slotsOf( p: { slot0: number; slot1: number; slot2: number } ): [ number, number, number ] {
-    return [ p.slot0, p.slot1, p.slot2 ];
 }
 
 export interface RoomMeta {

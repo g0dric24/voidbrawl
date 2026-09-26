@@ -15,7 +15,8 @@ const SANDBOX: readonly [ string, string ][] = [
 ];
 
 const PLAY: readonly [ string, string ][] = [
-    [ '1 2 3', 'use pickup' ],
+    [ 'Right hold / release', 'lock / fire seeker' ],
+    [ 'F', 'drop mine' ],
     [ 'A A / D D', 'dash (Interceptor)' ],
 ];
 

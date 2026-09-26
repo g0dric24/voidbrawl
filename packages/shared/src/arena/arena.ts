@@ -27,7 +27,6 @@ export interface Arena {
     radius: number;
     asteroids: readonly Asteroid[];
     bases: readonly [ Base, Base ];
-    pads: readonly Vec3[];
 }
 
 export const ARENA_RADIUS = 600;
@@ -41,11 +40,6 @@ export const ASTEROID_FILL = 0.92;
 export const SPAWN_SPACING = 28;
 export const SPAWN_COLUMNS = 4;
 export const SPAWN_ROWS = 2;
-export const PAD_PAIRS = 6;
-export const PAD_CLEAR = 14;
-export const PAD_SPACING = 90;
-export const PAD_REACH = 0.7;
-const PAD_SALT = 0x9e3779b9;
 const MAX_ATTEMPTS = 40_000;
 
 export const DEFAULT_ARENA: ArenaDescriptor = { mapId: 'rockfield', seed: 20260925 };
@@ -112,44 +106,12 @@ function placeAsteroids( seed: number, radius: number, bases: readonly Base[] ):
     return rocks;
 }
 
-function spaced( p: Vec3, pads: readonly Vec3[] ): boolean {
-    for ( const q of pads ) {
-        const dx = p.x - q.x;
-        const dy = p.y - q.y;
-        const dz = p.z - q.z;
-        if ( dx * dx + dy * dy + dz * dz < PAD_SPACING * PAD_SPACING ) return false;
-    }
-    return true;
-}
-
-function padFits( p: Vec3, rocks: readonly Asteroid[], bases: readonly Base[], pads: readonly Vec3[] ): boolean {
-    return (
-        clearOfRocks( p.x, p.y, p.z, PAD_CLEAR, rocks ) && clearOfBases( p.x, p.y, p.z, 0, bases ) && spaced( p, pads )
-    );
-}
-
-function placePads( seed: number, radius: number, rocks: readonly Asteroid[], bases: readonly Base[] ): Vec3[] {
-    const rand = mulberry32( ( seed ^ PAD_SALT ) >>> 0 );
-    const pads: Vec3[] = [];
-    const span = radius * PAD_REACH;
-    for ( let attempt = 0; attempt < MAX_ATTEMPTS && pads.length < PAD_PAIRS * 2; attempt++ ) {
-        const p = { x: ( rand() * 2 - 1 ) * span, y: ( rand() * 2 - 1 ) * span, z: ( rand() * 2 - 1 ) * span };
-        if ( p.x * p.x + p.y * p.y + p.z * p.z > span * span ) continue;
-        const mirror = { x: p.x, y: p.y, z: -p.z };
-        if ( ! padFits( p, rocks, bases, pads ) || ! padFits( mirror, rocks, bases, [ ...pads, p ] ) ) continue;
-        pads.push( p, mirror );
-    }
-    return pads;
-}
-
 export function materializeArena( descriptor: ArenaDescriptor ): Arena {
     const radius = ARENA_RADIUS;
     const bases = [ makeBase( 0, radius ), makeBase( 1, radius ) ] as const;
-    const asteroids = placeAsteroids( descriptor.seed, radius, bases );
     return {
         radius,
-        asteroids,
+        asteroids: placeAsteroids( descriptor.seed, radius, bases ),
         bases,
-        pads: placePads( descriptor.seed, radius, asteroids, bases ),
     };
 }

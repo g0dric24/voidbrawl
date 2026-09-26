@@ -1,10 +1,9 @@
 import { useFrame } from '@react-three/fiber';
-import { PICKUP, type TeamId } from '@voidbrawl/shared';
+import type { TeamId } from '@voidbrawl/shared';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { session } from '../../net/session';
 import { explode } from '../fx/fx-store';
-import { PICKUP_COLORS } from '../pickup-colors';
 import { TEAM_COLORS } from '../team-colors';
 import { flushInstances, glowInstances } from './instanced';
 import { useDisposeInstanced } from './use-dispose-instanced';
@@ -29,7 +28,7 @@ const _o = new THREE.Object3D();
 const _z = new THREE.Vector3( 0, 0, 1 );
 const _v = new THREE.Vector3();
 const _p = new THREE.Vector3();
-const COLOR = new THREE.Color( PICKUP_COLORS[ PICKUP.seeker ] ).multiplyScalar( GLOW );
+const COLOR = new THREE.Color( '#ff5a4f' ).multiplyScalar( GLOW );
 
 function sync( now: number ): Set< string > {
     const live = new Set< string >();

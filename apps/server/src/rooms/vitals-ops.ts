@@ -1,6 +1,7 @@
 import {
     type Arena,
     classOf,
+    clearLock,
     copyShip,
     type PlayerState,
     RESPAWN_DELAY,
@@ -10,6 +11,15 @@ import {
 } from '@voidbrawl/shared';
 import { freeSlot } from './teams.js';
 
+export function fillKit( p: PlayerState ): void {
+    const ship = SHIP_CLASSES[ classOf( p ) ];
+    p.seekers = ship.seekers;
+    p.mines = ship.mines;
+    p.seekerCooldown = 0;
+    p.lockHeld = false;
+    clearLock( p );
+}
+
 export function fillVitals( p: PlayerState ): void {
     const ship = SHIP_CLASSES[ classOf( p ) ];
     p.hull = ship.hull;
@@ -18,12 +28,7 @@ export function fillVitals( p: PlayerState ): void {
     p.shieldDelay = 0;
     p.regenDelay = ship.regenDelay;
     p.regenRate = ship.regenRate;
-}
-
-export function clearSlots( p: PlayerState ): void {
-    p.slot0 = 0;
-    p.slot1 = 0;
-    p.slot2 = 0;
+    fillKit( p );
 }
 
 export function markDead( p: PlayerState ): void {
@@ -35,7 +40,8 @@ export function markDead( p: PlayerState ): void {
     p.vy = 0;
     p.vz = 0;
     p.rollRate = 0;
-    clearSlots( p );
+    p.lockHeld = false;
+    clearLock( p );
 }
 
 export function revive( p: PlayerState, arena: Arena, others: Iterable< PlayerState > ): void {
