@@ -132,9 +132,6 @@ export default function Lobby( { loaderData }: Route.ComponentProps ) {
                     );
                 } ) }
             </section>
-            <Link to="/sandbox" className="text-xs tracking-[0.3em] text-readout-dim hover:text-readout">
-                Flight sandbox
-            </Link>
         </main>
     );
 }

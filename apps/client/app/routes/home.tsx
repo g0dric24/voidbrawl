@@ -24,9 +24,6 @@ export default function Home() {
                 <Link to="/lobby" className={ BUTTON }>
                     Play
                 </Link>
-                <Link to="/sandbox" className={ BUTTON }>
-                    Flight sandbox
-                </Link>
             </div>
         </main>
     );
