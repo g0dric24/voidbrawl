@@ -143,7 +143,7 @@ that dies more refills more often, which pulls a one-sided match back.
 | Utility | How it works |
 |---|---|
 | **Seeker** | **Hold right mouse** with an enemy in a **20° cone within 300u**; the ring on the target fills over **0.6 s**. **Release** to fire. Releasing early fires nothing. 170 u/s, 6 s life, **35 damage** (never a kill on a full-health ship alone), **4 s** before the next one. Turns at most 1.6 rad/s, so a late hard turn beats it, and a rock stops it. The target sees **LOCKING ON YOU**, then **MISSILE LOCK**, then **MISSILE INCOMING**. |
-| **Mine** | **F** drops one behind you. Arms after **1 s**; max 3 out per pilot (a fourth removes your oldest). Once armed, the first enemy within 18u sets it off early; otherwise it **blows up on its own 6 s after the drop** (client, 2026-09-26). Either way: **40 damage** to every enemy within 26u. Armed mines show their trigger zone in the owner's team colour. Mines may be dropped anywhere, the enemy base too (spawn protection covers fresh ships). |
+| **Mine** | **F** drops one behind you. Arms after **1 s**; max 3 out per pilot (a fourth removes your oldest). Once armed, the first enemy within 18u sets it off early; otherwise it **blows up on its own 6 s after the drop** (client, 2026-09-26). Either way: **40 damage** to every enemy within 26u. A mine is a small dark core in the owner's team colour that **ticks**: a short bright blink, about once a second at the drop, speeding up to ten a second just before the 6 s blast. No trigger-zone sphere is drawn. Mines may be dropped anywhere, the enemy base too (spawn protection covers fresh ships). |
 
 The HUD shows both under the health bars: **RMB SEEKER ■■□** and **F MINE ■■**, with the seeker cooldown as
 a fill.
