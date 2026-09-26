@@ -10,7 +10,7 @@ import {
 import type { Entity } from 'koota';
 import * as THREE from 'three';
 import { RemotePose } from '../game/ecs/traits';
-import { explode, feedback, lastDeath, spark } from '../game/fx/fx-store';
+import { explode, feedback, hullSparks, lastDeath, shimmer } from '../game/fx/fx-store';
 import { clearFeed, pushFeed } from '../game/fx/kill-feed';
 import { dropTracersNear } from '../game/local-tracers';
 import { TEAM_COLORS } from '../game/team-colors';
@@ -89,7 +89,10 @@ export function attachCombat( room: Room< MatchState >, entityOf: ( sessionId: s
         if ( m.shooterId === room.sessionId ) {
             feedback.hitMarkerAt = now;
             dropTracersNear( m.x, m.y, m.z );
-            spark( _at.set( m.x, m.y, m.z ), teamColor( room, m.shooterId ) );
+        }
+        if ( m.victimId !== room.sessionId ) {
+            if ( m.hull > 0 ) hullSparks( _at.set( m.x, m.y, m.z ) );
+            else if ( m.shield > 0 ) shimmer( _at.set( m.x, m.y, m.z ) );
         }
         if ( m.victimId === room.sessionId ) noteDamage( room, m, now );
     } );

@@ -14,6 +14,7 @@ import type { PerspectiveCamera } from 'three';
 import { localStepCues } from '../../audio/cue-audio';
 import { cameraScale, updateFollowCamera, watchKiller } from '../../game/camera/follow-camera';
 import { LocalPlayer, Pilot, Prev, Sim, Vital } from '../../game/ecs/traits';
+import { dashFx } from '../../game/fx/dash-fx';
 import { lastDeath, stepParticles } from '../../game/fx/fx-store';
 import { readFlightInput } from '../../game/input/flight-input';
 import { addTracer, stepTracers } from '../../game/local-tracers';
@@ -62,6 +63,7 @@ export function PlayLoop( { arena, predictor }: { arena: Arena; predictor: Predi
                 const dashing = net.dash !== 0 && ship.tuning.dashSpeed > 0 && sim.dashCooldown <= dt;
                 stepPilot( sim, net, ship, arena, dt );
                 localStepCues( net, sim, dashing );
+                if ( dashing ) dashFx( sim, net.dash, TEAM_COLORS[ pilot.team ] );
                 if ( ! sim.shot ) return;
                 const launch = launchBolt( sim, ship.tuning.hullRadius, ship.gun, 'local', pilot.team, 0 );
                 addTracer( launch, ship.gun.boltLife, TEAM_COLORS[ pilot.team ] );

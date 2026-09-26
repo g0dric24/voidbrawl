@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import * as THREE from 'three';
 import { playSfxAt } from '../../audio/sfx-map';
 import { session } from '../../net/session';
-import { explode } from '../fx/fx-store';
+import { blast } from '../fx/fx-store';
 import { TEAM_COLORS } from '../team-colors';
 import { viewPose } from '../view-pose';
 import { flushInstances, glowInstances } from './instanced';
@@ -80,7 +80,7 @@ function draw( mesh: THREE.InstancedMesh ): void {
     } );
     for ( const [ id, s ] of seen ) {
         if ( live.has( id ) ) continue;
-        explode( _at.set( s.x, s.y, s.z ), TEAM_COLORS[ s.team ] );
+        blast( _at.set( s.x, s.y, s.z ), TEAM_COLORS[ s.team ], MINE.blast );
         seen.delete( id );
     }
     flushInstances( mesh, n );
