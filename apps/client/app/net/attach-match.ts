@@ -13,6 +13,7 @@ import { bindMatchAudio } from '../audio/match-audio';
 import { Interp, LocalPlayer, NetId, Pilot, Prev, Remote, RemotePose, Sim, Vital } from '../game/ecs/traits';
 import { capturePrev } from '../game/pose-from-sim';
 import { pushSnapshot } from '../game/remote-interp';
+import { setActiveArena } from './active-arena';
 import { attachCombat } from './attach-combat';
 import { attachMatchStore } from './match-store';
 import type { Predictor } from './prediction';
@@ -93,6 +94,7 @@ export function attachMatch( room: Room< MatchState >, world: World, predictor: 
     const $ = getStateCallbacks( room );
     const byId = new Map< string, Entity >();
     const offs = new Map< string, () => void >();
+    setActiveArena( arena );
 
     const offAdd = $( room.state ).players.onAdd( ( p, sid ) => {
         const isLocal = sid === room.sessionId;
@@ -150,5 +152,6 @@ export function attachMatch( room: Room< MatchState >, world: World, predictor: 
         for ( const e of byId.values() ) e.destroy();
         byId.clear();
         setRoster( { marigold: 0, cyan: 0, you: null } );
+        setActiveArena( null );
     };
 }

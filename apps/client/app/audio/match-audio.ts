@@ -7,11 +7,18 @@ import {
     type MatchState,
     PHASE,
 } from '@voidbrawl/shared';
-import { playMusic } from './audio-engine';
+import { viewPose } from '../game/view-pose';
+import { playMusic, type Where } from './audio-engine';
 import { MUSIC, playSfx, playSfxAt, preloadAudio } from './sfx-map';
 
 const REMOTE_FIRE_GAIN = 0.3;
 const REMOTE_HIT_GAIN = 0.5;
+const GUNFIRE_REACH = 500;
+
+function inEarshot( at: Where ): boolean {
+    const p = viewPose.position;
+    return ( at.x - p.x ) ** 2 + ( at.y - p.y ) ** 2 + ( at.z - p.z ) ** 2 <= GUNFIRE_REACH * GUNFIRE_REACH;
+}
 
 function musicFor( phase: number ): string {
     return phase === PHASE.countdown || phase === PHASE.live ? MUSIC.match.name : MUSIC.lobby.name;
@@ -28,7 +35,7 @@ function resultSting( room: Room< MatchState > ): void {
 function onHit( room: Room< MatchState >, m: HitMessage ): void {
     if ( m.victimId === room.sessionId ) playSfx( 'hurt' );
     else if ( m.shooterId === room.sessionId ) playSfx( 'hit' );
-    else playSfxAt( 'hit', m, { gain: REMOTE_HIT_GAIN } );
+    else if ( inEarshot( m ) ) playSfxAt( 'hit', m, { gain: REMOTE_HIT_GAIN } );
 }
 
 function onKill( room: Room< MatchState >, m: KillMessage ): void {
@@ -62,8 +69,8 @@ function bindPhases( room: Room< MatchState > ): () => void {
 function bindOrdnance( room: Room< MatchState > ): () => void {
     const $ = getStateCallbacks( room );
     const offBolt = $( room.state ).bolts.onAdd( ( b ) => {
-        if ( b.ownerId !== room.sessionId )
-            playSfxAt( 'fire', { x: b.x0, y: b.y0, z: b.z0 }, { gain: REMOTE_FIRE_GAIN } );
+        const at = { x: b.x0, y: b.y0, z: b.z0 };
+        if ( b.ownerId !== room.sessionId && inEarshot( at ) ) playSfxAt( 'fire', at, { gain: REMOTE_FIRE_GAIN } );
     } );
     const offLaunch = $( room.state ).missiles.onAdd( ( m ) => playSfxAt( 'fire', m, { rate: 0.55, gain: 0.8 } ) );
     const offBurst = $( room.state ).missiles.onRemove( ( m ) => playSfxAt( 'hit', m, { rate: 0.7 } ) );

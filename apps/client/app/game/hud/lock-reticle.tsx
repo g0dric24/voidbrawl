@@ -1,7 +1,9 @@
 import { addAfterEffect } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
+import { activeArena } from '../../net/active-arena';
 import { LocalPlayer, Vital } from '../ecs/traits';
 import { world } from '../ecs/world';
+import { rockBetween } from '../line-of-sight';
 import { remotePosition } from '../remote-position';
 import { sceneCamera } from '../scene-camera';
 import { type ScreenPoint, toScreen } from './marker-math';
@@ -12,7 +14,8 @@ function paint( el: HTMLDivElement ): void {
     const vital = world.queryFirst( LocalPlayer, Vital )?.get( Vital );
     const camera = sceneCamera.current;
     const at = vital ? remotePosition( vital.lockId ) : null;
-    if ( ! vital || ! camera || ! at ) {
+    const arena = activeArena();
+    if ( ! vital || ! camera || ! at || ( arena && rockBetween( camera.position, at, arena ) ) ) {
         el.dataset.state = 'hidden';
         return;
     }

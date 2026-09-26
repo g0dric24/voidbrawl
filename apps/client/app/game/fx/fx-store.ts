@@ -62,12 +62,8 @@ export function debris( at: THREE.Vector3 ): void {
     emit( at, '#9aa3ad', { count: 8, speed: 14, life: 0.6, size: 0.5 } );
 }
 
-export function shimmer( at: THREE.Vector3 ): void {
-    emit( at, '#9fd8ff', { count: 16, speed: 10, life: 0.3, size: 0.45 } );
-}
-
-export function hullSparks( at: THREE.Vector3 ): void {
-    emit( at, '#ffb347', { count: 16, speed: 28, life: 0.45, size: 0.4 } );
+export function impact( at: THREE.Vector3 ): void {
+    emit( at, '#e8eef5', { count: 14, speed: 20, life: 0.35, size: 0.4 } );
 }
 
 export function smoke( at: THREE.Vector3 ): void {
@@ -120,6 +116,8 @@ export const feedback = {
     damageFrom: new THREE.Vector3(),
     damageFromAt: -Infinity,
 };
+
+export const recentAttackers = new Map< string, number >();
 
 export const lastDeath = {
     killerId: '',

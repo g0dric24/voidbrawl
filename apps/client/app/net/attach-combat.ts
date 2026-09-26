@@ -10,7 +10,7 @@ import {
 import type { Entity } from 'koota';
 import * as THREE from 'three';
 import { RemotePose } from '../game/ecs/traits';
-import { explode, feedback, hullSparks, lastDeath, shimmer } from '../game/fx/fx-store';
+import { explode, feedback, impact, lastDeath, recentAttackers } from '../game/fx/fx-store';
 import { clearFeed, pushFeed } from '../game/fx/kill-feed';
 import { dropTracersNear } from '../game/local-tracers';
 import { TEAM_COLORS } from '../game/team-colors';
@@ -40,6 +40,7 @@ function killText( room: Room< MatchState >, m: KillMessage ): string {
 function noteDamage( room: Room< MatchState >, m: HitMessage, now: number ): void {
     feedback.damageAt = now;
     feedback.damageFromAt = now;
+    recentAttackers.set( m.shooterId, now );
     _at.set( m.x, m.y, m.z );
     const shooter = room.state.players.get( m.shooterId );
     if ( _at.distanceTo( viewPose.position ) < NEAR_HIT && shooter ) _at.set( shooter.x, shooter.y, shooter.z );
@@ -90,11 +91,8 @@ export function attachCombat( room: Room< MatchState >, entityOf: ( sessionId: s
             feedback.hitMarkerAt = now;
             dropTracersNear( m.x, m.y, m.z );
         }
-        if ( m.victimId !== room.sessionId ) {
-            if ( m.hull > 0 ) hullSparks( _at.set( m.x, m.y, m.z ) );
-            else if ( m.shield > 0 ) shimmer( _at.set( m.x, m.y, m.z ) );
-        }
         if ( m.victimId === room.sessionId ) noteDamage( room, m, now );
+        else impact( _at.set( m.x, m.y, m.z ) );
     } );
 
     const offKill = room.onMessage( KILL_MESSAGE, ( m: KillMessage ) => {

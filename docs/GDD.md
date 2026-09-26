@@ -235,7 +235,8 @@ widest collision sphere.
 - **Audio (built in S6)** — Kenney CC0 SFX, a synth engine hum and two music tracks, on SLUR's Web Audio engine
   (threat › combat › UI › engine › music buses; louder buses duck quieter ones).
   - Other pilots' shots, hits, deaths, seeker launches and blasts, and mine blasts play **in 3D** from where they
-    happen, so you hear an enemy behind you.
+    happen, so you hear an enemy behind you. Other pilots' gunfire and hits are heard only **within 500u**;
+    deaths and blasts carry further.
   - Your own gun, boost, dash, hits taken and hit confirms play flat. The engine hum rises with speed.
   - Seeker: your lock blips quicken as the ring fills and chime on full lock. The target hears a warning that
     quickens from *locking* to *locked* to *incoming*. Mines tick with their blink within 160u.
@@ -249,16 +250,23 @@ off-screen enemy indicators · hit markers · boundary warning.
 
 **Built in S6:** hold **Tab** for a per-team scoreboard (ship, kills, deaths) · a red **damage-direction** arc at
 the screen edge points at whoever just hit you · **+1 KILL** under the crosshair · the death screen names your
-killer and weapon · ship markers show range and class ("340u · Heavy").
+killer and weapon.
 
 **VFX (S6):** expanding shockwave rings on ship deaths, mine blasts and seeker bursts · seeker smoke trails ·
-blue shimmer when a hit lands on shield, orange sparks when it reaches the hull · grey debris when bolts hit
-rocks · a burst behind an Interceptor dash · bigger ship explosions.
+one neutral white spark for every hit, the same on shield or hull · grey debris when bolts hit rocks · a burst
+behind an Interceptor dash · bigger ship explosions.
 
-**Ship markers (built in S3):** every other ship gets a screen-space bracket in its team colour with its name
-and distance (teammates smaller and dimmer). Enemies off screen show as an arrow at the screen edge. Enemies
-on screen get the lead marker (§7.2). **You never see another player's health** — only your own hull and
-shield (client).
+**Ship markers:** every other ship gets a screen-space bracket in its team colour with its name and class
+(teammates smaller and dimmer). Enemies on screen get the lead marker (§7.2). **What you may know about
+enemies (client, 2026-09-26):**
+- An enemy's marker shows **only when no rock blocks your view** of it; the seeker lock ring follows the
+  same rule.
+- The off-screen edge arrow shows only for enemies **within 400u**, or one that **hit you in the last 3 s**.
+- An enemy's distance shows only within 400u; beyond, the label is the class alone.
+- Only your own base ring is drawn.
+- **You never see another player's health**: no health bars, and a hit spark looks the same whether it hit
+  shield or hull. You see only your own hull and shield.
+- Teammates are always marked, with distance.
 
 ## 12. Hosting
 

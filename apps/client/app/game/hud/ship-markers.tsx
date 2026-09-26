@@ -3,8 +3,11 @@ import { leadPoint, SHIP_CLASSES, type ShipClassId, type TeamId, vec3 } from '@v
 import type { World } from 'koota';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { LocalPlayer, Pilot, Remote, RemotePose, Vital } from '../ecs/traits';
+import { activeArena } from '../../net/active-arena';
+import { LocalPlayer, NetId, Pilot, Remote, RemotePose, Vital } from '../ecs/traits';
 import { world } from '../ecs/world';
+import { recentAttackers } from '../fx/fx-store';
+import { rockBetween } from '../line-of-sight';
 import { sceneCamera } from '../scene-camera';
 import { TEAM_COLORS } from '../team-colors';
 import { viewPose } from '../view-pose';
@@ -12,6 +15,8 @@ import { type ScreenPoint, toScreen } from './marker-math';
 
 const SLOTS = 8;
 const EDGE_MARGIN = 48;
+const NEAR_RANGE = 400;
+const ATTACKER_MEMORY_MS = 3000;
 
 interface Slot {
     root: HTMLDivElement | null;
@@ -60,8 +65,21 @@ function paintLead( slot: Slot, { camera, pose, speed, color, w, h }: LeadInput 
 }
 
 interface ShipView {
+    id: string;
     pilot: { team: TeamId; name: string; classId: ShipClassId };
     pose: { position: THREE.Vector3; velocity: THREE.Vector3 };
+}
+
+function attackedRecently( id: string ): boolean {
+    return performance.now() - ( recentAttackers.get( id ) ?? Number.NEGATIVE_INFINITY ) < ATTACKER_MEMORY_MS;
+}
+
+function enemyShown( ship: ShipView, camera: THREE.PerspectiveCamera ): boolean {
+    if ( _sp.onScreen ) {
+        const arena = activeArena();
+        return ! arena || ! rockBetween( camera.position, ship.pose.position, arena );
+    }
+    return ship.pose.position.distanceTo( viewPose.position ) <= NEAR_RANGE || attackedRecently( ship.id );
 }
 
 function paintBracket( root: HTMLDivElement, enemy: boolean, team: TeamId ): void {
@@ -73,12 +91,12 @@ function paintBracket( root: HTMLDivElement, enemy: boolean, team: TeamId ): voi
     root.style.setProperty( '--team', TEAM_COLORS[ team ] );
 }
 
-function paintLabel( slot: Slot, ship: ShipView ): void {
+function paintLabel( slot: Slot, ship: ShipView, enemy: boolean ): void {
     if ( slot.name && slot.name.textContent !== ship.pilot.name ) slot.name.textContent = ship.pilot.name;
-    if ( slot.distance ) {
-        const range = Math.round( ship.pose.position.distanceTo( viewPose.position ) );
-        slot.distance.textContent = `${ range }u · ${ SHIP_CLASSES[ ship.pilot.classId ].name }`;
-    }
+    if ( ! slot.distance ) return;
+    const range = Math.round( ship.pose.position.distanceTo( viewPose.position ) );
+    const kind = SHIP_CLASSES[ ship.pilot.classId ].name;
+    slot.distance.textContent = ! enemy || range <= NEAR_RANGE ? `${ range }u · ${ kind }` : kind;
 }
 
 function paintSlot( slot: Slot, ship: ShipView, lead: Omit< LeadInput, 'pose' | 'color' > & { team: TeamId } ): void {
@@ -86,8 +104,12 @@ function paintSlot( slot: Slot, ship: ShipView, lead: Omit< LeadInput, 'pose' | 
     if ( ! root ) return;
     const enemy = ship.pilot.team !== lead.team;
     toScreen( ship.pose.position, lead.camera, lead.w, lead.h, EDGE_MARGIN, _sp );
+    if ( enemy && ! enemyShown( ship, lead.camera ) ) {
+        hide( slot );
+        return;
+    }
     paintBracket( root, enemy, ship.pilot.team );
-    paintLabel( slot, ship );
+    paintLabel( slot, ship, enemy );
     if ( enemy && _sp.onScreen ) {
         paintLead( slot, { ...lead, pose: ship.pose, color: TEAM_COLORS[ ship.pilot.team ] } );
     } else if ( slot.lead ) slot.lead.dataset.state = 'hidden';
@@ -99,11 +121,11 @@ function paint( slots: Slot[] ): void {
     if ( ! camera || ! me ) return;
     const lead = { camera, speed: me.speed, team: me.team, w: window.innerWidth, h: window.innerHeight };
     let i = 0;
-    world.query( Remote, Pilot, RemotePose, Vital ).readEach( ( [ pilot, pose, vital ] ) => {
+    world.query( Remote, Pilot, RemotePose, Vital, NetId ).readEach( ( [ pilot, pose, vital, net ] ) => {
         const slot = slots[ i++ ];
         if ( ! slot ) return;
         if ( ! pose.ready || vital.dead ) hide( slot );
-        else paintSlot( slot, { pilot, pose }, lead );
+        else paintSlot( slot, { id: net.sessionId, pilot, pose }, lead );
     } );
     for ( ; i < slots.length; i++ ) hide( slots[ i ] );
 }
