@@ -1,5 +1,5 @@
 import { addAfterEffect } from '@react-three/fiber';
-import { leadPoint, SHIP_CLASSES, type TeamId, vec3 } from '@voidbrawl/shared';
+import { leadPoint, SHIP_CLASSES, type ShipClassId, type TeamId, vec3 } from '@voidbrawl/shared';
 import type { World } from 'koota';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
@@ -60,7 +60,7 @@ function paintLead( slot: Slot, { camera, pose, speed, color, w, h }: LeadInput 
 }
 
 interface ShipView {
-    pilot: { team: TeamId; name: string };
+    pilot: { team: TeamId; name: string; classId: ShipClassId };
     pose: { position: THREE.Vector3; velocity: THREE.Vector3 };
 }
 
@@ -76,7 +76,8 @@ function paintBracket( root: HTMLDivElement, enemy: boolean, team: TeamId ): voi
 function paintLabel( slot: Slot, ship: ShipView ): void {
     if ( slot.name && slot.name.textContent !== ship.pilot.name ) slot.name.textContent = ship.pilot.name;
     if ( slot.distance ) {
-        slot.distance.textContent = `${ Math.round( ship.pose.position.distanceTo( viewPose.position ) ) }u`;
+        const range = Math.round( ship.pose.position.distanceTo( viewPose.position ) );
+        slot.distance.textContent = `${ range }u · ${ SHIP_CLASSES[ ship.pilot.classId ].name }`;
     }
 }
 

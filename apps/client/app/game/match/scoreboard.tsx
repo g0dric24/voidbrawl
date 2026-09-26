@@ -27,7 +27,7 @@ export function Scoreboard() {
     return (
         <div
             ref={ ref }
-            className="fixed inset-0 z-30 hidden items-center justify-center bg-void/50 font-readout text-readout uppercase data-[open=true]:flex"
+            className="fixed inset-0 z-50 hidden items-center justify-center bg-void/50 font-readout text-readout uppercase data-[open=true]:flex"
         >
             <div className="grid w-[min(720px,94vw)] grid-cols-2 gap-6 border border-line bg-deep/90 p-6">
                 { TEAMS.map( ( team ) => (

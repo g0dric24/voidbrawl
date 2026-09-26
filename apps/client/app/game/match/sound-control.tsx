@@ -10,7 +10,7 @@ export function SoundControl() {
             <button
                 type="button"
                 onClick={ () => toggleMute() }
-                className="w-20 border border-line px-2 py-1 text-left hover:text-readout focus-visible:text-readout focus-visible:outline-none"
+                className="w-28 border border-line px-2 py-1 text-left whitespace-nowrap hover:text-readout focus-visible:text-readout focus-visible:outline-none"
             >
                 { muted ? 'Muted' : 'Sound' } · M
             </button>
