@@ -1,4 +1,4 @@
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useLoader } from '@react-three/fiber';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { MAX_SHOCKWAVES, shockwaves } from '../fx/fx-store';
@@ -6,6 +6,7 @@ import { flushInstances, glowInstances } from './instanced';
 import { useDisposeInstanced } from './use-dispose-instanced';
 
 const GLOW = 3;
+const RING_URL = '/textures/fx/ring.png';
 
 const _o = new THREE.Object3D();
 const _c = new THREE.Color();
@@ -27,12 +28,14 @@ function draw( mesh: THREE.InstancedMesh, camera: THREE.Camera ): void {
 }
 
 export function ShockwaveField() {
+    const ring = useLoader( THREE.TextureLoader, RING_URL );
     const meshes = useMemo(
         () => [
             glowInstances(
-                new THREE.RingGeometry( 0.9, 1, 64 ),
+                new THREE.PlaneGeometry( 2.2, 2.2 ),
                 MAX_SHOCKWAVES,
                 new THREE.MeshBasicMaterial( {
+                    map: ring,
                     transparent: true,
                     depthWrite: false,
                     blending: THREE.AdditiveBlending,
@@ -40,7 +43,7 @@ export function ShockwaveField() {
                 } ),
             ),
         ],
-        [],
+        [ ring ],
     );
     useDisposeInstanced( meshes );
     const [ mesh ] = meshes;

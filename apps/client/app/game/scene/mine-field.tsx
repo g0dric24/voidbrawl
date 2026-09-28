@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { playSfxAt } from '../../audio/sfx-map';
 import { session } from '../../net/session';
 import { blast } from '../fx/fx-store';
-import { TEAM_COLORS } from '../team-colors';
+import { MINE_COLOR, TEAM_COLORS } from '../team-colors';
 import { viewPose } from '../view-pose';
 import { flushInstances, glowInstances } from './instanced';
 import { useDisposeInstanced } from './use-dispose-instanced';
@@ -64,7 +64,10 @@ function place( mesh: THREE.InstancedMesh, i: number, s: Seen, lit: boolean ): v
     _o.scale.setScalar( lit ? FLASH_SCALE : 1 );
     _o.updateMatrix();
     mesh.setMatrixAt( i, _o.matrix );
-    mesh.setColorAt( i, _c.set( TEAM_COLORS[ s.team ] ).multiplyScalar( lit ? FLASH_GLOW : BODY_GLOW ) );
+    mesh.setColorAt(
+        i,
+        _c.set( lit ? MINE_COLOR : TEAM_COLORS[ s.team ] ).multiplyScalar( lit ? FLASH_GLOW : BODY_GLOW ),
+    );
 }
 
 function draw( mesh: THREE.InstancedMesh ): void {
@@ -80,7 +83,7 @@ function draw( mesh: THREE.InstancedMesh ): void {
     } );
     for ( const [ id, s ] of seen ) {
         if ( live.has( id ) ) continue;
-        blast( _at.set( s.x, s.y, s.z ), TEAM_COLORS[ s.team ], MINE.blast );
+        blast( _at.set( s.x, s.y, s.z ), MINE_COLOR, MINE.blast );
         seen.delete( id );
     }
     flushInstances( mesh, n );

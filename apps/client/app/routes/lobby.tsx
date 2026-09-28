@@ -1,6 +1,7 @@
 import { type MatchMode, MODE_ORDER, MODES, PHASE } from '@voidbrawl/shared';
 import { useState, useSyncExternalStore } from 'react';
 import { Link, useNavigate } from 'react-router';
+import { VoidbrawlLogo } from '../game/brand/voidbrawl-logo';
 import { callSign, setCallSign } from '../net/call-sign';
 import { lobbyRooms, subscribeLobby } from '../net/lobby-store';
 import { createMatch, joinLobby, leaveMatch } from '../net/matchmaking';
@@ -47,8 +48,8 @@ export default function Lobby( { loaderData }: Route.ComponentProps ) {
 
     return (
         <main className="flex min-h-screen flex-col items-center gap-10 overflow-y-auto bg-void px-4 py-[8vh] font-readout text-readout uppercase">
-            <Link to="/" className="text-[clamp(28px,5vw,56px)] font-bold tracking-[0.3em] text-marigold">
-                VOIDBRAWL
+            <Link to="/" aria-label="VOIDBRAWL home">
+                <VoidbrawlLogo size="small" />
             </Link>
             { ! loaderData.online ? (
                 <p className="text-sm tracking-[0.2em] text-danger">

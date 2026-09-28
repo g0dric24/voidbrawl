@@ -25,22 +25,30 @@ export function ScoreBar() {
     if ( match.phase !== PHASE.live && match.phase !== PHASE.countdown ) return null;
 
     return (
-        <div className="pointer-events-none fixed inset-x-0 top-[clamp(12px,2.5vh,28px)] z-20 flex flex-col items-center gap-1 font-readout uppercase">
-            <div className="flex items-baseline gap-5 text-shadow-readout">
-                <span className="text-[clamp(26px,4.5vh,44px)] font-bold text-marigold tabular-nums">
+        <div className="pointer-events-none fixed inset-x-0 top-[clamp(10px,2vh,24px)] z-20 flex justify-center font-readout uppercase">
+            <div className="flex items-stretch gap-1 drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+                <span className="flex min-w-16 items-center justify-center bg-marigold px-4 font-display text-[clamp(22px,3.8vh,36px)] font-black text-void tabular-nums [clip-path:polygon(0_0,100%_0,calc(100%-12px)_100%,0_100%)]">
                     { match.score0 }
                 </span>
-                <span className="text-xs tracking-[0.3em] text-readout-dim">to { MODES[ match.mode ].target }</span>
-                <span className="text-[clamp(26px,4.5vh,44px)] font-bold text-cyan tabular-nums">{ match.score1 }</span>
+                <span className="flex flex-col items-center justify-center bg-deep/90 px-5 py-1">
+                    <span className="text-[10px] tracking-[0.3em] text-readout-dim">
+                        Kill target { MODES[ match.mode ].target }
+                    </span>
+                    { match.suddenDeath ? (
+                        <span className="font-display text-sm font-bold tracking-[0.2em] text-danger">
+                            Sudden death
+                        </span>
+                    ) : (
+                        <span
+                            ref={ timer }
+                            className="font-display text-base font-bold tracking-[0.15em] tabular-nums"
+                        />
+                    ) }
+                </span>
+                <span className="flex min-w-16 items-center justify-center bg-cyan px-4 font-display text-[clamp(22px,3.8vh,36px)] font-black text-void tabular-nums [clip-path:polygon(12px_0,100%_0,100%_100%,0_100%)]">
+                    { match.score1 }
+                </span>
             </div>
-            { match.suddenDeath ? (
-                <span className="text-sm font-bold tracking-[0.35em] text-danger text-shadow-danger">Sudden death</span>
-            ) : (
-                <span
-                    ref={ timer }
-                    className="text-sm tracking-[0.25em] text-readout tabular-nums text-shadow-readout"
-                />
-            ) }
         </div>
     );
 }
