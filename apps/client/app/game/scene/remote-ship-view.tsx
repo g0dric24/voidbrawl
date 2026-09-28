@@ -9,6 +9,7 @@ import { TEAM_COLORS } from '../team-colors';
 import { EngineTrail, type TrailSource } from './engine-trail';
 import { ShipModel } from './ship-model';
 import { SHIP_VISUALS } from './ship-visuals';
+import { SpawnShield } from './spawn-shield';
 import { WingBeacons } from './wing-beacons';
 
 const WING_SPAN = 0.95;
@@ -39,6 +40,7 @@ export function RemoteShipView( { entity }: { entity: Entity } ) {
                     <ShipModel classId={ pilot.classId } glow={ color } />
                 </Suspense>
                 <WingBeacons span={ SHIP_CLASSES[ pilot.classId ].tuning.hullRadius * WING_SPAN } color={ color } />
+                <SpawnShield entity={ entity } radius={ SHIP_CLASSES[ pilot.classId ].hitRadius } color={ color } />
             </group>
             <EngineTrail source={ trail } color={ color } tail={ SHIP_VISUALS[ pilot.classId ].tail } />
         </Fragment>

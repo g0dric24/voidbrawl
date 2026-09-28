@@ -5,6 +5,7 @@ export interface RimUniforms {
     uRimPower: { value: number };
     uRimStrength: { value: number };
     uBodyGlow: { value: number };
+    uLivery: { value: number };
 }
 
 export function rimUniforms( color: string ): RimUniforms {
@@ -13,6 +14,7 @@ export function rimUniforms( color: string ): RimUniforms {
         uRimPower: { value: 3 },
         uRimStrength: { value: 2 },
         uBodyGlow: { value: 0 },
+        uLivery: { value: 1 },
     };
 }
 
@@ -21,6 +23,21 @@ uniform vec3 uRimColor;
 uniform float uRimPower;
 uniform float uRimStrength;
 uniform float uBodyGlow;
+uniform float uLivery;
+`;
+
+const LIVERY = `
+#include <map_fragment>
+{
+    vec3 base = diffuseColor.rgb;
+    float hi = max( base.r, max( base.g, base.b ) );
+    float lo = min( base.r, min( base.g, base.b ) );
+    float lum = dot( base, vec3( 0.299, 0.587, 0.114 ) );
+    float paint = smoothstep( 0.12, 0.35, hi - lo ) * smoothstep( 0.08, 0.3, lum );
+    vec3 trim = vec3( 0.06 + lum * 0.55 );
+    vec3 team = uRimColor * ( 0.45 + lum * 0.7 );
+    diffuseColor.rgb = mix( base, mix( trim, team, paint ), uLivery );
+}
 `;
 
 const RIM_EMISSIVE = `
@@ -35,9 +52,12 @@ function withRim( source: THREE.Material, uniforms: RimUniforms ): THREE.Materia
     material.onBeforeCompile = ( shader ) => {
         Object.assign( shader.uniforms, uniforms );
         shader.fragmentShader =
-            RIM_HEAD + shader.fragmentShader.replace( '#include <emissivemap_fragment>', RIM_EMISSIVE );
+            RIM_HEAD +
+            shader.fragmentShader
+                .replace( '#include <map_fragment>', LIVERY )
+                .replace( '#include <emissivemap_fragment>', RIM_EMISSIVE );
     };
-    material.customProgramCacheKey = () => 'voidbrawl-ship-rim';
+    material.customProgramCacheKey = () => 'voidbrawl-ship-rim-livery';
     return material;
 }
 

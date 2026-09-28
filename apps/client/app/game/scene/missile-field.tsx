@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import * as THREE from 'three';
 import { session } from '../../net/session';
 import { blast, smoke } from '../fx/fx-store';
-import { TEAM_COLORS } from '../team-colors';
+import { SEEKER_COLOR } from '../team-colors';
 import { flushInstances, glowInstances } from './instanced';
 import { useDisposeInstanced } from './use-dispose-instanced';
 
@@ -29,7 +29,7 @@ const _o = new THREE.Object3D();
 const _z = new THREE.Vector3( 0, 0, 1 );
 const _v = new THREE.Vector3();
 const _p = new THREE.Vector3();
-const COLOR = new THREE.Color( '#ff5a4f' ).multiplyScalar( GLOW );
+const COLOR = new THREE.Color( SEEKER_COLOR ).multiplyScalar( GLOW );
 
 function sync( now: number ): Set< string > {
     const live = new Set< string >();
@@ -54,7 +54,7 @@ function draw( mesh: THREE.InstancedMesh ): void {
     for ( const [ id, t ] of tracks ) {
         const at = where( t, now );
         if ( ! live.has( id ) ) {
-            blast( at, TEAM_COLORS[ t.team ], BURST_RADIUS );
+            blast( at, SEEKER_COLOR, BURST_RADIUS );
             tracks.delete( id );
             continue;
         }

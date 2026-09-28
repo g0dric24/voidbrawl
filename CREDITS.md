@@ -23,6 +23,7 @@ Full per-file audio breakdown lives in
 | Asset | Author | License | Source |
 |-------|--------|---------|--------|
 | Ship placeholders — `bob`, `challenger`, `dispatcher`, `executioner` (4× glTF) | **Quaternius** | **CC0** | *Ultimate Spaceships Pack* — https://quaternius.com/ |
+| Class ships — `kit-fighter` (Rae the Red Panda), `kit-interceptor` (Fernando the Flamingo), `kit-heavy` (Finn the Frog) | **Quaternius** | **CC0** | *Ultimate Space Kit* via Poly Pizza — https://poly.pizza/bundle/Ultimate-Space-Kit-YWh743lqGX |
 
 Four of the five ship classes still fly a placeholder from Quaternius' **Ultimate Spaceships Pack**
 (CC0, public domain). No attribution is required; we acknowledge it gladly. `split-crown` and `comet` are bespoke assets from the SLUR project (used with its owner's permission).
@@ -45,6 +46,7 @@ engine hum is synthesized in-engine (Web Audio, no sample). Per-file mapping:
 ## Fonts
 
 *Chakra Petch* (The Chakra Petch Project Authors) — SIL Open Font License 1.1, see `apps/client/public/fonts/OFL.txt`.
+*Orbitron* (The Orbitron Project Authors) — SIL Open Font License 1.1, see `apps/client/public/fonts/OFL-orbitron.txt`.
 
 ## Textures
 
@@ -52,6 +54,8 @@ engine hum is synthesized in-engine (Web Audio, no sample). Per-file mapping:
 |---|---|---|
 | `dark-rock-*` | Poly Haven — *dark_rock* | CC0 |
 | `metal/Metal046B_*` | ambientCG — *Metal046B* | CC0 |
+| `sky/blue/*` (space skybox) | StumpyStrust — *Space Skyboxes* (OpenGameArt) | CC0 |
+| `fx/glow`, `fx/smoke`, `fx/fire`, `fx/ring` (particle sprites) | Kenney — *Particle Pack* | CC0 |
 
 ## Art references
 

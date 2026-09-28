@@ -3,6 +3,10 @@ import * as THREE from 'three';
 export const MAX_PARTICLES = 2048;
 export const MAX_SHOCKWAVES = 32;
 
+export const SPRITE = { glow: 0, smoke: 1, fire: 2 } as const;
+
+export type Sprite = ( typeof SPRITE )[ keyof typeof SPRITE ];
+
 export interface Particle {
     position: THREE.Vector3;
     velocity: THREE.Vector3;
@@ -10,6 +14,7 @@ export interface Particle {
     age: number;
     life: number;
     size: number;
+    sprite: Sprite;
 }
 
 export interface Shockwave {
@@ -30,6 +35,7 @@ interface Burst {
     speed: number;
     life: number;
     size: number;
+    sprite?: Sprite;
 }
 
 function emit( at: THREE.Vector3, color: string, b: Burst, drift?: THREE.Vector3 ): void {
@@ -45,6 +51,7 @@ function emit( at: THREE.Vector3, color: string, b: Burst, drift?: THREE.Vector3
             age: 0,
             life: b.life * ( 0.6 + Math.random() * 0.4 ),
             size: b.size,
+            sprite: b.sprite ?? SPRITE.glow,
         } );
     }
 }
@@ -59,7 +66,7 @@ export function spark( at: THREE.Vector3, color: string ): void {
 }
 
 export function debris( at: THREE.Vector3 ): void {
-    emit( at, '#9aa3ad', { count: 8, speed: 14, life: 0.6, size: 0.5 } );
+    emit( at, '#9aa3ad', { count: 6, speed: 10, life: 0.7, size: 1.4, sprite: SPRITE.smoke } );
 }
 
 export function impact( at: THREE.Vector3 ): void {
@@ -67,7 +74,7 @@ export function impact( at: THREE.Vector3 ): void {
 }
 
 export function smoke( at: THREE.Vector3 ): void {
-    emit( at, '#5d6570', { count: 1, speed: 3, life: 0.8, size: 1.1 } );
+    emit( at, '#8a93a0', { count: 1, speed: 3, life: 0.9, size: 2.2, sprite: SPRITE.smoke } );
 }
 
 export function dashBurst( at: THREE.Vector3, away: THREE.Vector3, color: string ): void {
@@ -75,15 +82,15 @@ export function dashBurst( at: THREE.Vector3, away: THREE.Vector3, color: string
 }
 
 export function explode( at: THREE.Vector3, color: string ): void {
-    emit( at, '#fffbe7', { count: 36, speed: 34, life: 0.55, size: 1.6 } );
-    emit( at, color, { count: 110, speed: 52, life: 1.4, size: 0.9 } );
-    emit( at, '#5d6570', { count: 20, speed: 12, life: 1.6, size: 1.4 } );
+    emit( at, '#fff1d6', { count: 6, speed: 14, life: 0.5, size: 3, sprite: SPRITE.fire } );
+    emit( at, color, { count: 60, speed: 48, life: 1.1, size: 0.8 } );
+    emit( at, '#6b7480', { count: 12, speed: 10, life: 1.6, size: 3, sprite: SPRITE.smoke } );
     shockwave( at, color, 34, 0.6 );
 }
 
 export function blast( at: THREE.Vector3, color: string, radius: number ): void {
-    emit( at, '#fffbe7', { count: 20, speed: 30, life: 0.4, size: 1.2 } );
-    emit( at, color, { count: 50, speed: 40, life: 0.8, size: 0.7 } );
+    emit( at, '#fff1d6', { count: 8, speed: 16, life: 0.45, size: 4, sprite: SPRITE.fire } );
+    emit( at, color, { count: 50, speed: 40, life: 0.8, size: 0.9 } );
     shockwave( at, color, radius, 0.4 );
 }
 

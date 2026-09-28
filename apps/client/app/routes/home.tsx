@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { VoidbrawlLogo } from '../game/brand/voidbrawl-logo';
 import { leaveMatch } from '../net/matchmaking';
 
 export function meta() {
@@ -17,7 +18,9 @@ export default function Home() {
     return (
         <main className="flex min-h-screen flex-col items-center justify-center gap-10 bg-void font-readout text-readout">
             <div className="flex flex-col items-center gap-3">
-                <h1 className="text-[clamp(40px,8vw,96px)] font-bold tracking-[0.3em] text-marigold">VOIDBRAWL</h1>
+                <h1 className="m-0">
+                    <VoidbrawlLogo />
+                </h1>
                 <p className="text-sm tracking-[0.3em] text-readout-dim uppercase">Cold space. Warm energy.</p>
             </div>
             <div className="flex gap-6">

@@ -8,17 +8,27 @@
     --color-cyan: #3bd6ff;
     --color-core: #ffe0a0;
     --color-danger: #ff5c6e;
+    --color-seeker: #ff3fbf;
+    --color-mine: #5ee05a;
     --color-readout: #eceff2;
     --color-readout-dim: #8b929b;
     --color-line: rgba( 120, 160, 200, 0.26 );
 
     --font-readout: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Orbitron", "Chakra Petch", ui-sans-serif, sans-serif;
 
     --text-shadow-readout: 0 2px 5px rgba( 0, 0, 0, 0.9 ), 0 0 2px rgba( 0, 0, 0, 0.8 );
     --text-shadow-danger: 0 0 12px rgba( 255, 92, 110, 0.85 ), 0 2px 5px rgba( 0, 0, 0, 0.9 );
     --shadow-meter: 0 0 8px rgba( 245, 154, 36, 0.6 );
 }
 
+@font-face {
+    font-family: "Orbitron";
+    font-style: normal;
+    font-weight: 400 900;
+    font-display: swap;
+    src: url( "/fonts/orbitron-latin.woff2" ) format( "woff2" );
+}
 @font-face {
     font-family: "Chakra Petch";
     font-style: normal;

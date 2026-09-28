@@ -5,6 +5,7 @@ import { AsteroidField } from './asteroid-field';
 import { BaseMarkers } from './base-markers';
 import { BoltField } from './bolt-field';
 import { BoundaryShell } from './boundary-shell';
+import { CubeSky } from './cube-sky';
 import { FxField } from './fx-field';
 import { LocalShipView } from './local-ship-view';
 import { NebulaSky } from './nebula-sky';
@@ -16,7 +17,10 @@ import { SpaceDust } from './space-dust';
 export function ArenaScene( { arena, children }: { arena: Arena; children?: ReactNode } ) {
     return (
         <Fragment>
-            <NebulaSky radius={ arena.radius } />
+            <NebulaSky radius={ arena.radius } backdrop={ false } />
+            <Suspense fallback={ null }>
+                <CubeSky radius={ arena.radius } />
+            </Suspense>
             <SceneLighting />
             <Suspense fallback={ null }>
                 <AsteroidField arena={ arena } />
@@ -27,8 +31,10 @@ export function ArenaScene( { arena, children }: { arena: Arena; children?: Reac
             <LocalShipView />
             { children }
             <BoltField />
-            <FxField />
-            <ShockwaveField />
+            <Suspense fallback={ null }>
+                <FxField />
+                <ShockwaveField />
+            </Suspense>
             <AimReticle />
             <SceneEffects />
         </Fragment>

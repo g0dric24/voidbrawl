@@ -47,8 +47,8 @@ export function UtilitySlots() {
     useUtilityPaint( seeker, mine );
 
     const groups = [
-        { ref: seeker, label: 'Seeker', keyName: 'RMB', tone: 'bg-danger' },
-        { ref: mine, label: 'Mine', keyName: 'F', tone: 'bg-readout' },
+        { ref: seeker, label: 'Seeker', keyName: 'RMB', tone: 'bg-seeker' },
+        { ref: mine, label: 'Mine', keyName: 'F', tone: 'bg-mine' },
     ];
 
     return (
